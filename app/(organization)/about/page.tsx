@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import {
   contactInfo,
   founderDetails,
-  heroData,
+  heroCardData,
   howWeWorkList,
   leaderShip,
   ourServicesList,
@@ -62,7 +62,7 @@ export default function Page() {
                 thrive.
               </p>
               <Button
-                className="max-w-3/6 cursor-pointer py-6 text-lg px-5 hover:-translate-y-0.5 transition-all ease-in-out duration-200"
+                className="w-fit cursor-pointer py-6 text-lg px-5 hover:-translate-y-0.5 transition-all ease-in-out duration-200"
                 onClick={() => router.push("/")}
               >
                 Explore the platform
@@ -77,19 +77,19 @@ export default function Page() {
               />
             </div>
           </div>
-
-          <div className="w-full mt-5 flex gap-4 md:flex-nowrap flex-wrap flex-row items-center justify-center">
-            {heroData.map((d, idx) => (
+          <div className="w-full mt-5 flex gap-4 md:flex-nowrap flex-wrap items-stretch justify-center">
+            {heroCardData.map((d, idx) => (
               <div
                 key={idx}
-                className="w-11/12  border-primary/20 border inline-flex items-start gap-2
-                        px-3 py-4 rounded-lg justify-center bg-primary-foreground hover:-translate-y-1.5 transition-transform
-                        ease-in-out duration-200 hover:shadow-lg drop-shadow-primary/40 cursor-pointer h-auto"
+                className="w-11/12 md:w-1/3 border border-primary/20 flex flex-col items-start gap-2
+                 px-3 py-4 rounded-lg justify-start bg-primary-foreground
+                 hover:-translate-y-1.5 transition-transform ease-in-out duration-200
+                 hover:shadow-lg drop-shadow-primary/40 cursor-pointer"
               >
                 <div className="w-fit">
                   <d.icon className="bg-primary/10 text-accent-foreground/80 p-2 size-12 rounded-full" />
                 </div>
-                <div className="flex flex-col w-fit gap-1">
+                <div className="flex flex-col flex-1 gap-1 w-full">
                   <h2 className="text-xl text-slate-800 font-semibold">{d.title}</h2>
                   <p className="text-balance text-slate-700">{d.description}</p>
                 </div>
@@ -100,7 +100,7 @@ export default function Page() {
       </section>
 
       {/* who we are section */}
-      <section className="bg-slate-50 p-5 py-20 md:p-2 flex flex-col gap-4 items-center justify-center">
+      <section className="bg-slate-50 p-5 min-h-[80svh] py-20 md:p-2 flex flex-col gap-4 items-center justify-center">
         <div className="md:w-5/6 flex md:flex-nowrap flex-wrap flex-row gap-4">
           <div className="flex flex-col w-full md:w-3/6 px-2 gap-4">
             <span className="uppercase text-slate-400">who we are</span>
@@ -138,9 +138,15 @@ export default function Page() {
       </section>
 
       {/* Founder section */}
-      <section className="bg-slate-100 p-5 md:p-2 flex md:flex-nowrap flex-wrap gap-4 items-center justify-center">
-        <div className="w-full md:w-2/6">
-          <img src={founderDetails.image} loading="lazy" className="rounded-lg overflow-hidden" />
+      <section className="bg-slate-100 min-h-[80svh] p-5 md:p-2 flex md:flex-nowrap flex-wrap gap-4 items-center justify-center">
+        <div className="w-full md:w-2/6 flex justify-center relative">
+          <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-xl bg-primary/20 blur-3xl"></div>
+
+          <img
+            src={founderDetails.image}
+            loading="lazy"
+            className="relative rounded-xl object-contain max-h-96 w-auto z-10 shadow-lg"
+          />
         </div>
         <div className="w-full md:w-3/6 flex flex-col gap-4">
           <h2 className="text-4xl font-bold capitalize">Meet Our Founder</h2>
@@ -155,7 +161,7 @@ export default function Page() {
       </section>
 
       {/* How we work section */}
-      <section className="py-20 bg-slate-100 min-h-screen p-5 md:p-2 flex flex-col items-center justify-center text-pretty">
+      <section className="py-20 bg-slate-[70svh] min-h-screen p-5 md:p-2 flex flex-col items-center justify-center text-pretty">
         <h2 className="text-4xl capitalize font-semibold">How we Work</h2>
         <div className="w-2/6 md:w-1/6 h-1 bg-primary rounded-full my-2"></div>
 
@@ -259,7 +265,7 @@ export default function Page() {
       </section>
 
       {/* Leadership section */}
-      <section className="py-20 bg-slate-100 min-h-screen p-5 md:p-2 flex flex-col items-center justify-center text-pretty">
+      <section className="py-20 bg-slate-100 min-h-[60svh] p-5 md:p-2 flex flex-col items-center justify-center text-pretty">
         <h2 className="text-4xl capitalize font-semibold">Our leadership team</h2>
         <div className="w-2/6 md:w-1/6 h-1 bg-primary rounded-full my-2"></div>
 
@@ -289,7 +295,7 @@ export default function Page() {
       </section>
 
       {/* Contact section */}
-      <section className="py-20 bg-slate-100 min-h-screen p-5 md:p-2 flex flex-col items-center justify-center text-pretty">
+      <section className="py-20 bg-slate-100 min-h-[60svh] p-5 md:p-2 flex flex-col items-center justify-center text-pretty">
         <h2 className="text-4xl capitalize font-semibold">Contact</h2>
         <div className="w-2/6 md:w-1/6 h-1 bg-primary rounded-full my-2"></div>
 
@@ -297,10 +303,9 @@ export default function Page() {
           {contactInfo.map((contact, idx) => (
             <div
               key={idx}
-              className="group md:w-3/6 w-full flex flex-col justify-center items-center my-3
-         border-2 border-primary/40 rounded-xl p-5 gap-1
-          hover:shadow-xl shadow-slate-300 ease-in-out duration-300 hover:-translate-y-1.5 cursor-pointer
-          "
+              className="group flex flex-col justify-center items-center my-3
+              border-2 border-primary/40 rounded-xl p-5 gap-1
+              hover:shadow-xl shadow-slate-300 ease-in-out duration-300 hover:-translate-y-1.5 cursor-pointer"
             >
               <contact.icon className="w-fit size-14 mb-3 bg-primary/10 text-primary/90 rounded-2xl p-3" />
               <h3 className="text-2xl font-semibold text-slate-800 capitalize">{contact.title}</h3>
