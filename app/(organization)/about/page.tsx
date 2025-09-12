@@ -40,22 +40,22 @@ export default function Page() {
           </Link>
         </div>
       </header>
-      <section className="bg-primary/5 py-20 p-2 flex flex-col gap-4 items-center">
+      <section className="dark:bg-primary/20 bg-primary/5 py-20 p-2 flex flex-col gap-4 items-center">
         <div className="w-full p-2 md:p-1 md:w-5/6 flex flex-col gap-4">
           {/* Hero section */}
-          <div className="mt-10 w-fit border border-slate-400/40 inline-flex rounded-full py-2 px-3  items-center gap-2">
-            <LucideBell className="p-1 size-6 text-slate-700 bg-primary/20 rounded-full" />
-            <span className="font-[600] text-slate-700 text-sm">
+          <div className="mt-10 w-fit border border-secondary-foreground/40 inline-flex rounded-full py-2 px-3  items-center gap-2">
+            <LucideBell className="p-1 size-6 text-scondary-foreground bg-primary/20 rounded-full" />
+            <span className="font-[600] text-secondary-foreground text-sm">
               One Platform. Endless Possibilities.
             </span>
           </div>
 
           <div className="flex md:flex-row flex-col mt-3 justify-between md:max-h-80">
             <div className="md:w-3/6 w-full flex flex-col gap-4 p-2">
-              <h1 className="text-4xl text-zinc-800 font-semibold">
+              <h1 className="text-4xl text-secondary-foreground font-semibold">
                 Connect. Hustle. Shop. Earn — All with YohPal
               </h1>
-              <p className="text-balance text-lg text-zinc-700">
+              <p className="text-balance text-lg text-secondary-foreground/80">
                 YohPal is a next-generation digital ecosystem combining social media, services,
                 e-commerce, messaging, and digital finance. Whether you're a creator, hustler,
                 shopper, or entrepreneur — YohPal is your all-in-one platform to grow, connect, and
@@ -82,7 +82,7 @@ export default function Page() {
               <div
                 key={idx}
                 className="w-11/12 md:w-1/3 border border-primary/20 flex flex-col items-start gap-2
-                 px-3 py-4 rounded-lg justify-start bg-primary-foreground
+                 px-3 py-4 rounded-lg justify-start dark:bg-primary/20 bg-primary-foreground
                  hover:-translate-y-1.5 transition-transform ease-in-out duration-200
                  hover:shadow-lg drop-shadow-primary/40 cursor-pointer"
               >
@@ -90,8 +90,8 @@ export default function Page() {
                   <d.icon className="bg-primary/10 text-accent-foreground/80 p-2 size-12 rounded-full" />
                 </div>
                 <div className="flex flex-col flex-1 gap-1 w-full">
-                  <h2 className="text-xl text-slate-800 font-semibold">{d.title}</h2>
-                  <p className="text-balance text-slate-700">{d.description}</p>
+                  <h2 className="text-xl text-secondary-foreground font-semibold">{d.title}</h2>
+                  <p className="text-balance text-secondary-foreground">{d.description}</p>
                 </div>
               </div>
             ))}
@@ -100,14 +100,14 @@ export default function Page() {
       </section>
 
       {/* who we are section */}
-      <section className="bg-slate-50 p-5 min-h-[80svh] py-20 md:p-2 flex flex-col gap-4 items-center justify-center">
+      <section className="bg-primary-foreground/5 p-5 min-h-[80svh] py-20 md:p-2 flex flex-col gap-4 items-center justify-center">
         <div className="md:w-5/6 flex md:flex-nowrap flex-wrap flex-row gap-4">
           <div className="flex flex-col w-full md:w-3/6 px-2 gap-4">
-            <span className="uppercase text-slate-400">who we are</span>
+            <span className="uppercase text-secondary-foreground/90">who we are</span>
             <h2 className="text-3xl font-bold text-pretty">
               Building Africa’s Most Powerful Digital Ecosystem
             </h2>
-            <p className="italic text-slate-800 text-lg">
+            <p className="italic  text-secondary-foreground/90 text-lg">
               At YohPal, we believe in bridging gaps through technology — empowering creators,
               service providers, businesses, and communities to connect, grow, and thrive from a
               single digital hub.
@@ -138,7 +138,7 @@ export default function Page() {
       </section>
 
       {/* Founder section */}
-      <section className="bg-slate-100 min-h-[80svh] p-5 md:p-2 flex md:flex-nowrap flex-wrap gap-4 items-center justify-center">
+      <section className="bg-secondary min-h-[80svh] p-5 md:p-2 flex md:flex-nowrap flex-wrap gap-4 items-center justify-center">
         <div className="w-full md:w-2/6 flex justify-center relative">
           <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-xl bg-primary/20 blur-3xl"></div>
 
@@ -150,10 +150,10 @@ export default function Page() {
         </div>
         <div className="w-full md:w-3/6 flex flex-col gap-4">
           <h2 className="text-4xl font-bold capitalize">Meet Our Founder</h2>
-          <p className="text-lg text-slate-700 text-balance my-2">{founderDetails.description}</p>
+          <p className="text-lg text-foreground text-balance my-2">{founderDetails.description}</p>
           {founderDetails.facts.map((fact, idx) => (
             <span key={idx} className="inline-flex gap-2 items-center">
-              <LucideCheck className="bg-primary text-white rounded-full p-1 size-5 font-bold" />
+              <LucideCheck className="bg-primary text-foreground rounded-full p-1 size-5 font-bold" />
               {fact}
             </span>
           ))}
@@ -174,7 +174,7 @@ export default function Page() {
             key={idx}
             className="group md:w-3/6 w-full flex md:flex-nowrap flex-wrap justify-center items-center bg-gradient-to-r from-primary/10 my-3
           to-primary-foreground/10 border-2 border-primary/40 rounded-xl p-5 gap-4
-          hover:shadow-xl shadow-slate-300 ease-in-out duration-300 hover:-translate-y-1.5 cursor-pointer
+          shadow-primary ease-in-out duration-300 hover:-translate-y-1.5 cursor-pointer
           "
           >
             <item.icon
@@ -183,15 +183,15 @@ export default function Page() {
             "
             />
             <div className="flex flex-col w-full text-start px-2">
-              <h3 className="text-2xl font-semibold text-slate-800 capitalize">{item.title}</h3>
-              <p className="my-2 text-slate-700 text-pretty">{item.description}</p>
+              <h3 className="text-2xl font-semibold capitalize">{item.title}</h3>
+              <p className="my-2 text-pretty">{item.description}</p>
             </div>
           </div>
         ))}
       </section>
 
       {/* Our services section */}
-      <section className="py-20 bg-slate-100 min-h-screen p-5 md:p-2 flex flex-col items-center justify-center  text-pretty">
+      <section className="py-20 bg-secondary min-h-screen p-5 md:p-2 flex flex-col items-center justify-center  text-pretty">
         <h2 className="text-4xl capitalize font-semibold">Our Services</h2>
         <div className="w-2/6 md:w-1/6 h-1 bg-primary rounded-full my-2"></div>
 
@@ -205,15 +205,15 @@ export default function Page() {
               key={idx}
               className="pl-5 group flex flex-col justify-start bg-primary/5
         hover:border-r-2 border-primary/40 rounded-xl p-5 gap-4
-        hover:shadow-xl shadow-slate-300 ease-in-out duration-300 hover:-translate-y-1.5 cursor-pointer"
+        hover:shadow-xl shadow-secondary ease-in-out duration-300 hover:-translate-y-1.5 cursor-pointer"
             >
               <item.icon
                 className="w-fit size-14 bg-primary/10 text-primary/90 rounded-xl p-3
-        transform transition-transform duration-300 group-hover:-rotate-12 group-hover:bg-primary group-hover:text-slate-100"
+        transform transition-transform duration-300 group-hover:-rotate-12 group-hover:bg-primary group-hover:text-primary-foreground"
               />
               <div className="flex flex-col flex-1 w-full text-start px-2">
-                <h3 className="text-2xl font-semibold text-slate-800 capitalize">{item.title}</h3>
-                <p className="my-2 text-slate-700 text-pretty">{item.description}</p>
+                <h3 className="text-2xl font-semibold text-foreground capitalize">{item.title}</h3>
+                <p className="my-2 text-foreground text-pretty">{item.description}</p>
               </div>
             </div>
           ))}
@@ -221,20 +221,20 @@ export default function Page() {
       </section>
 
       {/* Our ecosystem */}
-      <section className="bg-slate-50 p-5 py-20 min-h-screen md:p-2 flex flex-col gap-4 items-center justify-center">
+      <section className="p-5 min-h-screen md:p-2 flex flex-col gap-4 items-center justify-center">
         <div className="md:w-5/6 flex md:flex-nowrap flex-wrap flex-row gap-4">
           <div className="flex flex-col w-full md:w-3/6 px-2 gap-4">
             <span className="font-semibold uppercase text-primary">Our Innovative Ecosystem</span>
             <h2 className="text-3xl font-bold text-pretty">
               Powering Digital Life, Work & Commerce — Seamlessly
             </h2>
-            <p className="text-slate-800 text-lg text-pretty">
+            <p className="text-foreground text-lg text-pretty">
               YohPal is more than just an app — it's a powerful ecosystem of platforms designed to
               make life easier. From content creation and job hunting to online shopping, secure
               chatting, and managing earnings — we provide the tools for people to connect, grow,
               and earn in the digital age.
             </p>
-            <p className="text-slate-800 text-lg text-pretty">
+            <p className="text-foreground text-lg text-pretty">
               Our ecosystem is made up of five interconnected platforms, each designed with
               real-life needs in mind. From watching and sharing videos on YohPal Social, to finding
               work or hiring skilled professionals through YohPal Hustle, to buying and selling
@@ -249,14 +249,14 @@ export default function Page() {
             {ourServicesList.slice(0, -1).map((service, idx) => (
               <div key={idx} className="border-b-2 cursor-pointer w-full flex group gap-5 pb-3">
                 <service.icon
-                  className="flex-shrink-0 group-hover:bg-primary/80 duration-300 group-hover:text-slate-100 transition-all
+                  className="flex-shrink-0 group-hover:bg-primary/80 duration-300 group-hover:text-foreground transition-all
                   ease-in-out bg-primary/10 rounded-full p-3 size-14 text-primary"
                 />
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold group-hover:text-primary duration-300">
                     {service.title}
                   </h3>
-                  <p className="text-slate-800 text-balance">{service.description}</p>
+                  <p className="text-foreground text-balance">{service.description}</p>
                 </div>
               </div>
             ))}
@@ -265,7 +265,7 @@ export default function Page() {
       </section>
 
       {/* Leadership section */}
-      <section className="py-20 bg-slate-100 min-h-[60svh] p-5 md:p-2 flex flex-col items-center justify-center text-pretty">
+      <section className="py-20 bg-secondary min-h-[60svh] p-5 md:p-2 flex flex-col items-center justify-center text-pretty">
         <h2 className="text-4xl capitalize font-semibold">Our leadership team</h2>
         <div className="w-2/6 md:w-1/6 h-1 bg-primary rounded-full my-2"></div>
 
@@ -273,7 +273,7 @@ export default function Page() {
           {leaderShip.map((leader, idx) => (
             <div
               key={idx}
-              className="hover:-translate-y-2 transition-all hover:shadow-xl ease-in-out duration-300 flex flex-col rounded-xl shadow-lg bg-slate-100 overflow-hidden h-full"
+              className="hover:-translate-y-2 transition-all hover:shadow-primary-foreground ease-in-out duration-300 flex flex-col rounded-xl shadow-lg bg-secondary-foreground/10 overflow-hidden h-full"
             >
               <div className="aspect-square w-full overflow-hidden">
                 <img
@@ -295,7 +295,7 @@ export default function Page() {
       </section>
 
       {/* Contact section */}
-      <section className="py-20 bg-slate-100 min-h-[60svh] p-5 md:p-2 flex flex-col items-center justify-center text-pretty">
+      <section className="py-20 min-h-[60svh] p-5 md:p-2 flex flex-col items-center justify-center text-pretty">
         <h2 className="text-4xl capitalize font-semibold">Contact</h2>
         <div className="w-2/6 md:w-1/6 h-1 bg-primary rounded-full my-2"></div>
 
@@ -305,18 +305,18 @@ export default function Page() {
               key={idx}
               className="group flex flex-col justify-center items-center my-3
               border-2 border-primary/40 rounded-xl p-5 gap-1
-              hover:shadow-xl shadow-slate-300 ease-in-out duration-300 hover:-translate-y-1.5 cursor-pointer"
+              hover:shadow-xl shadow-secondary ease-in-out duration-300 hover:-translate-y-1.5 cursor-pointer"
             >
               <contact.icon className="w-fit size-14 mb-3 bg-primary/10 text-primary/90 rounded-2xl p-3" />
-              <h3 className="text-2xl font-semibold text-slate-800 capitalize">{contact.title}</h3>
-              <p className="my-2 text-slate-700 text-pretty">{contact.details}</p>
+              <h3 className="text-2xl font-semibold capitalize">{contact.title}</h3>
+              <p className="my-2 text-foreground text-pretty">{contact.details}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* footer section */}
-      <footer className="flex flex-col bg-slate-100 items-center justify-center">
+      <footer className="flex flex-col dark:bg-secondary items-center justify-center">
         <div className="border-t-2 w-fit flex flex-col items-center p-3 capitalize">
           <span className="inline-flex gap-2 items-center">
             <LucideCopyright className="size-5" /> Copyright {new Date().getFullYear()}
