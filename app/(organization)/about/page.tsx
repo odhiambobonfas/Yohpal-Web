@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button"
 import { LucideBell, LucideCheck, LucideCheckCircle2, LucideCopyright } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import {
@@ -35,7 +36,13 @@ export default function Page() {
       >
         <div>
           <Link href="/" className="flex items-center gap-2">
-            <img src="/logo_circular.png" className="size-8 shrink-0" />
+            <Image
+              src="/logo_circular.png"
+              className="size-8 shrink-0"
+              width={100}
+              height={100}
+              alt="Yohpals logo"
+            />
             <span className="font-black text-2xl">Yohpal</span>
           </Link>
         </div>
@@ -57,7 +64,7 @@ export default function Page() {
               </h1>
               <p className="text-balance text-lg text-secondary-foreground/80">
                 YohPal is a next-generation digital ecosystem combining social media, services,
-                e-commerce, messaging, and digital finance. Whether you're a creator, hustler,
+                e-commerce, messaging, and digital finance. Whether you&apos;re a creator, hustler,
                 shopper, or entrepreneur — YohPal is your all-in-one platform to grow, connect, and
                 thrive.
               </p>
@@ -70,9 +77,12 @@ export default function Page() {
             </div>
 
             <div className="md:w-3/6 w-full items-center justify-center p-2">
-              <img
+              <Image
                 src="/org/images/illustration-16.webp"
                 loading="lazy"
+                width={800}
+                height={800}
+                alt="illustration"
                 className="h-full w-full object-contain hover:-translate-y-1.5 transition-transform ease-in-out duration-200"
               />
             </div>
@@ -125,10 +135,13 @@ export default function Page() {
           <div className="w-full md:w-5/12 columns-2 gap-2 mt-5 md:m-0">
             {Array(4)
               .fill(0)
-              .map((_, idx) => (
-                <img
+              .map((__val, idx) => (
+                <Image
                   key={idx}
                   src={`/org/images/img${idx + 1}.jpg`}
+                  width={500}
+                  height={500}
+                  alt="display img"
                   loading="lazy"
                   className="mb-2 w-full break-inside-avoid rounded-lg overflow-hidden"
                 />
@@ -142,9 +155,12 @@ export default function Page() {
         <div className="w-full md:w-2/6 flex justify-center relative">
           <div className="absolute inset-0 translate-x-3 translate-y-3 rounded-xl bg-primary/20 blur-3xl"></div>
 
-          <img
+          <Image
             src={founderDetails.image}
             loading="lazy"
+            width={500}
+            height={500}
+            alt="founder's image"
             className="relative rounded-xl object-contain md:max-h-[60svh] w-auto z-10 shadow-lg"
           />
         </div>
@@ -229,8 +245,8 @@ export default function Page() {
               Powering Digital Life, Work & Commerce — Seamlessly
             </h2>
             <p className="text-foreground text-lg text-pretty">
-              YohPal is more than just an app — it's a powerful ecosystem of platforms designed to
-              make life easier. From content creation and job hunting to online shopping, secure
+              YohPal is more than just an app — it&apos;s a powerful ecosystem of platforms designed
+              to make life easier. From content creation and job hunting to online shopping, secure
               chatting, and managing earnings — we provide the tools for people to connect, grow,
               and earn in the digital age.
             </p>
@@ -276,10 +292,12 @@ export default function Page() {
               className="hover:-translate-y-2 transition-all hover:shadow-primary-foreground ease-in-out duration-300 flex flex-col rounded-xl shadow-lg bg-secondary-foreground/10 overflow-hidden h-full"
             >
               <div className="aspect-square w-full overflow-hidden">
-                <img
+                <Image
                   src={leader.image}
                   alt={`${leader.name}'s image`}
                   loading="lazy"
+                  width={500}
+                  height={500}
                   className="w-full h-full object-cover"
                 />
               </div>

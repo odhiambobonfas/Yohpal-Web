@@ -10,6 +10,7 @@ import {
 import React from "react"
 import { LucideAlbum, LucideHome, LucideUploadCloud } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 const navItems = [
   { icon: LucideHome, title: "Home", link: "/" },
@@ -25,7 +26,13 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/" className="flex items-center gap-2">
-                <img src="/logo_circular.png" className="size-8 shrink-0" />
+                <Image
+                  src="/logo_circular.png"
+                  className="size-8 shrink-0"
+                  width={100}
+                  height={100}
+                  alt="Yohpal's logo"
+                />
                 <span className="font-black text-2xl">Yohpal</span>
               </Link>
             </SidebarMenuButton>
