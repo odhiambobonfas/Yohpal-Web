@@ -145,7 +145,7 @@ export default function Page() {
           <img
             src={founderDetails.image}
             loading="lazy"
-            className="relative rounded-xl object-contain md:max-h-1/3 w-auto z-10 shadow-lg"
+            className="relative rounded-xl object-contain md:max-h-[60svh] w-auto z-10 shadow-lg"
           />
         </div>
         <div className="w-full md:w-3/6 flex flex-col gap-4">
