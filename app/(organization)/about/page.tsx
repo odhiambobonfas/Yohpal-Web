@@ -30,7 +30,7 @@ export default function Page() {
   return (
     <>
       <header
-        className={`w-full p-3 fixed top-0 z-10 transition-all duration-300
+        className={`w-full p-3 fixed top-0 z-20 transition-all duration-300
         ${isScrolled ? "backdrop-blur-lg shadow-sm" : "bg-transparent"}`}
       >
         <div>
@@ -145,7 +145,7 @@ export default function Page() {
           <img
             src={founderDetails.image}
             loading="lazy"
-            className="relative rounded-xl object-contain md:max-h-1/3 w-auto z-10 shadow-lg"
+            className="relative rounded-xl object-contain md:max-h-[60svh] w-auto z-10 shadow-lg"
           />
         </div>
         <div className="w-full md:w-3/6 flex flex-col gap-4">
