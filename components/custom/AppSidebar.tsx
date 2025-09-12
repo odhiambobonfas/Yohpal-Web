@@ -1,7 +1,6 @@
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -9,37 +8,49 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import React from "react"
-import AppNavHeader from "./AppNavHeader"
-import { LucideHome, LucideUploadCloud } from "lucide-react"
+import { LucideAlbum, LucideHome, LucideUploadCloud } from "lucide-react"
+import Link from "next/link"
 
 const navItems = [
   { icon: LucideHome, title: "Home", link: "/" },
   { icon: LucideUploadCloud, title: "Upload Video", link: "#" },
+  { icon: LucideAlbum, title: "About Us", link: "/about" },
 ]
 
 export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <AppNavHeader />
+    <Sidebar collapsible="icon" className="group/sidebar" {...props}>
+      <SidebarHeader className="flex justify-center">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link href="/" className="flex items-center gap-2">
+                <img src="/logo_circular.png" className="size-8 shrink-0" />
+                <span className="font-black text-2xl">Yohpal</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
           {navItems.map((item, idx) => (
-            <SidebarMenuItem className="inline-flex" key={idx}>
-              <SidebarMenuButton tooltip={item.title}>
-                <item.icon className="size-20" />
-                <span className="p-2 group-data-[collapsible=icon]/sidebar:hidden">
-                  {item.title}
-                </span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            <Link href={item.link} className="w-full inline-flex  items-center p-1" key={idx}>
+              <SidebarMenuItem className="w-full">
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  className="hover:bg-primary/5 cursor-pointer"
+                >
+                  <item.icon />
+                  <span className="text-lg group-data-[collapsible=icon]/sidebar:hidden">
+                    {item.title}
+                  </span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </Link>
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>
-        <h1>User</h1>
-      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )
