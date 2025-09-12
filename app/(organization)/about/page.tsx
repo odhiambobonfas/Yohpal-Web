@@ -30,7 +30,7 @@ export default function Page() {
   return (
     <>
       <header
-        className={`w-full p-3 fixed top-0 z-10 transition-all duration-300
+        className={`w-full p-3 fixed top-0 z-20 transition-all duration-300
         ${isScrolled ? "backdrop-blur-lg shadow-sm" : "bg-transparent"}`}
       >
         <div>
