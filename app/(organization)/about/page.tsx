@@ -62,9 +62,9 @@ export default function Page() {
                             <div
                                 key={idx}
                                 className="w-11/12 md:w-1/3 border border-primary/20 flex flex-col items-start gap-2
-                 px-3 py-4 rounded-lg justify-start dark:bg-primary/20 bg-primary-foreground
-                 hover:-translate-y-1.5 transition-transform ease-in-out duration-200
-                 hover:shadow-lg drop-shadow-primary/40 cursor-pointer"
+                                px-3 py-4 rounded-lg justify-start dark:bg-primary/20 bg-primary-foreground
+                                hover:-translate-y-1.5 transition-transform ease-in-out duration-200
+                                hover:shadow-lg drop-shadow-primary/40 cursor-pointer"
                             >
                                 <div className="w-fit">
                                     <d.icon className="bg-primary/10 text-accent-foreground/80 p-2 size-12 rounded-full" />
@@ -316,8 +316,8 @@ export default function Page() {
                         <div
                             key={idx}
                             className="group flex flex-col justify-center items-center my-3
-              border-2 border-primary/40 rounded-xl p-5 gap-1
-              hover:shadow-xl shadow-secondary ease-in-out duration-300 hover:-translate-y-1.5 cursor-pointer"
+                            border-2 border-primary/40 rounded-xl p-5 gap-1
+                            hover:shadow-xl shadow-secondary ease-in-out duration-300 hover:-translate-y-1.5 cursor-pointer"
                         >
                             <contact.icon className="w-fit size-14 mb-3 bg-primary/10 text-primary/90 rounded-2xl p-3" />
                             <h3 className="text-2xl font-semibold capitalize">{contact.title}</h3>
