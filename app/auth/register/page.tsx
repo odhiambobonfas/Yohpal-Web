@@ -64,7 +64,7 @@ export default function Page() {
                 </div>
                 <div className="hidden md:block bg-primary fill w-1/2 relative">
                     <Image
-                        src="/auth-bg.jpg"
+                        src="/app/auth-bg.jpg"
                         fill
                         alt="Auth page image placeholder"
                         className="object-cover"

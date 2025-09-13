@@ -3,7 +3,7 @@ import Image from "next/image"
 import "@/app/globals.css"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Checkbox } from "@radix-ui/react-checkbox"
+import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 export default function Page() {
     return (
@@ -85,7 +85,7 @@ export default function Page() {
                 </div>
                 <div className="hidden md:block bg-primary fill w-1/2 relative">
                     <Image
-                        src="/auth-bg.jpg"
+                        src="/app/auth-bg.jpg"
                         fill
                         alt="Auth page image placeholder"
                         className="object-cover"
