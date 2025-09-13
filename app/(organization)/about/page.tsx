@@ -1,10 +1,8 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import { LucideBell, LucideCheck, LucideCheckCircle2, LucideCopyright } from "lucide-react"
-import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
 import {
   contactInfo,
   founderDetails,
@@ -17,36 +15,8 @@ import {
 
 export default function Page() {
   const router = useRouter()
-  const [isScrolled, setScrolled] = useState(false)
-  useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 10
-      setScrolled(isScrolled)
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
   return (
     <>
-      <header
-        className={`w-full p-3 fixed top-0 z-20 transition-all duration-300
-        ${isScrolled ? "backdrop-blur-lg shadow-sm" : "bg-transparent"}`}
-      >
-        <div>
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo_circular.png"
-              className="size-8 shrink-0"
-              width={100}
-              height={100}
-              alt="Yohpals logo"
-            />
-            <span className="font-black text-2xl">Yohpal</span>
-          </Link>
-        </div>
-      </header>
       <section className="dark:bg-primary/20 bg-primary/5 py-20 p-2 flex flex-col gap-4 items-center">
         <div className="w-full p-2 md:p-1 md:w-5/6 flex flex-col gap-4">
           {/* Hero section */}
