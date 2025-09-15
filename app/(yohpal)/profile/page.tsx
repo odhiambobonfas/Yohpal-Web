@@ -1,21 +1,17 @@
 "use client"
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar"
+import { Avatar, AvatarImage } from "@radix-ui/react-avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload, Heart, Bookmark, History } from "lucide-react"
 import { useAuth } from "@/providers/Auth"
 import {
     Card,
-    CardAction,
     CardContent,
-    CardDescription,
     CardFooter,
-    CardHeader,
-    CardTitle,
 } from "@/components/ui/card"
 import { useState } from "react"
 
 export default function Page() {
-    const { isAuthenticated, user, profile, loading } = useAuth()
+    const { profile,  } = useAuth()
     const [expanded, setExpanded] = useState(false)
     const wordsToShow = 5
 
