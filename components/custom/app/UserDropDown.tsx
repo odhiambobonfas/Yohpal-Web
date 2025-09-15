@@ -106,8 +106,8 @@ export default function UserDropDown() {
 
                 <DropdownMenuItem asChild>
                     <DropdownMenuSub>
-                        <DropdownMenuSubTrigger className="text-muted-foreground">
-                            <LucideSunMoon className="size-4 mr-2" />
+                        <DropdownMenuSubTrigger>
+                            <LucideSunMoon className="size-4 mr-2 text-muted-foreground" />
                             <span>Theme</span>
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
