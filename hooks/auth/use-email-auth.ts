@@ -5,6 +5,7 @@ import {
     signUpWithEmailAndPassword,
     logout,
 } from "@/services/client/auth"
+import { getError } from "@/lib/utils"
 
 export function useEmailAuth() {
     const [loading, setLoading] = useState(false)
@@ -14,13 +15,12 @@ export function useEmailAuth() {
         setLoading(true)
         setError(null)
         try {
-            const result = await loginWithEmailAndPassword(user)
-            return { success: true, data: result, error: null }
+            await loginWithEmailAndPassword(user)
+            return { success: true }
         } catch (e) {
-            // @ts-expect-error  message does exist on error
-            const errorMsg = e.message || "Login failed"
+            const errorMsg = getError(e) || "Login failed"
             setError(errorMsg)
-            return { success: false, data: null, error: errorMsg }
+            return { success: false }
         } finally {
             setLoading(false)
         }
@@ -30,28 +30,27 @@ export function useEmailAuth() {
         setLoading(true)
         setError(null)
         try {
-            const result = await signUpWithEmailAndPassword(user)
-            return { success: true, data: result, error: null }
+            await signUpWithEmailAndPassword(user)
+            return { success: true }
         } catch (e) {
-            // @ts-expect-error  message does exist on error
-            const errorMsg = e.message || "Sign up failed"
+            const errorMsg = getError(e) || "Sign up failed"
             setError(errorMsg)
-            return { success: false, data: null, error: errorMsg }
+            return { success: false }
         } finally {
             setLoading(false)
         }
     }
+
     const logOut = async () => {
         setLoading(true)
         setError(null)
         try {
-            const result = await logout()
-            return { success: true, data: result, error: null }
+            await logout()
+            return { success: true }
         } catch (e) {
-            // @ts-expect-error  message does exist on error
-            const errorMsg = e.message || "Log Out failed"
+            const errorMsg = getError(e) || "Log Out failed"
             setError(errorMsg)
-            return { success: false, data: null, error: errorMsg }
+            return { success: false }
         } finally {
             setLoading(false)
         }

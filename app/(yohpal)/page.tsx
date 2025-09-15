@@ -5,24 +5,25 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { getLandingVideos } from "@/services/server/videos"
 import { LucidePlay } from "lucide-react"
+import UserDropDown from "@/components/custom/app/UserDropDown"
 
 export default async function Home() {
     const videos = await getLandingVideos("")
     return (
         <>
-            <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+            <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] justify-between ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
                 <div className="flex items-center gap-2 px-4">
-                    <SidebarTrigger className="-ml-1" />
-                    <Separator
-                        orientation="vertical"
-                        className="mr-2 data-[orientation=vertical]:h-4"
-                    />
+                    <SidebarTrigger className="-ml-1 size-8" />
+                    <Separator orientation="vertical" className="data-[orientation=vertical]:h-5" />
+                </div>
+                <div className="mr-4 w-full inline-flex items-center justify-end">
+                    <UserDropDown />
                 </div>
             </header>
             <section className="grid grid-cols-4 gap-4 p-4">
                 {videos.map((video) => (
                     <Card key={video.id} className="w-full shadow-none border-none">
-                        <Link href={`/v?w=${video.id}`}>
+                        <Link href={`/videos?w=${video.id}`}>
                             <CardContent className="group cursor-pointer relative bg-blue-400 rounded-lg overflow-hidden flex items-center justify-center">
                                 <Image
                                     width={300}

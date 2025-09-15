@@ -17,7 +17,7 @@ export default function NavHeader() {
     return (
         <header
             className={`w-full p-3 fixed top-0 z-20 transition-all duration-300
-        ${isScrolled ? "backdrop-blur-lg shadow-sm" : "bg-transparent"}`}
+            ${isScrolled ? "backdrop-blur-lg shadow-sm" : "bg-transparent"}`}
         >
             <div>
                 <Link href="/" className="flex items-center gap-2">
