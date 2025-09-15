@@ -34,7 +34,7 @@ export default function UserDropDown() {
     const { logOut } = useEmailAuth()
     const router = useRouter()
 
-    const { setTheme, theme } = useTheme()
+    const { setTheme } = useTheme()
 
     const handleLogout = async () => {
         await logOut()
@@ -104,27 +104,25 @@ export default function UserDropDown() {
                     </Link>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem asChild>
-                    <DropdownMenuSub>
-                        <DropdownMenuSubTrigger>
-                            <LucideSunMoon className="size-4 mr-2 text-muted-foreground" />
-                            <span>Theme</span>
-                        </DropdownMenuSubTrigger>
-                        <DropdownMenuPortal>
-                            <DropdownMenuSubContent>
-                                <DropdownMenuItem onClick={() => setTheme("light")}>
-                                    <LucideSun /> <span>Light</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setTheme("dark")}>
-                                    <LucideMoon /> <span>Dark</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setTheme("system")}>
-                                    <LucideLaptopMinimal /> <span>System</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuSubContent>
-                        </DropdownMenuPortal>
-                    </DropdownMenuSub>
-                </DropdownMenuItem>
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                        <LucideLaptopMinimal className="size-4 mr-3 text-muted-foreground" />
+                        <span>Theme</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                            <DropdownMenuItem onClick={() => setTheme("light")}>
+                                <LucideSun /> <span>Light</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setTheme("dark")}>
+                                <LucideMoon /> <span>Dark</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setTheme("system")}>
+                                <LucideLaptopMinimal /> <span>System</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                </DropdownMenuSub>
 
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
