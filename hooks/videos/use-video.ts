@@ -1,14 +1,87 @@
-import { VideoInteraction } from "#/videos"
+import { Video, VideoInteraction } from "#/videos"
+import { getError } from "@/lib/utils"
+import { useAuth } from "@/providers/Auth"
+import {
+    getBookmarks,
+    getDownloads,
+    getLikes,
+    getShares,
+    getVideo,
+    getViews,
+} from "@/services/client/video"
 import { useState } from "react"
 
 export function useVideo() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const { user } = useAuth()
 
+    const getVideoStats = async (videoId: string) => {
+        try {
+            setLoading(true)
+            setError(null)
+            const [views, likes, shares, downloads, bookmarks] = await Promise.all([
+                getViews(videoId),
+                getLikes(videoId),
+                getShares(videoId),
+                getDownloads(videoId),
+                getBookmarks(videoId),
+            ])
+
+            return {
+                views: views.length,
+                likes: likes.length,
+                shares: shares.length,
+                downloads: downloads.length,
+                bookmarks: bookmarks.length,
+                userLiked: user ? likes.includes(user.uid) : false,
+                userBookmarked: user ? bookmarks.includes(user.uid) : false,
+            }
+        } catch (e) {
+            const errorMsg = getError(e)
+            setError(errorMsg)
+
+            return {
+                views: 0,
+                likes: 0,
+                shares: 0,
+                downloads: 0,
+                bookmarks: 0,
+                userLiked: false,
+                userBookmarked: false,
+            }
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const singleVideo = async (videoId: string) => {
+        try {
+            setLoading(true)
+            setError(null)
+            const vid = await getVideo(videoId)
+            return vid as unknown as Video
+        } catch (e) {
+            const errorMsg = getError(e) || "Failed to get video"
+            setError(errorMsg)
+            return null
+        } finally {
+            setLoading(false)
+        }
+    }
     const likeVideo = async (interactionDetails: VideoInteraction) => {}
     const bookmarkVideo = async (interactionDetails: VideoInteraction) => {}
     const shareVideo = async (interactionDetails: VideoInteraction) => {}
     const downloadVideo = async (interactionDetails: VideoInteraction) => {}
 
-    return { loading, error, likeVideo, bookmarkVideo, shareVideo, downloadVideo }
+    return {
+        loading,
+        error,
+        likeVideo,
+        bookmarkVideo,
+        shareVideo,
+        singleVideo,
+        downloadVideo,
+        getVideoStats,
+    }
 }

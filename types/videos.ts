@@ -4,11 +4,25 @@ export interface Video {
     id: string
     userId: string
     userName: string
+    fullName: string
     videoUrl: string
-    privacy: "Everyone" | ""
-    timestamp: string | FirebaseTimestamp
+    privacy: string
     broken: boolean | null
     thumbnail: string
+    allowComments: boolean
+    caption: string
+    tags: string[]
+    timestamp: string
+
+    campaignMeta: CampaignMeta | null
+    promoted: boolean
+}
+
+export interface CampaignMeta {
+    promotionId: string
+    newVideoUrl: string
+    newThumbnailUrl: string
+    timestamp: FirebaseTimestamp
 }
 
 export interface VideoInteraction {

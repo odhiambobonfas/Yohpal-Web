@@ -18,9 +18,7 @@ export default function AppLayout({
         <>
             <SidebarProvider>
                 <AppSidebar />
-                <SidebarInset>
-                    <main className="w-full">{children}</main>
-                </SidebarInset>
+                <SidebarInset>{children}</SidebarInset>
             </SidebarProvider>
             <Toaster position="top-right" richColors />
         </>
