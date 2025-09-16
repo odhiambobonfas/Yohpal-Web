@@ -1,5 +1,5 @@
 "use client"
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar"
+import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload, Heart, Bookmark, History } from "lucide-react"
 import { useAuth } from "@/providers/Auth"
@@ -23,7 +23,7 @@ export default function Page() {
         <div className="flex flex-col">
             <div className="h-[40vh] bg-background flex flex-col p-2 items-center md:flex-row overflow-auto md:justify-center">
                 <div className="flex-shrink-0">
-                    <Avatar className="">
+                    <Avatar className="w-[150px] h-[150px]">
                         <AvatarImage
                             loading="lazy"
                             width={100}
