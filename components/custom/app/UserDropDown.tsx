@@ -23,13 +23,12 @@ import {
     LucideMoon,
     LucideSun,
     LucideLaptopMinimal,
-    LucideSunMoon,
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 
-export default function UserDropDown() {
+export default function UserDropDown({ className }: { className: string | undefined }) {
     const { isAuthenticated, user, profile, loading } = useAuth()
     const { logOut } = useEmailAuth()
     const router = useRouter()
@@ -43,7 +42,7 @@ export default function UserDropDown() {
 
     if (loading) {
         return (
-            <Button variant="ghost" size="icon" disabled>
+            <Button variant="ghost" size="icon" disabled className={className}>
                 <CircleUser className="size-8 animate-pulse" />
             </Button>
         )
@@ -51,7 +50,7 @@ export default function UserDropDown() {
 
     if (!isAuthenticated) {
         return (
-            <Button variant="ghost" size="icon" asChild>
+            <Button variant="ghost" size="icon" asChild className={className}>
                 <Link href="/auth/login">
                     <CircleUser className="size-8" />
                     <span className="sr-only">Login</span>
@@ -65,7 +64,7 @@ export default function UserDropDown() {
 
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild className={className}>
                 <Button variant="ghost" className="relative size-8 rounded-full">
                     <Avatar>
                         <AvatarImage

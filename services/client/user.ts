@@ -1,6 +1,7 @@
 import { db } from "@/lib/firebase/firebase.browser"
 import { YPUser } from "#/users"
-import { doc, getDoc } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs } from "firebase/firestore"
+import { DOC } from "."
 
 export async function getUserProfile(userId: string) {
     const userDocRef = doc(db, "users", userId)
@@ -10,4 +11,52 @@ export async function getUserProfile(userId: string) {
 
     const data = userDoc.data()
     return { id: userDoc.id, ...data } as unknown as YPUser
+}
+
+export async function getUserfollowers(userId: string) {
+    const userFollowersRef = collection(db, "users", userId, "followers", "organic", "userIds")
+    const userFollowersDocs = await getDocs(userFollowersRef)
+    if (userFollowersDocs.empty) return []
+
+    return userFollowersDocs.docs.map((f) => f.id)
+}
+
+export async function getUserfollowing(userId: string) {
+    const userFollowersRef = collection(db, "users", userId, "following", "organic", "userIds")
+    const userFollowersDocs = await getDocs(userFollowersRef)
+    if (userFollowersDocs.empty) return []
+
+    return userFollowersDocs.docs.map((f) => f.id)
+}
+
+export async function getWatchedVideos(userId: string) {
+    const profileStatsRef = collection(db, "users", userId, "watched", DOC, "videoIds")
+    const profileStatsDocs = await getDocs(profileStatsRef)
+    if (profileStatsDocs.empty) return []
+
+    return profileStatsDocs.docs.map((f) => f.id)
+}
+
+export async function getViewedVideos(userId: string) {
+    const profileStatsRef = collection(db, "users", userId, "views", DOC, "videoIds")
+    const profileStatsDocs = await getDocs(profileStatsRef)
+    if (profileStatsDocs.empty) return []
+
+    return profileStatsDocs.docs.map((f) => f.id)
+}
+
+export async function getLikedVideos(userId: string) {
+    const profileStatsRef = collection(db, "users", userId, "likes", DOC, "videoIds")
+    const profileStatsDocs = await getDocs(profileStatsRef)
+    if (profileStatsDocs.empty) return []
+
+    return profileStatsDocs.docs.map((f) => f.id)
+}
+
+export async function getBookmarkedVideos(userId: string) {
+    const profileStatsRef = collection(db, "users", userId, "bookmarks", DOC, "videoIds")
+    const profileStatsDocs = await getDocs(profileStatsRef)
+    if (profileStatsDocs.empty) return []
+
+    return profileStatsDocs.docs.map((f) => f.id)
 }
