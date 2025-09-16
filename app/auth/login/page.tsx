@@ -29,7 +29,7 @@ export default function Page() {
 
     return (
         <div className="h-screen flex items-center justify-center">
-            <div className="w-4/6 min-h-[40svh] drop-shadow-2xl rounded-lg bg-background grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+            <div className="w-full md:w-4/6 min-h-full md:min-h-[40svh] drop-shadow-2xl rounded-lg bg-background grid grid-cols-1 md:grid-cols-2 overflow-hidden">
                 <div className="col-span-1 p-5 flex flex-col my-2 gap-5">
                     <div className="min-h-24 flex flex-col gap-2 py-3">
                         <h4 className="text-4xl font-semibold">YOHPAL</h4>

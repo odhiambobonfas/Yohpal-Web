@@ -3,18 +3,19 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload, Heart, Bookmark, History } from "lucide-react"
 import { useAuth } from "@/providers/Auth"
-import {
-    Card,
-    CardContent,
-    CardFooter,
-} from "@/components/ui/card"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import useSWR from "swr"
+import { useUser } from "@/hooks/user/use-user"
 import { useState } from "react"
 
 export default function Page() {
-    const { profile,  } = useAuth()
+    const { profile } = useAuth()
     const [expanded, setExpanded] = useState(false)
     const wordsToShow = 5
-
+    const {getProfileStats} = useUser()
+    const { data, } = useSWR(["user-profile", profile?.uid || ""], () =>
+        getProfileStats(profile?.uid || ""),
+    )
     const bio = profile?.bio || ""
     const words = bio.split(" ")
     const isLong = words.length > wordsToShow
@@ -59,20 +60,24 @@ export default function Page() {
                     </div>
                     <div className="flex flex-row mt-2 gap-4">
                         <div>
-                            <h4>post</h4>
-                            <span className="text-muted-foreground">4</span>
+                            <h4>Post</h4>
+                            <span className="text-muted-foreground">{data?.uploadedStat}</span>
                         </div>
                         <div>
                             <h4>Views</h4>
-                            <span className="text-muted-foreground">56</span>
+                            <span className="text-muted-foreground">{data?.viewedStat}</span>
                         </div>
                         <div>
                             <h4>Followers</h4>
-                            <span className="text-muted-foreground">67</span>
+                            <span className="text-muted-foreground">{data?.followersStat}</span>
                         </div>
                         <div>
                             <h4>Following</h4>
-                            <span className="text-muted-foreground">78</span>
+                            <span className="text-muted-foreground">{data?.followingStat}</span>
+                        </div>
+                        <div>
+                            <h4>Liked</h4>
+                            <span className="text-muted-foreground">{data?.likedStat}</span>
                         </div>
                     </div>
                 </div>
