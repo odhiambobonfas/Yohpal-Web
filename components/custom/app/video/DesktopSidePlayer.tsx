@@ -21,6 +21,7 @@ import {
     LucideUserPlus2,
 } from "lucide-react"
 import useSWR from "swr"
+import Link from "next/link"
 
 export default function DesktopSidePlayer({ video }: { video: Video }) {
     const { isAuthenticated } = useAuth()
@@ -63,7 +64,9 @@ export default function DesktopSidePlayer({ video }: { video: Video }) {
                             </Avatar>
 
                             <span className="flex flex-col items-start">
-                                <b>@{video.userName}</b>
+                                <Link href={`/user/${video.userId}`}>
+                                    <b>@{video.userName}</b>
+                                </Link>
                                 <span className="text-muted-foreground text-sm">
                                     {video.fullName}
                                 </span>
