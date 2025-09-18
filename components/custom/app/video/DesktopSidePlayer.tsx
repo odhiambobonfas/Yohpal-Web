@@ -250,7 +250,10 @@ export default function DesktopSidePlayer({
                             </Avatar>
 
                             <span className="flex flex-col items-start">
-                                <Link href={`/user/${video.userId}`}>
+                                <Link
+                                    href={`/user/${video.userId}`}
+                                    className="hover:underline underline-offset-2"
+                                >
                                     <b>@{video.userName}</b>
                                 </Link>
                                 <span className="text-muted-foreground text-sm">

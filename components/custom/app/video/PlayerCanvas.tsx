@@ -108,7 +108,7 @@ export default function PlayerCanvas({ videos }: { videos: Video[] }) {
                 </DebugWindow>
 
                 <ResponsiveShareDialog videoId={activeVideo.id}>
-                    <Button variant={"secondary"}>hello</Button>
+                    <Button variant={"secondary"}>TO REMOVE</Button>
                 </ResponsiveShareDialog>
                 <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
                     <div className="w-full h-full flex flex-row items-center justify-center p-2 gap-2">

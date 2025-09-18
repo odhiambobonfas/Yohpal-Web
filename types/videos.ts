@@ -29,13 +29,13 @@ export interface VideoComment {
     id: string
     replies: number
     msg: string
-    timestamp: FirebaseTimestamp
     userId: string
     hasReply: boolean
+    isReply: boolean
     username: string
     profile_picture: string
-    isReply: boolean
     likes: number
+    timestamp: FirebaseTimestamp
 }
 
 export interface VideoCommentInteraction {

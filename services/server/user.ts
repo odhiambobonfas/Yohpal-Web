@@ -1,7 +1,7 @@
 import { db } from "@/lib/firebase/firebase.admin"
 import { YPUser } from "#/users"
-import { DOC } from "../client"
-import { Video } from "@/types/videos"
+import { DOC } from "@/services"
+import { getUserVideoUploads } from "./videos"
 
 export async function getUserProfile(userId: string) {
     const userDoc = await db.collection("users").doc(userId).get()
@@ -14,7 +14,7 @@ export async function getUserProfile(userId: string) {
         email: user.email,
         bio: user.bio,
         phoneNumber: user.phoneNumber,
-        profilePicture: user.profile_picture,
+        profile_picture: user.profile_picture,
     } as unknown as YPUser
 }
 
@@ -24,16 +24,15 @@ export async function getUserProfileStats(userId: string) {
         getFollowingCount(userId),
         getUserVideoUploads(userId),
         getViewsCount(userId),
-        getLikedCount(userId)
+        getLikedCount(userId),
     ])
 
     return {
         followers: followers.length,
         following: following.length,
         uploadedVideos: uploadedVideos.length,
-        views:views.length,
-        likes:likes.length
-        
+        views: views.length,
+        likes: likes.length,
     }
 }
 
@@ -64,24 +63,25 @@ async function getFollowersCount(userId: string) {
 }
 
 async function getViewsCount(userId: string) {
-    const viewsDocs = await db.collection("users").doc(userId).collection("views").doc(DOC).collection("videoIds").get()
-    if(viewsDocs.empty) return []
+    const viewsDocs = await db
+        .collection("users")
+        .doc(userId)
+        .collection("views")
+        .doc(DOC)
+        .collection("videoIds")
+        .get()
+    if (viewsDocs.empty) return []
     return viewsDocs.docs.map((v) => v.id)
 }
 
-async function getLikedCount(userId: string){
-    const likesDocs = await db.collection("users").doc(userId).collection("likes").doc(DOC).collection("videoIds").get()
+async function getLikedCount(userId: string) {
+    const likesDocs = await db
+        .collection("users")
+        .doc(userId)
+        .collection("likes")
+        .doc(DOC)
+        .collection("videoIds")
+        .get()
     if (likesDocs.empty) return []
     return likesDocs.docs.map((l) => l.id)
-}
-export async function getUserVideoUploads(userId: string) {
-    const videoUploads = await db
-        .collection("videos")
-        .where("userId", "==", userId)
-        .where("broken", "==", false)
-        .get()
-
-    if (videoUploads.empty) return []
-
-    return videoUploads.docs.map((v) => ({ id: v.id, ...v.data() })) as unknown as Video[]
 }

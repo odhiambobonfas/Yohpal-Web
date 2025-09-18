@@ -1,7 +1,8 @@
 import { db } from "@/lib/firebase/firebase.browser"
 import { YPUser } from "#/users"
 import { collection, doc, getDoc, getDocs } from "firebase/firestore"
-import { DOC } from "."
+import { DOC } from "@/services"
+import { getMultiVideosData } from "./video"
 
 export async function getUserProfile(userId: string) {
     const userDocRef = doc(db, "users", userId)
@@ -34,15 +35,18 @@ export async function getWatchedVideos(userId: string) {
     const profileStatsDocs = await getDocs(profileStatsRef)
     if (profileStatsDocs.empty) return []
 
-    return profileStatsDocs.docs.map((f) => f.id)
+    const videoIds = profileStatsDocs.docs.map((v) => v.id)
+
+    return getMultiVideosData(videoIds)
 }
 
-export async function getViewedVideos(userId: string) {
+export async function getVideoViews(userId: string) {
     const profileStatsRef = collection(db, "users", userId, "views", DOC, "videoIds")
     const profileStatsDocs = await getDocs(profileStatsRef)
     if (profileStatsDocs.empty) return []
 
-    return profileStatsDocs.docs.map((f) => f.id)
+    const videoIds = profileStatsDocs.docs.map((f) => f.id)
+    return getMultiVideosData(videoIds)
 }
 
 export async function getLikedVideos(userId: string) {
@@ -50,7 +54,8 @@ export async function getLikedVideos(userId: string) {
     const profileStatsDocs = await getDocs(profileStatsRef)
     if (profileStatsDocs.empty) return []
 
-    return profileStatsDocs.docs.map((f) => f.id)
+    const videoIds = profileStatsDocs.docs.map((f) => f.id)
+    return getMultiVideosData(videoIds)
 }
 
 export async function getBookmarkedVideos(userId: string) {
@@ -58,5 +63,6 @@ export async function getBookmarkedVideos(userId: string) {
     const profileStatsDocs = await getDocs(profileStatsRef)
     if (profileStatsDocs.empty) return []
 
-    return profileStatsDocs.docs.map((f) => f.id)
+    const videoIds = profileStatsDocs.docs.map((f) => f.id)
+    return getMultiVideosData(videoIds)
 }

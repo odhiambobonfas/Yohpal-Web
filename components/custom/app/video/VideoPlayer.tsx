@@ -13,7 +13,7 @@ export default function VideoPlayer({
     videoId: string
     videoSrc: string
     activeVideoId: string
-    thumbnail?: string
+    thumbnail: string
     index: number
     activeIndex: number
 }) {
@@ -43,7 +43,7 @@ export default function VideoPlayer({
                     <CardContent className="h-full p-0 relative flex items-center justify-center">
                         <Image
                             fill
-                            src={thumbnail || "/logo_circular.png"}
+                            src={thumbnail}
                             alt="video thumbnail"
                             className="object-cover"
                         />
@@ -69,10 +69,12 @@ export default function VideoPlayer({
                     {!isLoaded && (
                         <div className="absolute inset-0">
                             <Image
-                                fill
-                                src={thumbnail || "/logo_circular.png"}
+                                quality={20}
+                                width={100}
+                                height={100}
+                                src={thumbnail}
                                 alt="video thumbnail"
-                                className="object-cover"
+                                className="h-full w-full object-cover"
                             />
                         </div>
                     )}

@@ -1,7 +1,7 @@
 import { db } from "@/lib/firebase/firebase.admin"
 import { Video } from "#/videos"
 import { replaceWithCDN, serializeTimestamp } from "@/lib/utils"
-import { VIDEO_LIMIT } from "@/constants"
+import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
 
 const videoRef = db.collection("videos")
 
@@ -10,16 +10,19 @@ export async function getLandingVideos(videoId: string | undefined) {
     if (videoId) {
         const videoDoc = await videoRef.doc(videoId).get()
         if (videoDoc.exists) {
-            let vid = { id: videoDoc.id, ...videoDoc.data() } as unknown as Video
-            const { campaignMeta, ...clean } = vid
-            vid = {
-                ...vid,
-                videoUrl: replaceWithCDN(vid.videoUrl),
-                thumbnail: replaceWithCDN(vid.thumbnail),
-                timestamp: serializeTimestamp(clean.timestamp),
+            let videoData = videoDoc.data()
+            if (!videoData) return
+            delete videoData["campaignMeta"]
+
+            videoData = {
+                id: videoDoc.id,
+                ...videoData,
+                videoUrl: replaceWithCDN(videoData.videoUrl),
+                thumbnail: replaceWithCDN(videoData.thumbnail) || DEFAULT_THUMBNAIL,
+                timestamp: serializeTimestamp(videoData.timestamp),
             }
 
-            videos.push(vid)
+            videos.push(videoData)
         }
     }
 
@@ -31,17 +34,39 @@ export async function getLandingVideos(videoId: string | undefined) {
 
     const moreVids = videosDocs.docs.map((v) => {
         // TODO(583fae8a3d42):: find a way to deal with campaignMeta
-        // const { campaignMeta, ...clean } = v.data()
         const videoData = v.data()
         delete videoData["campaignMeta"]
         return {
             id: v.id,
             ...videoData,
             videoUrl: replaceWithCDN(videoData.videoUrl),
-            thumbnail: replaceWithCDN(videoData.thumbnail),
+            thumbnail: replaceWithCDN(videoData.thumbnail) || DEFAULT_THUMBNAIL,
             timestamp: serializeTimestamp(videoData.timestamp),
         }
     }) as Video[]
     videos.push(...moreVids)
     return videos
+}
+
+export async function getUserVideoUploads(userId: string) {
+    const videoUploads = await db
+        .collection("videos")
+        .where("userId", "==", userId)
+        .where("broken", "==", false)
+        .get()
+
+    if (videoUploads.empty) return []
+
+    // TODO::(583fae8a3d42)
+    return videoUploads.docs.map((v) => {
+        const videoData = v.data()
+        delete videoData["campaignMeta"]
+        return {
+            id: v.id,
+            ...videoData,
+            videoUrl: replaceWithCDN(videoData.videoUrl),
+            thumbnail: replaceWithCDN(videoData.thumbnail) || DEFAULT_THUMBNAIL,
+            timestamp: serializeTimestamp(videoData.timestamp),
+        }
+    }) as Video[]
 }

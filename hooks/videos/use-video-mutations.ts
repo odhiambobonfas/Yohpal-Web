@@ -104,6 +104,16 @@ export default function useVideoMutation() {
                 comment: text,
                 isReply: false,
             }
+            //
+            // hasReply false
+            // isReply false
+            // likes 0
+            // msg "very appetizing"
+            // profile_picture "https://firebasestorage.googleapis.com/v0/b/yohlab.firebasestorage.app/o/profile_pictures%2F2Kffm6SsC2UAZ5rz1ifboKIh4nj2%2Fprofile_image.jpg?alt=media&token=8ec395e3-aabb-414e-8122-7271e33c6d22"
+            // replies 0
+            // timestamp September 1, 2025 at 4:08:01 PM UTC+3
+            // userId "2Kffm6SsC2UAZ5rz1ifboKIh4nj2"
+            // username "kaitli"
             const commentId = await commentVideo(comment)
             return { commentId, comment }
         })

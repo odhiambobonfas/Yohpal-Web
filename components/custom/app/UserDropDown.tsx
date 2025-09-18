@@ -66,12 +66,12 @@ export default function UserDropDown({ className }: { className: string | undefi
         <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild className={className}>
                 <Button variant="ghost" className="relative size-8 rounded-full">
-                    <Avatar className="rounded-lg">
+                    <Avatar className="rounded-xl">
                         <AvatarImage
                             loading="lazy"
                             width={100}
                             height={100}
-                            src={profile?.profile_picture || ""}
+                            src={profile?.profile_picture || "/logo_circular.png"}
                             alt={profile?.userName || "User profile image"}
                         />
                         <AvatarFallback>{userInitials}</AvatarFallback>
@@ -129,7 +129,7 @@ export default function UserDropDown({ className }: { className: string | undefi
                     className="cursor-pointer text-red-500 hover:text-red-500"
                 >
                     <LogOut className="size-4 mr-2" />
-                    <span>Log Out</span>
+                    Log Out
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

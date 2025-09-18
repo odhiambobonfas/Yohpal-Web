@@ -13,7 +13,7 @@ import {
     startAfter,
     where,
 } from "firebase/firestore"
-import { DOC } from "."
+import { DOC } from "@/services"
 import { replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 import { VIDEO_LIMIT } from "@/constants"
 
@@ -110,9 +110,11 @@ export async function getUserUploadedVideos(userId: string) {
     return videoDocsRef.docs.map((v) => ({ id: v.id, ...v.data() })) as unknown as Video[]
 }
 
-export async function getUserLikedVideos(userId: string) {
-    const q = query(collection(db, "users"), where("userId", "==", userId))
-    const videoDocsRef = await getDocs(q)
-    const videos = videoDocsRef.docs.map((v) => ({ id: v.id, ...v.data() })) as unknown as Video[]
-    return videos.filter((v) => !v.broken)
+export async function getMultiVideosData(videoIds: string[]) {
+    const videos = await Promise.all(
+        videoIds.map(async (v) => {
+            return getVideo(v)
+        }),
+    )
+    return videos.filter((v) => v !== null)
 }

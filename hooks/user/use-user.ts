@@ -1,11 +1,13 @@
 "use client"
 import { getError } from "@/lib/utils"
 import {
+    getBookmarkedVideos,
     getLikedVideos,
     getUserfollowers,
     getUserfollowing,
     getUserProfile,
-    getViewedVideos,
+    getVideoViews,
+    getWatchedVideos,
 } from "@/services/client/user"
 import { getUserUploadedVideos } from "@/services/client/video"
 import { useState } from "react"
@@ -38,7 +40,7 @@ export function useUser() {
                 getUserfollowers(userId),
                 getUserfollowing(userId),
                 getLikedVideos(userId),
-                getViewedVideos(userId),
+                getVideoViews(userId),
             ])
 
             return {
@@ -62,13 +64,14 @@ export function useUser() {
             setLoading(true)
             setError(null)
 
-            const [uploaded, liked, viewed] = await Promise.all([
+            const [uploaded, liked, bookmarked, watched] = await Promise.all([
                 getUserUploadedVideos(userId),
                 getLikedVideos(userId),
-                getViewedVideos(userId),
+                getBookmarkedVideos(userId),
+                getWatchedVideos(userId),
             ])
 
-            return { uploaded, liked, viewed }
+            return { uploaded, liked, bookmarked, watched }
         } catch (e) {
             const errorMsg = getError(e) || "Failed to get profile videos"
             setError(errorMsg)

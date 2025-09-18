@@ -1,19 +1,20 @@
 import { db } from "@/lib/firebase/firebase.browser"
 import { VideoCommentInteraction, VideoInteraction } from "#/videos"
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore"
-import { DOC } from "."
+import { DOC } from "@/services"
 
 export async function commentVideo(interaction: VideoCommentInteraction) {
     const commentsRef = collection(db, "comments", interaction.videoId, "messages")
 
     const docRef = await addDoc(commentsRef, {
+        username: interaction.username,
         profile_picture: interaction.profilePicture,
         userId: interaction.userId,
-        username: interaction.username,
         msg: interaction.comment,
         isReply: interaction.isReply,
         replies: 0,
         likes: 0,
+        hasReply: false,
         timestamp: serverTimestamp(),
     })
 
