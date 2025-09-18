@@ -10,12 +10,11 @@ import PageVideoLoading from "@/components/custom/app/profile/profileVideoLoadin
 
 export default function Page() {
     const { profile } = useAuth()
-    
+
     const { getProfileStats } = useUser()
     const { data, isLoading } = useSWR(["user-profile", profile?.uid || ""], () =>
         getProfileStats(profile?.uid || ""),
     )
-
     if (isLoading) {
         return (
             <div className="flex flex-col">
@@ -27,10 +26,7 @@ export default function Page() {
     }
     return (
         <div className="flex flex-col">
-            <ProfileHeader
-                user={profile!}
-                stats={data}
-            />
+            <ProfileHeader user={profile!} stats={data} />
             <hr />
             <ProfileVideosSection
                 videos={{

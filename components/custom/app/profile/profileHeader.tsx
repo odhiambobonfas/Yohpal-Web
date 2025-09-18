@@ -1,10 +1,11 @@
 "use client"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { YPUser } from "@/types/users"
+import { User } from "lucide-react"
 import { useState } from "react"
 
 interface ProfileHeaderProps {
-    user: YPUser 
+    user: YPUser
     stats:
         | {
               uploadedStat?: number
@@ -17,13 +18,14 @@ interface ProfileHeaderProps {
         | undefined
 }
 
-
-export default function ProfileHeader({user, stats }: ProfileHeaderProps) {
+export default function ProfileHeader({ user, stats }: ProfileHeaderProps) {
     const [expanded, setExpanded] = useState(false)
     const wordsToShow = 5
-    const words = user.bio.split(" ")
+    const bio = user.bio || ""
+    const words = bio.split(" ") 
     const isLong = words.length > wordsToShow
-    const visibleText = expanded ? user.bio : words.slice(0, wordsToShow).join(" ")
+    const visibleText = expanded ? bio : words.slice(0, wordsToShow).join(" ")
+
 
     return (
         <div className="h-[40vh] bg-background flex flex-col p-2 items-center md:flex-row overflow-auto md:justify-center">

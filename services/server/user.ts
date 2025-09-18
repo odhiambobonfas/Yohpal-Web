@@ -14,7 +14,7 @@ export async function getUserProfile(userId: string) {
         email: user.email,
         bio: user.bio,
         phoneNumber: user.phoneNumber,
-        profilePicture: user.profile_picture,
+        profile_picture: user.profile_picture,
     } as unknown as YPUser
 }
 
