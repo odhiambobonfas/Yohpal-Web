@@ -1,12 +1,14 @@
-import { Video, VideoInteraction } from "#/videos"
+import { Video } from "#/videos"
 import { getError } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
 import {
     getBookmarks,
+    getComments,
     getDownloads,
     getLikes,
     getShares,
     getVideo,
+    getVideos,
     getViews,
 } from "@/services/client/video"
 import { useState } from "react"
@@ -20,12 +22,13 @@ export function useVideo() {
         try {
             setLoading(true)
             setError(null)
-            const [views, likes, shares, downloads, bookmarks] = await Promise.all([
+            const [views, likes, shares, downloads, bookmarks, comments] = await Promise.all([
                 getViews(videoId),
                 getLikes(videoId),
                 getShares(videoId),
                 getDownloads(videoId),
                 getBookmarks(videoId),
+                getComments(videoId),
             ])
 
             return {
@@ -34,6 +37,7 @@ export function useVideo() {
                 shares: shares.length,
                 downloads: downloads.length,
                 bookmarks: bookmarks.length,
+                comments: comments,
                 userLiked: user ? likes.includes(user.uid) : false,
                 userBookmarked: user ? bookmarks.includes(user.uid) : false,
             }
@@ -47,6 +51,7 @@ export function useVideo() {
                 shares: 0,
                 downloads: 0,
                 bookmarks: 0,
+                comments: [],
                 userLiked: false,
                 userBookmarked: false,
             }
@@ -69,19 +74,16 @@ export function useVideo() {
             setLoading(false)
         }
     }
-    const likeVideo = async (interactionDetails: VideoInteraction) => {}
-    const bookmarkVideo = async (interactionDetails: VideoInteraction) => {}
-    const shareVideo = async (interactionDetails: VideoInteraction) => {}
-    const downloadVideo = async (interactionDetails: VideoInteraction) => {}
 
+    // TODO::(253894320916) - handle infinite scroll for both directions
+    const getPaginatedVideos = async (lastVideoId: string) => {
+        return await getVideos(lastVideoId)
+    }
     return {
         loading,
         error,
-        likeVideo,
-        bookmarkVideo,
-        shareVideo,
         singleVideo,
-        downloadVideo,
         getVideoStats,
+        getPaginatedVideos,
     }
 }

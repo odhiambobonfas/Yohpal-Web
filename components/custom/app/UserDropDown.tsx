@@ -63,10 +63,10 @@ export default function UserDropDown({ className }: { className: string | undefi
         profile?.userName?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "U"
 
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild className={className}>
                 <Button variant="ghost" className="relative size-8 rounded-full">
-                    <Avatar>
+                    <Avatar className="rounded-lg">
                         <AvatarImage
                             loading="lazy"
                             width={100}

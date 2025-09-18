@@ -6,7 +6,6 @@ import {
     getUserfollowing,
     getUserProfile,
     getViewedVideos,
-    getWatchedVideos,
 } from "@/services/client/user"
 import { getUserUploadedVideos } from "@/services/client/video"
 import { useState } from "react"
@@ -62,13 +61,57 @@ export function useUser() {
         try {
             setLoading(true)
             setError(null)
+
+            const [uploaded, liked, viewed] = await Promise.all([
+                getUserUploadedVideos(userId),
+                getLikedVideos(userId),
+                getViewedVideos(userId),
+            ])
+
+            return { uploaded, liked, viewed }
         } catch (e) {
-            const errorMsg = getError(e) || "Failed to load profile"
+            const errorMsg = getError(e) || "Failed to get profile videos"
             setError(errorMsg)
         } finally {
             setLoading(false)
         }
     }
 
-    return { loading, error, getProfile, getProfileVideos, getProfileStats }
+    const getFollowers = async (userId: string) => {
+        try {
+            setLoading(true)
+            setError(null)
+            return await getUserfollowers(userId)
+        } catch (e) {
+            const errorMsg = getError(e) || "Failed to get user followers"
+            setError(errorMsg)
+            return null
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const getFollowing = async (userId: string) => {
+        try {
+            setLoading(true)
+            setError(null)
+            return await getUserfollowing(userId)
+        } catch (e) {
+            const errorMsg = getError(e) || "Failed to get user following"
+            setError(errorMsg)
+            return null
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return {
+        loading,
+        error,
+        getProfile,
+        getProfileVideos,
+        getProfileStats,
+        getFollowers,
+        getFollowing,
+    }
 }

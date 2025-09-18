@@ -20,3 +20,12 @@ export function serializeTimestamp(timestamp: string | FirebaseTimestamp): strin
 
     return new Date().toISOString()
 }
+
+export function replaceWithCDN(link: string): string {
+    const oldUrl = "https://firebasestorage.googleapis.com/v0/b/yohlab.firebasestorage.app/o/"
+    const cdnUrl = "http://cdn.yohpal.com/"
+
+    const regex = new RegExp(`\\b${oldUrl}\\b`, "g")
+    const newLink = link.replace(regex, cdnUrl)
+    return newLink
+}
