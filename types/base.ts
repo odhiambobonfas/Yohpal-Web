@@ -1,1 +1,1 @@
-export type FirebaseTimestamp = { _seconds: number; _nanoseconds: number }
+export type FirebaseTimestamp = { seconds: number; nanoseconds: number }

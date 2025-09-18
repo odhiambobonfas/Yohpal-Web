@@ -19,6 +19,9 @@ import CommentsLoading from "@/components/custom/app/comments/CommentsLoading"
 import CommentCard from "@/components/custom/app/comments/CommentCard"
 import NoCommentsCard from "@/components/custom/app/comments/NoCommentsCard"
 import { ResponsiveShareDialog } from "@/components/custom/app/video/ResponsiveShareDialog"
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
+import updateLocale from "dayjs/plugin/updateLocale"
 
 import {
     LucideBookmark,
@@ -256,6 +259,9 @@ export default function DesktopSidePlayer({
                                 <span className="text-muted-foreground text-sm">
                                     {video.fullName}
                                 </span>
+                                <span className="text-muted-foreground text-sm">
+                                    {formatedTime(video.timestamp)}
+                                </span>
                             </span>
                         </div>
 
@@ -377,4 +383,37 @@ export default function DesktopSidePlayer({
             </div>
         </div>
     )
+}
+
+dayjs.extend(relativeTime)
+dayjs.extend(updateLocale)
+
+dayjs.updateLocale("en", {
+    relativeTime: {
+        future: "in %s",
+        past: "%s ago",
+        s: "%d seconds",
+        m: "1 minute",
+        mm: "%dm",
+        h: "1 hour",
+        hh: "%dhrs",
+        d: "1 day",
+        dd: "%d days",
+        M: "1 month",
+        MM: "%d months",
+        y: "1 year",
+        yy: "%d years",
+    },
+})
+
+function formatedTime(timestamp: string) {
+    const date = dayjs(timestamp)
+    const now = dayjs()
+
+    const dateTime = now.diff(date, "day")
+    if (dateTime > 7) {
+        return date.format("MMM D, YYYY")
+    } else {
+        return date.fromNow()
+    }
 }

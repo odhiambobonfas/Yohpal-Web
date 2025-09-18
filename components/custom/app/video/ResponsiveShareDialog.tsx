@@ -87,7 +87,6 @@ export function ResponsiveShareDialog({
                     className="text-xs font-mono"
                     readOnly
                     aria-selected
-                    defaultValue={shareLink}
                 />
                 <div className="flex w-full justify-end space-x-2 mt-4">
                     <Button variant="outline" onClick={() => setOpen(false)}>
