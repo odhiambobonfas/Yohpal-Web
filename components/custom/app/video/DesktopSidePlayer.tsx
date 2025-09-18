@@ -5,6 +5,7 @@ import { useUser } from "@/hooks/user/use-user"
 import { useVideo } from "@/hooks/videos/use-video"
 import { useAuth } from "@/providers/Auth"
 import useSWR from "swr"
+import Link from "next/link"
 
 import { Video, VideoComment } from "#/videos"
 
@@ -249,7 +250,9 @@ export default function DesktopSidePlayer({
                             </Avatar>
 
                             <span className="flex flex-col items-start">
-                                <b>@{video.userName}</b>
+                                <Link href={`/user/${video.userId}`}>
+                                    <b>@{video.userName}</b>
+                                </Link>
                                 <span className="text-muted-foreground text-sm">
                                     {video.fullName}
                                 </span>
