@@ -1,8 +1,13 @@
 "use client"
-import { Video } from "#/videos"
+
+import { FormEvent, useEffect, useState } from "react"
 import { useUser } from "@/hooks/user/use-user"
 import { useVideo } from "@/hooks/videos/use-video"
 import { useAuth } from "@/providers/Auth"
+import useSWR from "swr"
+import Link from "next/link"
+
+import { Video, VideoComment } from "#/videos"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -10,42 +15,223 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import CommentsLoading from "@/components/custom/app/comments/CommentsLoading"
+import CommentCard from "@/components/custom/app/comments/CommentCard"
+import NoCommentsCard from "@/components/custom/app/comments/NoCommentsCard"
+import { ResponsiveShareDialog } from "@/components/custom/app/video/ResponsiveShareDialog"
+
 import {
     LucideBookmark,
     LucideDownload,
     LucideEye,
     LucideHeart,
+    LucideLoader,
     LucideMessageCircleMore,
     LucideSend,
     LucideShare2,
+    LucideUserMinus2,
     LucideUserPlus2,
 } from "lucide-react"
-import useSWR from "swr"
-import Link from "next/link"
 
-export default function DesktopSidePlayer({ video }: { video: Video }) {
-    const { isAuthenticated } = useAuth()
-    const { getProfile } = useUser()
+interface VideoMutationProps {
+    onToggleLike: (videoId: string, isCurrentlyLiked: boolean) => Promise<{ liked: boolean } | null>
+    onToggleBookmark: (
+        videoId: string,
+        isCurrentlyBookmarked: boolean,
+    ) => Promise<{ bookmarked: boolean } | null>
+    onAddComment: (
+        videoId: string,
+        text: string,
+    ) => Promise<{ commentId: string; comment: VideoComment } | null>
+    onShare: (videoId: string) => Promise<{ shared: boolean } | null>
+    onDownload: (videoId: string) => Promise<{ downloaded: boolean } | null>
+    mutationLoading: boolean
+    mutationError: string | null
+    // onView: (videoId: string) => Promise<{ viewed: boolean } | null>
+}
+
+interface DesktopSidePlayerProps extends VideoMutationProps {
+    video: Video
+}
+
+export default function DesktopSidePlayer({
+    video,
+    onToggleLike,
+    onToggleBookmark,
+    onAddComment,
+    onShare,
+    onDownload,
+    mutationLoading,
+    mutationError,
+    // onView,
+}: DesktopSidePlayerProps) {
+    const { isAuthenticated, profile } = useAuth()
+    const { getProfile, getFollowing } = useUser()
     const { getVideoStats } = useVideo()
 
+    // optimistic ui updates
+    const [optimisticLike, setOptimisticLike] = useState<{ liked: boolean; count: number } | null>(
+        null,
+    )
+    const [optimisticBookmark, setOptimisticBookmark] = useState<{
+        bookmarked: boolean
+        count: number
+    } | null>(null)
+    const [optimisticShare, setOptimisticShare] = useState<number | null>(null)
+    const [optimisticDownload, setOptimisticDownload] = useState<number | null>(null)
+    const [optimisticComments, setOptimisticComments] = useState<VideoComment[]>([])
+    const [commentText, setCommentText] = useState("")
+
     const swrConfig = {
-        revalidateOnFocus: false, // Don't refetch on window focus
+        revalidateOnFocus: false,
         revalidateOnReconnect: true,
         dedupingInterval: 60000,
-        errorRetryCount: 3, // Retry failed requests 3 times
+        errorRetryCount: 2,
     }
 
-    const { data: stats } = useSWR(
-        [`video-stats`, video.id],
-        ([_, videoId]) => getVideoStats(videoId),
-        {},
+    const {
+        data: stats,
+        isLoading: videoStatsLoading,
+        mutate: mutateStats,
+    } = useSWR([`video-stats`, video.id], ([, videoId]) => getVideoStats(videoId), swrConfig)
+
+    const { data: followings, isLoading: followingsLoading } = useSWR(
+        ["user-following", profile?.uid],
+        () => getFollowing(profile!.uid),
+        swrConfig,
     )
 
-    const { data: ownerProfile } = useSWR(
+    const { data: ownerProfile, isLoading: profileLoading } = useSWR(
         [`user-profile`, video.userId],
         ([, userId]) => getProfile(userId),
         swrConfig,
     )
+    useEffect(() => {
+        setOptimisticComments([]) // clear optimistic comments on video change
+        setCommentText("") //clear input
+    }, [video.id])
+
+    const loading = videoStatsLoading || profileLoading || followingsLoading
+    const isFollowing = (followings && followings.includes(video.userId)) || false
+
+    // current stats with optimistic updates
+    const currentStats = {
+        likes: optimisticLike?.count ?? stats?.likes ?? 0,
+        bookmarks: optimisticBookmark?.count ?? stats?.bookmarks ?? 0,
+        shares: optimisticShare ?? stats?.shares ?? 0,
+        downloads: optimisticDownload ?? stats?.downloads ?? 0,
+        views: stats?.views ?? 0,
+        comments: [...optimisticComments, ...(stats?.comments ?? [])],
+        userLiked: optimisticLike?.liked ?? stats?.userLiked ?? false,
+        userBookmarked: optimisticBookmark?.bookmarked ?? stats?.userBookmarked ?? false,
+    }
+
+    const handleLike = async () => {
+        if (!isAuthenticated || !stats) return
+
+        const newLiked = !currentStats.userLiked
+        const newCount = newLiked ? currentStats.likes + 1 : currentStats.likes - 1
+
+        setOptimisticLike({ liked: newLiked, count: newCount })
+
+        const result = await onToggleLike(video.id, currentStats.userLiked)
+        if (result) {
+            mutateStats() // revalidate to get active stats
+        }
+        if (mutationError) {
+            // revert on error
+            setOptimisticLike(null)
+            console.error("Failed to toggle like:", mutationError)
+        }
+        // clear optimistic state
+        setTimeout(() => setOptimisticLike(null), 1000)
+    }
+
+    const handleBookmark = async () => {
+        if (!isAuthenticated || !stats) return
+
+        const newBookmarked = !currentStats.userBookmarked
+        const newCount = newBookmarked ? currentStats.bookmarks + 1 : currentStats.bookmarks - 1
+
+        setOptimisticBookmark({ bookmarked: newBookmarked, count: newCount })
+
+        const result = await onToggleBookmark(video.id, currentStats.userBookmarked)
+        if (result) {
+            mutateStats()
+        }
+        if (mutationError) {
+            setOptimisticBookmark(null)
+            console.error("Failed to toggle bookmark:", mutationError)
+        }
+        setTimeout(() => setOptimisticBookmark(null), 1000)
+    }
+
+    const handleShare = async () => {
+        if (!isAuthenticated) return
+
+        setOptimisticShare(currentStats.shares + 1)
+
+        const result = await onShare(video.id)
+        if (result) {
+            mutateStats()
+        }
+        if (mutationError) {
+            setOptimisticShare(null)
+            console.error("Failed to share:", mutationError)
+        }
+        setTimeout(() => setOptimisticShare(null), 1000)
+    }
+
+    const handleDownload = async () => {
+        if (!isAuthenticated) return
+
+        setOptimisticDownload(currentStats.downloads + 1)
+
+        const result = await onDownload(video.id)
+        if (result) {
+            mutateStats()
+        }
+
+        if (mutationError) {
+            setOptimisticDownload(null)
+            console.error("Failed to download:", mutationError)
+        }
+
+        setTimeout(() => setOptimisticDownload(null), 1000)
+    }
+
+    const handleComment = async (e: FormEvent) => {
+        e.preventDefault()
+        if (!isAuthenticated || !commentText.trim()) return
+
+        const text = commentText.trim()
+        setCommentText("")
+
+        const tempComment = {
+            id: `temp-${Date.now()}`,
+            msg: text,
+            username: profile?.userName,
+            profile_picture: profile?.profile_picture,
+            isReply: false,
+            likes: 0,
+            replies: 0,
+        } as unknown as VideoComment
+
+        setOptimisticComments((prev) => [tempComment, ...prev])
+
+        const res = await onAddComment(video.id, text)
+        if (res) {
+            mutateStats()
+            setOptimisticComments((prev) => prev.filter((c) => c.id !== tempComment.id))
+        }
+
+        if (mutationError) {
+            setOptimisticComments((prev) => prev.filter((c) => c.id !== tempComment.id))
+            setCommentText(text) // Restore text on error
+            console.error("Failed to add comment:", mutationError)
+        }
+    }
+
     return (
         <div className="w-6/12 px-3 gap-3 flex flex-col h-full">
             <Card className="w-full m-0 p-0 min-h-28">
@@ -74,8 +260,18 @@ export default function DesktopSidePlayer({ video }: { video: Video }) {
                         </div>
 
                         {isAuthenticated && (
-                            <Button className="rounded-full text-lg px-5 py-2">
-                                <LucideUserPlus2 /> Follow
+                            <Button
+                                className={`rounded-full text-lg px-5 py-2 ${!isFollowing ? "border-primary bg-none" : ""}`}
+                            >
+                                {isFollowing ? (
+                                    <>
+                                        <LucideUserMinus2 /> Unfollow
+                                    </>
+                                ) : (
+                                    <>
+                                        <LucideUserPlus2 /> Follow
+                                    </>
+                                )}
                             </Button>
                         )}
                     </div>
@@ -90,43 +286,94 @@ export default function DesktopSidePlayer({ video }: { video: Video }) {
 
             <div className="flex flex-col items-center w-full">
                 <div className="inline-flex gap-1 w-full">
-                    <Button variant={"ghost"} className="text-foreground">
+                    <Button variant={"ghost"} disabled className="text-foreground">
                         <LucideEye />
-                        {stats?.views || 0}
+                        {currentStats.views}
+                    </Button>
+                    <Button
+                        variant={"ghost"}
+                        className="text-foreground"
+                        onClick={handleLike}
+                        disabled={!isAuthenticated || mutationLoading}
+                    >
+                        <LucideHeart
+                            className={currentStats.userLiked ? "text-red-500 fill-current" : ""}
+                        />
+                        {currentStats.likes}
                     </Button>
                     <Button variant={"ghost"} className="text-foreground">
-                        <LucideHeart />
-                        {stats?.likes || 0}
+                        <LucideMessageCircleMore /> {currentStats.comments.length}
                     </Button>
-                    <Button variant={"ghost"} className="text-foreground">
-                        <LucideMessageCircleMore /> 0
+                    <Button
+                        variant={"ghost"}
+                        className="text-foreground"
+                        onClick={handleShare}
+                        disabled={!isAuthenticated || mutationLoading}
+                    >
+                        <LucideShare2 className="text-emerald-800/60" />
+                        {currentStats.shares}
                     </Button>
-                    <Button variant={"ghost"} className="text-foreground">
-                        <LucideShare2 />
-                        {stats?.shares || 0}
-                    </Button>
-                    <Button variant={"ghost"} className="text-foreground">
-                        <LucideBookmark /> {stats?.bookmarks || 0}
+                    <Button
+                        variant={"ghost"}
+                        className={
+                            currentStats.userBookmarked ? "text-blue-500" : "text-foreground"
+                        }
+                        onClick={handleBookmark}
+                        disabled={!isAuthenticated || mutationLoading}
+                    >
+                        <LucideBookmark
+                            className={currentStats.userBookmarked ? "fill-current" : ""}
+                        />
+                        {currentStats.bookmarks}
                     </Button>
 
-                    <Button variant={"ghost"} className="text-foreground">
-                        <LucideDownload /> {stats?.downloads || 0}
+                    <Button
+                        variant={"ghost"}
+                        className="text-foreground"
+                        onClick={handleDownload}
+                        disabled={!isAuthenticated || mutationLoading}
+                    >
+                        <LucideDownload /> {currentStats.downloads}
                     </Button>
+                    <ResponsiveShareDialog videoId={video.id}>
+                        <Button>hello</Button>
+                    </ResponsiveShareDialog>
                 </div>
             </div>
-            <div className="h-full py-3 w-full flex flex-col">
-                <form className="inline-flex w-full items-center gap-2 h-10">
+            <div className="h-full py-3 w-full flex gap-3 flex-col">
+                <form
+                    onSubmit={handleComment}
+                    className="inline-flex w-full items-center gap-2 h-10"
+                >
                     <Input
                         type="text"
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
                         className="rounded-full p-3 text-lg"
                         placeholder="What's going on..."
+                        disabled={!isAuthenticated || mutationLoading}
                     />
-                    <Button className="rounded-full">
-                        <LucideSend />
+                    <Button
+                        type="submit"
+                        className="rounded-full"
+                        disabled={!isAuthenticated || !commentText.trim() || mutationLoading}
+                    >
+                        {mutationLoading ? (
+                            <LucideLoader className="animate-spin" />
+                        ) : (
+                            <LucideSend />
+                        )}
                     </Button>
                 </form>
-
-                <ScrollArea className="flex-1 h-1/2 overflow-hidden p-3"></ScrollArea>
+                <ScrollArea className="flex-1 h-1/2 overflow-hidden py-3 flex flex-col gap-2">
+                    {loading && <CommentsLoading />}
+                    {!loading &&
+                        (currentStats.comments.length === 0 ? (
+                            <NoCommentsCard />
+                        ) : (
+                            currentStats.comments.map((c) => <CommentCard key={c.id} comment={c} />)
+                        ))}
+                </ScrollArea>
             </div>
         </div>
     )

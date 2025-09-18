@@ -35,7 +35,7 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     <YPAuthProvider>
-                        <main className="w-full">{children}</main>
+                        <div className="w-full">{children}</div>
                     </YPAuthProvider>
                 </ThemeProvider>
                 <Toaster position="top-right" richColors />

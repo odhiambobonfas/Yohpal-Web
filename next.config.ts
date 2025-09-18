@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
                 hostname: "firebasestorage.googleapis.com",
                 pathname: "/v0/b/yohlab.firebasestorage.app/o/**",
             },
+            {
+                protocol: "http",
+                hostname: "cdn.yohpal.com",
+                pathname: "/**",
+            },
         ],
     },
 }

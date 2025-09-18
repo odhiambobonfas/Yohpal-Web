@@ -25,6 +25,28 @@ export interface CampaignMeta {
     timestamp: FirebaseTimestamp
 }
 
+export interface VideoComment {
+    id: string
+    replies: number
+    msg: string
+    timestamp: FirebaseTimestamp
+    userId: string
+    hasReply: boolean
+    username: string
+    profile_picture: string
+    isReply: boolean
+    likes: number
+}
+
+export interface VideoCommentInteraction {
+    userId: string
+    profilePicture: string
+    username: string
+    videoId: string
+    comment: string
+    isReply: boolean
+}
+
 export interface VideoInteraction {
     userId: string
     videoId: string
