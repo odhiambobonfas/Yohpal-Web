@@ -14,8 +14,8 @@ export function getError(error: unknown): string {
 export function serializeTimestamp(timestamp: string | FirebaseTimestamp): string {
     if (typeof timestamp === "string") return timestamp
 
-    if (timestamp && typeof timestamp === "object" && "_seconds" in timestamp) {
-        return new Date(timestamp._seconds * 1000 + timestamp._nanoseconds / 1000000).toISOString()
+    if (typeof timestamp === "object" && "seconds" in timestamp) {
+        return new Date(timestamp.seconds * 1000).toISOString()
     }
 
     return new Date().toISOString()

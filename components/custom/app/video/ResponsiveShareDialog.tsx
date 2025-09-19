@@ -23,6 +23,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Input } from "@/components/ui/input"
 import { LucideCopy } from "lucide-react"
+import { toast } from "sonner"
 
 export function ResponsiveShareDialog({
     children,
@@ -45,6 +46,13 @@ export function ResponsiveShareDialog({
     const dialogTitle = "Share"
     const dialogDescription = "Copy the link below to share this video."
 
+    const handleCopy = async () => {
+        if (!window) return
+        await window.navigator.clipboard.writeText(shareLink)
+        toast.success("Link copied to clipboard")
+        setOpen(false)
+    }
+
     if (isMobile) {
         return (
             <Drawer open={open} onOpenChange={setOpen}>
@@ -64,7 +72,7 @@ export function ResponsiveShareDialog({
                         />
                     </div>
                     <DrawerFooter className="mb-10 p-2">
-                        <Button>Copy</Button>
+                        <Button onClick={handleCopy}>Copy</Button>
                         <DrawerClose asChild>
                             <Button variant="outline">Cancel</Button>
                         </DrawerClose>
@@ -87,7 +95,7 @@ export function ResponsiveShareDialog({
                     <Button variant="outline" onClick={() => setOpen(false)}>
                         Cancel
                     </Button>
-                    <Button onClick={() => {}}>
+                    <Button onClick={handleCopy}>
                         <LucideCopy /> Copy
                     </Button>
                 </div>
