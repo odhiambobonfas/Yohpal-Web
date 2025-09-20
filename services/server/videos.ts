@@ -2,6 +2,7 @@ import { db } from "@/lib/firebase/firebase.admin"
 import { Video } from "#/videos"
 import { replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
+import { Timestamp } from "firebase/firestore"
 
 const videoRef = db.collection("videos")
 
@@ -53,6 +54,7 @@ export async function getUserVideoUploads(userId: string) {
         .collection("videos")
         .where("userId", "==", userId)
         .where("broken", "==", false)
+        .orderBy("timestamp", "desc")
         .get()
 
     if (videoUploads.empty) return []

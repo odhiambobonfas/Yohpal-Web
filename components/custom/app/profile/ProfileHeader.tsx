@@ -21,9 +21,9 @@ interface ProfileHeaderProps {
 export default function ProfileHeader({ user, stats, profileType }: ProfileHeaderProps) {
     const [expanded, setExpanded] = useState(false)
     const wordsToShow = 5
-    const words = user?.bio.split(" ") || [""]
+    const words = user?.bio?.split(" ") || []
     const isLong = words.length > wordsToShow
-    const visibleText = expanded ? words : words.slice(0, wordsToShow).join(" ")
+    const visibleText = expanded ? words.join(" ") : words.slice(0, wordsToShow).join(" ")
 
     return (
         <div className="min-h-[30%] flex flex-col p-2 items-center md:flex-row overflow-auto md:justify-center">
@@ -47,7 +47,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                     <span className="text-muted-foreground mb-2">{user?.email}</span>
                 )}
 
-                <span className="text-muted-foreground mb-2">
+                <span className="text-muted-foreground mb-2 w-full md:w-[600px]">
                     {visibleText}
                     {isLong && !expanded && "..."}
                     {isLong && (
