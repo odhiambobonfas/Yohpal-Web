@@ -64,8 +64,7 @@ export function useVideo() {
         try {
             setLoading(true)
             setError(null)
-            const vid = await getVideo(videoId)
-            return vid as unknown as Video
+            return (await getVideo(videoId)) as unknown as Video
         } catch (e) {
             const errorMsg = getError(e) || "Failed to get video"
             setError(errorMsg)

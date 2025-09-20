@@ -1,4 +1,8 @@
+"use client"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { DEFAULT_THUMBNAIL } from "@/constants"
+import { LucidePlay, LucideVolume2, LucideVolumeOff } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 
@@ -19,6 +23,8 @@ export default function VideoPlayer({
 }) {
     const videoRef = useRef<HTMLVideoElement | null>(null)
     const [isLoaded, setIsLoaded] = useState(false)
+    const [isMuted, setMuteStatus] = useState(false)
+    const [isPlaying, setPlaying] = useState(true)
 
     // load current +- 10
     const shouldRender = Math.abs(index - activeIndex) <= 10
@@ -36,14 +42,28 @@ export default function VideoPlayer({
         }
     }, [isActive])
 
+    const togglePlayPause = async () => {
+        const video = videoRef.current
+        if (!video) return
+
+        if (video.paused) {
+            await video.play()
+            setPlaying(true)
+        } else {
+            video.pause()
+            setPlaying(false)
+        }
+    }
+
     if (!shouldRender) {
         return (
             <div className="h-full flex">
-                <Card className="h-full p-0 m-0 w-full overflow-hidden">
+                <Card className="h-full p-0 m-0 w-full overflow-hidden border-none">
                     <CardContent className="h-full p-0 relative flex items-center justify-center">
                         <Image
                             fill
-                            src={thumbnail}
+                            quality={25}
+                            src={thumbnail || DEFAULT_THUMBNAIL}
                             alt="video thumbnail"
                             className="object-cover"
                         />
@@ -54,22 +74,41 @@ export default function VideoPlayer({
     }
 
     return (
-        <div className="h-full flex">
-            <Card className="h-full p-0 m-0 w-full overflow-hidden">
+        <div className="h-full w-full flex m-0 py-3">
+            <Card className="h-full p-0 m-0 w-full overflow-hidden rounded-lg md:rounded-lg">
                 <CardContent className="h-full p-0 relative flex items-center justify-center">
+                    <Button
+                        className="size-10 absolute top-2 left-2 hover:bg-transparent bg-transparent opacity-80"
+                        onClick={() => setMuteStatus(!isMuted)}
+                    >
+                        {isMuted ? (
+                            <LucideVolumeOff className="size-5" />
+                        ) : (
+                            <LucideVolume2 className="size-5" />
+                        )}
+                    </Button>
+                    {!isPlaying && (
+                        <Button
+                            onClick={togglePlayPause}
+                            className="size-20 p-2 absolute flex items-center justify-center bg-primary/60 hover:bg-primary/50 rounded-full z-10 transition-opacity duration-300"
+                        >
+                            <LucidePlay className="fill-primary-foreground stroke-white size-8" />
+                        </Button>
+                    )}
                     <video
                         ref={videoRef}
                         src={videoSrc}
                         className="w-full aspect-9/16 h-full object-cover"
                         loop
-                        muted
                         playsInline
+                        muted={isMuted}
+                        onClick={togglePlayPause}
                         onLoadedData={() => setIsLoaded(true)}
                     />
                     {!isLoaded && (
                         <div className="absolute inset-0">
                             <Image
-                                quality={20}
+                                quality={25}
                                 width={100}
                                 height={100}
                                 src={thumbnail}

@@ -6,23 +6,25 @@ import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
 const videoRef = db.collection("videos")
 
 export async function getLandingVideos(videoId: string | undefined) {
-    const videos = []
+    const videos: Video[] = []
+
     if (videoId) {
         const videoDoc = await videoRef.doc(videoId).get()
+
         if (videoDoc.exists) {
-            let videoData = videoDoc.data()
+            const videoData = videoDoc.data()
             if (!videoData) return
             delete videoData["campaignMeta"]
 
-            videoData = {
+            const cleanVideoData = {
                 id: videoDoc.id,
                 ...videoData,
                 videoUrl: replaceWithCDN(videoData.videoUrl),
                 thumbnail: replaceWithCDN(videoData.thumbnail) || DEFAULT_THUMBNAIL,
                 timestamp: serializeTimestamp(videoData.timestamp),
-            }
+            } as Video
 
-            videos.push(videoData)
+            videos.push(cleanVideoData)
         }
     }
 
@@ -44,7 +46,9 @@ export async function getLandingVideos(videoId: string | undefined) {
             timestamp: serializeTimestamp(videoData.timestamp),
         }
     }) as Video[]
+
     videos.push(...moreVids)
+
     return videos
 }
 

@@ -10,6 +10,7 @@ export interface Video {
     broken: boolean | null
     thumbnail: string
     allowComments: boolean
+    title: string
     caption: string
     tags: string[]
     timestamp: string

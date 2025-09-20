@@ -2,6 +2,11 @@ import { FirebaseTimestamp } from "@/types/base"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
+
+dayjs.extend(relativeTime)
+
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
@@ -28,4 +33,16 @@ export function replaceWithCDN(link: string): string {
     const regex = new RegExp(`\\b${oldUrl}\\b`, "g")
     const newLink = link.replace(regex, cdnUrl)
     return newLink
+}
+
+export function formatTime(timestamp: string) {
+    const date = dayjs(timestamp)
+    const now = dayjs()
+
+    const dateTime = now.diff(date, "day")
+    if (dateTime >= 7) {
+        return date.format("MMM D, YYYY")
+    } else {
+        return date.fromNow()
+    }
 }

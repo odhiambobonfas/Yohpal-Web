@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore"
 import { DOC } from "@/services"
 import { replaceWithCDN, serializeTimestamp } from "@/lib/utils"
-import { VIDEO_LIMIT } from "@/constants"
+import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
 
 export async function getVideos(lastVideoId: string) {
     const videosRef = collection(db, "videos")
@@ -37,6 +37,7 @@ export async function getVideos(lastVideoId: string) {
         return {
             id: v.id,
             ...videoData,
+            thumbnail: replaceWithCDN(videoData.videoUrl) || DEFAULT_THUMBNAIL,
             videoUrl: replaceWithCDN(videoData.videoUrl),
             timestamp: serializeTimestamp(videoData.timestamp),
         }

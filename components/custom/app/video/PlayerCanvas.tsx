@@ -8,8 +8,7 @@ import { useVideo } from "@/hooks/videos/use-video"
 import DebugWindow from "@/components/custom/DebugWindow"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import useVideoMutation from "@/hooks/videos/use-video-mutations"
-import { ResponsiveShareDialog } from "./ResponsiveShareDialog"
-import { Button } from "@/components/ui/button"
+import MobileInteractions from "./MobileInteractions"
 
 const FETCH_TRIGGER_OFFSET = 10
 
@@ -45,14 +44,6 @@ export default function PlayerCanvas({ videos }: { videos: Video[] }) {
     const activeIndex = allVideos.findIndex((v) => v.id === activeId)
     const activeVideo = activeIndex >= 0 ? allVideos[activeIndex] : allVideos[0]
 
-    useEffect(() => {
-        if (loading || isFetchingNext) return
-        const triggerIndex = allVideos.length - FETCH_TRIGGER_OFFSET
-        if (activeIndex >= triggerIndex) {
-            void fetchNextVideos()
-        }
-    }, [activeIndex, allVideos.length, loading, isFetchingNext])
-
     const fetchNextVideos = useCallback(async () => {
         if (isFetchingNext || loading) return
         const lastVideo = allVideos[allVideos.length - 1]
@@ -69,31 +60,40 @@ export default function PlayerCanvas({ videos }: { videos: Video[] }) {
         setIsFetchingNext(false)
     }, [allVideos, lastFetchedVideoId, isFetchingNext, loading, getPaginatedVideos])
 
+    useEffect(() => {
+        if (loading || isFetchingNext) return
+        const triggerIndex = allVideos.length - FETCH_TRIGGER_OFFSET
+        if (activeIndex >= triggerIndex) {
+            void fetchNextVideos()
+        }
+    }, [activeIndex, allVideos.length, loading, isFetchingNext, fetchNextVideos])
+
+    const virtualItems = rowVirtualizer.getVirtualItems()
     // watch active video
     useEffect(() => {
-        const virtualItems = rowVirtualizer.getVirtualItems()
-        if (virtualItems.length === 0) return
+        const rootEl = parentRef.current
+        if (!rootEl) return
 
-        const viewportHeight = parentRef.current?.clientHeight ?? window.innerHeight
-        const viewportCenter = (parentRef.current?.scrollTop ?? 0) + viewportHeight / 2
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute("data-id")
+                        if (id && id !== activeId) {
+                            setActiveId(id)
+                        }
+                    }
+                })
+            },
+            { threshold: 0.6, root: rootEl },
+        )
 
-        let closest = virtualItems[0]
-        let closestDist = Math.abs(viewportCenter - (closest.start + closest.size / 2))
+        // Observe all currently rendered video elements
+        const videoElements = rootEl.querySelectorAll("[data-id]")
+        videoElements.forEach((el) => observer.observe(el))
 
-        for (const v of virtualItems) {
-            const vCenter = v.start + v.size / 2
-            const dist = Math.abs(viewportCenter - vCenter)
-            if (dist < closestDist) {
-                closest = v
-                closestDist = dist
-            }
-        }
-
-        const newId = allVideos[closest.index]?.id ?? null
-        if (newId && newId !== activeId) {
-            setActiveId(newId)
-        }
-    }, [rowVirtualizer.getVirtualItems(), allVideos, activeId])
+        return () => observer.disconnect()
+    }, [virtualItems, activeId])
 
     if (isMobile) {
         return (
@@ -107,10 +107,7 @@ export default function PlayerCanvas({ videos }: { videos: Video[] }) {
                     <div>Fetching: {isFetchingNext ? "Yes" : "No"}</div>
                 </DebugWindow>
 
-                <ResponsiveShareDialog videoId={activeVideo.id}>
-                    <Button variant={"secondary"}>TO REMOVE</Button>
-                </ResponsiveShareDialog>
-                <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
+                <section className="h-[calc(100vh-6rem)] flex justify-center items-center w-full">
                     <div className="w-full h-full flex flex-row items-center justify-center p-2 gap-2">
                         <div
                             ref={parentRef}
@@ -131,20 +128,32 @@ export default function PlayerCanvas({ videos }: { videos: Video[] }) {
                                             key={video.id}
                                             data-id={video.id}
                                             data-idx={virtualRow.index}
-                                            className="absolute top-0 left-0 my-2 w-full snap-start"
+                                            className="absolute top-0 left-0 my-2 w-full snap-center"
                                             style={{
                                                 transform: `translateY(${virtualRow.start}px)`,
                                                 height: `${virtualRow.size}px`,
                                             }}
                                         >
-                                            <VideoPlayer
-                                                videoSrc={video.videoUrl}
-                                                videoId={video.id}
-                                                activeVideoId={activeVideo?.id}
-                                                thumbnail={video.thumbnail}
-                                                index={virtualRow.index}
-                                                activeIndex={activeIndex}
-                                            />
+                                            <div className="relative w-full h-full">
+                                                <VideoPlayer
+                                                    videoSrc={video.videoUrl}
+                                                    videoId={video.id}
+                                                    activeVideoId={activeVideo?.id}
+                                                    thumbnail={video.thumbnail}
+                                                    index={virtualRow.index}
+                                                    activeIndex={activeIndex}
+                                                />
+                                                <MobileInteractions
+                                                    video={activeVideo}
+                                                    onToggleLike={toggleLike}
+                                                    onToggleBookmark={toggleBookmark}
+                                                    onAddComment={addComment}
+                                                    onShare={shareVideo}
+                                                    onDownload={downloadVideo}
+                                                    mutationError={mutationError}
+                                                    mutationLoading={mutationLoading}
+                                                />
+                                            </div>
                                         </div>
                                     )
                                 })}
@@ -158,16 +167,8 @@ export default function PlayerCanvas({ videos }: { videos: Video[] }) {
 
     return (
         <>
-            <DebugWindow>
-                <div>
-                    Active: {activeIndex + 1}/{allVideos.length}
-                </div>
-                <div>ID: {activeVideo?.id}</div>
-                <div>Loading: {loading ? "Yes" : "No"}</div>
-                <div>Fetching: {isFetchingNext ? "Yes" : "No"}</div>
-            </DebugWindow>
             <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
-                <div className="w-5/6 h-full flex flex-row items-center justify-center p-2 gap-2">
+                <div className="w-full md:w-4/6 h-full flex flex-row items-center justify-center md:p-2 md:gap-2">
                     <div
                         ref={parentRef}
                         data-root-scroll
@@ -187,7 +188,7 @@ export default function PlayerCanvas({ videos }: { videos: Video[] }) {
                                         key={video.id}
                                         data-id={video.id}
                                         data-idx={virtualRow.index}
-                                        className="absolute top-0 left-0 my-2 w-full snap-start"
+                                        className="absolute top-0 left-0 w-full snap-center"
                                         style={{
                                             transform: `translateY(${virtualRow.start}px)`,
                                             height: `${virtualRow.size}px`,

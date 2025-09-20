@@ -8,5 +8,5 @@ export default async function Home({
 }) {
     const videoId = (await searchParams)?.v
     const videos = await getLandingVideos(videoId as string)
-    return <PlayerCanvas videos={videos} />
+    return <PlayerCanvas videos={videos!} />
 }

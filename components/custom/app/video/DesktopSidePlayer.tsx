@@ -7,7 +7,7 @@ import { useAuth } from "@/providers/Auth"
 import useSWR from "swr"
 import Link from "next/link"
 
-import { Video, VideoComment } from "#/videos"
+import { Video, VideoComment, VideoCommentInteraction } from "#/videos"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -19,9 +19,6 @@ import CommentsLoading from "@/components/custom/app/comments/CommentsLoading"
 import CommentCard from "@/components/custom/app/comments/CommentCard"
 import NoCommentsCard from "@/components/custom/app/comments/NoCommentsCard"
 import { ResponsiveShareDialog } from "@/components/custom/app/video/ResponsiveShareDialog"
-import dayjs from "dayjs"
-import relativeTime from "dayjs/plugin/relativeTime"
-import updateLocale from "dayjs/plugin/updateLocale"
 
 import {
     LucideBookmark,
@@ -35,6 +32,8 @@ import {
     LucideUserMinus2,
     LucideUserPlus2,
 } from "lucide-react"
+import { formatTime } from "@/lib/utils"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 interface VideoMutationProps {
     onToggleLike: (videoId: string, isCurrentlyLiked: boolean) => Promise<{ liked: boolean } | null>
@@ -45,12 +44,11 @@ interface VideoMutationProps {
     onAddComment: (
         videoId: string,
         text: string,
-    ) => Promise<{ commentId: string; comment: VideoComment } | null>
+    ) => Promise<{ commentId: string; comment: VideoCommentInteraction } | null>
     onShare: (videoId: string) => Promise<{ shared: boolean } | null>
     onDownload: (videoId: string) => Promise<{ downloaded: boolean } | null>
     mutationLoading: boolean
     mutationError: string | null
-    // onView: (videoId: string) => Promise<{ viewed: boolean } | null>
 }
 
 interface DesktopSidePlayerProps extends VideoMutationProps {
@@ -66,7 +64,6 @@ export default function DesktopSidePlayer({
     onDownload,
     mutationLoading,
     mutationError,
-    // onView,
 }: DesktopSidePlayerProps) {
     const { isAuthenticated, profile } = useAuth()
     const { getProfile, getFollowing } = useUser()
@@ -186,9 +183,14 @@ export default function DesktopSidePlayer({
     }
 
     const handleDownload = async () => {
-        if (!isAuthenticated) return
-
         setOptimisticDownload(currentStats.downloads + 1)
+
+        const link = document.createElement("a")
+        link.href = `/api/proxy/${video.id}`
+        link.download = ""
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
 
         const result = await onDownload(video.id)
         if (result) {
@@ -246,7 +248,7 @@ export default function DesktopSidePlayer({
                                     loading="lazy"
                                     width={50}
                                     height={50}
-                                    src={ownerProfile?.profile_picture || "/app/auth-bg.jpg"}
+                                    src={ownerProfile?.profile_picture || "/logo_circular.png"}
                                     alt={`${video.userName}'s profile picture`}
                                 />
                                 <AvatarFallback>{video.userName[0]}</AvatarFallback>
@@ -263,7 +265,7 @@ export default function DesktopSidePlayer({
                                     {video.fullName}
                                 </span>
                                 <span className="text-muted-foreground text-sm">
-                                    {formatedTime(video.timestamp)}
+                                    {formatTime(video.timestamp)}
                                 </span>
                             </span>
                         </div>
@@ -386,37 +388,4 @@ export default function DesktopSidePlayer({
             </div>
         </div>
     )
-}
-
-dayjs.extend(relativeTime)
-dayjs.extend(updateLocale)
-
-dayjs.updateLocale("en", {
-    relativeTime: {
-        future: "in %s",
-        past: "%s ago",
-        s: "%d seconds",
-        m: "1 minute",
-        mm: "%dm",
-        h: "1 hour",
-        hh: "%dhrs",
-        d: "1 day",
-        dd: "%d days",
-        M: "1 month",
-        MM: "%d months",
-        y: "1 year",
-        yy: "%d years",
-    },
-})
-
-function formatedTime(timestamp: string) {
-    const date = dayjs(timestamp)
-    const now = dayjs()
-
-    const dateTime = now.diff(date, "day")
-    if (dateTime > 7) {
-        return date.format("MMM D, YYYY")
-    } else {
-        return date.fromNow()
-    }
 }
