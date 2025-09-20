@@ -33,10 +33,10 @@ export function useVideo() {
 
             return {
                 views: views.length,
-                likes: likes.length,
                 shares: shares.length,
                 downloads: downloads.length,
-                bookmarks: bookmarks.length,
+                likes: likes,
+                bookmarks: bookmarks,
                 comments: comments,
                 userLiked: user ? likes.includes(user.uid) : false,
                 userBookmarked: user ? bookmarks.includes(user.uid) : false,
@@ -47,10 +47,10 @@ export function useVideo() {
 
             return {
                 views: 0,
-                likes: 0,
                 shares: 0,
                 downloads: 0,
-                bookmarks: 0,
+                likes: [],
+                bookmarks: [],
                 comments: [],
                 userLiked: false,
                 userBookmarked: false,

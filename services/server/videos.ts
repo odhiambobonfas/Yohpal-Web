@@ -1,12 +1,13 @@
 import { db } from "@/lib/firebase/firebase.admin"
-import { Video } from "#/videos"
-import { replaceWithCDN, serializeTimestamp } from "@/lib/utils"
+import { Video, VideoComment, VideoWithStats } from "#/videos"
+import { replaceWithCDN, serializeTimestamp, recoverThumbnail } from "@/lib/utils"
 import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
+import { DOC } from ".."
 
 const videoRef = db.collection("videos")
 
 export async function getLandingVideos(videoId: string | undefined) {
-    const videos: Video[] = []
+    const videos: VideoWithStats[] = []
 
     if (videoId) {
         const videoDoc = await videoRef.doc(videoId).get()
@@ -16,13 +17,19 @@ export async function getLandingVideos(videoId: string | undefined) {
             if (!videoData) return
             delete videoData["campaignMeta"]
 
+            const videoStats = await getVideoStats(videoId)
+
             const cleanVideoData = {
                 id: videoDoc.id,
                 ...videoData,
                 videoUrl: replaceWithCDN(videoData.videoUrl),
-                thumbnail: replaceWithCDN(videoData.thumbnail) || DEFAULT_THUMBNAIL,
+                thumbnail: recoverThumbnail(
+                    replaceWithCDN(videoData.thumbnail || DEFAULT_THUMBNAIL),
+                    replaceWithCDN(videoData.videoUrl),
+                ),
                 timestamp: serializeTimestamp(videoData.timestamp),
-            } as Video
+                ...videoStats,
+            } as unknown as VideoWithStats
 
             videos.push(cleanVideoData)
         }
@@ -34,22 +41,45 @@ export async function getLandingVideos(videoId: string | undefined) {
         .limit(VIDEO_LIMIT)
         .get()
 
-    const moreVids = videosDocs.docs.map((v) => {
-        // TODO(583fae8a3d42):: find a way to deal with campaignMeta
-        const videoData = v.data()
-        delete videoData["campaignMeta"]
-        return {
-            id: v.id,
-            ...videoData,
-            videoUrl: replaceWithCDN(videoData.videoUrl),
-            thumbnail: replaceWithCDN(videoData.thumbnail) || DEFAULT_THUMBNAIL,
-            timestamp: serializeTimestamp(videoData.timestamp),
-        }
-    }) as Video[]
+    const moreVids = (await Promise.all(
+        videosDocs.docs.map(async (v) => {
+            // TODO(583fae8a3d42):: find a way to deal with campaignMeta
+            const videoData = v.data()
+            delete videoData["campaignMeta"]
+
+            const videoStats = await getVideoStats(v.id)
+            return {
+                id: v.id,
+                ...videoData,
+                videoUrl: replaceWithCDN(videoData.videoUrl),
+                thumbnail: replaceWithCDN(videoData.thumbnail) || DEFAULT_THUMBNAIL,
+                timestamp: serializeTimestamp(videoData.timestamp),
+                ...videoStats,
+            }
+        }),
+    )) as unknown as VideoWithStats[]
 
     videos.push(...moreVids)
 
     return videos
+}
+
+async function getVideoStats(videoId: string) {
+    const [likes, bookmarks, shares, views, comments] = await Promise.all([
+        getVideoLikes(videoId),
+        getVideoBookmarks(videoId),
+        getVideoShares(videoId),
+        getVideoViews(videoId),
+        getVideoComments(videoId),
+    ])
+
+    return {
+        likes,
+        bookmarks,
+        shares,
+        views,
+        comments,
+    }
 }
 
 export async function getUserVideoUploads(userId: string) {
@@ -73,4 +103,70 @@ export async function getUserVideoUploads(userId: string) {
             timestamp: serializeTimestamp(videoData.timestamp),
         }
     }) as Video[]
+}
+
+async function getVideoLikes(videoId: string) {
+    const videoRef = await db
+        .collection("videos")
+        .doc(videoId)
+        .collection("likes")
+        .doc(DOC)
+        .collection("userIds")
+        .get()
+
+    if (videoRef.empty) return []
+
+    return videoRef.docs.map((v) => v.id)
+}
+
+async function getVideoBookmarks(videoId: string) {
+    const videoRef = await db
+        .collection("videos")
+        .doc(videoId)
+        .collection("bookmarks")
+        .doc(DOC)
+        .collection("userIds")
+        .get()
+
+    if (videoRef.empty) return []
+
+    return videoRef.docs.map((v) => v.id)
+}
+
+async function getVideoShares(videoId: string) {
+    const videoRef = await db
+        .collection("videos")
+        .doc(videoId)
+        .collection("shares")
+        .doc(DOC)
+        .collection("userIds")
+        .count()
+        .get()
+
+    return videoRef.data().count ?? 0
+}
+
+async function getVideoViews(videoId: string) {
+    const videoRef = await db
+        .collection("videos")
+        .doc(videoId)
+        .collection("views")
+        .doc(DOC)
+        .collection("userIds")
+        .count()
+        .get()
+
+    return videoRef.data().count ?? 0
+}
+
+async function getVideoComments(videoId: string) {
+    const commentsRef = await db.collection("comments").doc(videoId).collection("messages").get()
+
+    if (commentsRef.empty) return []
+    const comments = commentsRef.docs.map((c) => {
+        const data = c.data()
+        return { id: c.id, ...data, timestamp: serializeTimestamp(data.timestamp) }
+    })
+
+    return comments as unknown as VideoComment[]
 }

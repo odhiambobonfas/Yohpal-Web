@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge"
 
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import { DEFAULT_THUMBNAIL } from "@/constants"
 
 dayjs.extend(relativeTime)
 
@@ -33,6 +34,12 @@ export function replaceWithCDN(link: string): string {
     const regex = new RegExp(`\\b${oldUrl}\\b`, "g")
     const newLink = link.replace(regex, cdnUrl)
     return newLink
+}
+
+// Some video thumbnails point to the same resource as the video
+// we check if they are similar return default thumbnail url instead
+export function recoverThumbnail(thumbnailUrl: string, videoUrl: string) {
+    return thumbnailUrl === videoUrl ? DEFAULT_THUMBNAIL : thumbnailUrl
 }
 
 export function formatTime(timestamp: string) {

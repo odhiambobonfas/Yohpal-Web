@@ -1,4 +1,5 @@
 import { FirebaseTimestamp } from "#/base"
+import { FormEvent } from "react"
 
 export interface Video {
     id: string
@@ -17,6 +18,15 @@ export interface Video {
 
     campaignMeta: CampaignMeta | null
     promoted: boolean
+}
+
+export interface VideoWithStats extends Video {
+    downloads: number
+    shares: number
+    views: number
+    likes: string[]
+    bookmarks: string[]
+    comments: VideoComment[]
 }
 
 export interface CampaignMeta {
@@ -51,4 +61,39 @@ export interface VideoCommentInteraction {
 export interface VideoInteraction {
     userId: string
     videoId: string
+}
+
+export interface InteractionMutationProps {
+    handleComment: (e: FormEvent) => void
+    handleDownload: () => void
+    handleShare: () => void
+    handleBookmark: () => void
+    handleLikeToggle: () => void
+    handleFollowToggle: () => void
+
+    isLoading: boolean
+    error: string | null
+
+    currentStats: {
+        likes: number
+        bookmarks: number
+        shares: number
+        downloads: number
+        views: number
+        comments: VideoComment[]
+        userLiked: boolean
+        userBookmarked: boolean
+    }
+
+    userFollowed: boolean
+    userAuthed: boolean
+    ownerProfilePicture: string
+
+    video: Video
+
+    commentMutation: {
+        text: string
+        setText: (c: string) => void
+        disabled: boolean
+    }
 }

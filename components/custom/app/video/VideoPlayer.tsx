@@ -23,7 +23,7 @@ export default function VideoPlayer({
 }) {
     const videoRef = useRef<HTMLVideoElement | null>(null)
     const [isLoaded, setIsLoaded] = useState(false)
-    const [isMuted, setMuteStatus] = useState(false)
+    const [isMuted, setMuteStatus] = useState(true)
     const [isPlaying, setPlaying] = useState(true)
 
     // load current +- 10
@@ -57,7 +57,7 @@ export default function VideoPlayer({
 
     if (!shouldRender) {
         return (
-            <div className="h-full flex">
+            <div className="h-full flex py-3">
                 <Card className="h-full p-0 m-0 w-full overflow-hidden border-none">
                     <CardContent className="h-full p-0 relative flex items-center justify-center">
                         <Image
@@ -74,17 +74,17 @@ export default function VideoPlayer({
     }
 
     return (
-        <div className="h-full w-full flex m-0 py-3">
-            <Card className="h-full p-0 m-0 w-full overflow-hidden rounded-lg md:rounded-lg">
+        <div className="h-full w-full flex m-0 py-3 px-1">
+            <Card className="h-full p-0 m-0 w-full border-none overflow-hidden rounded-lg md:rounded-lg">
                 <CardContent className="h-full p-0 relative flex items-center justify-center">
                     <Button
-                        className="size-10 absolute top-2 left-2 hover:bg-transparent bg-transparent opacity-80"
+                        className="size-10 z-20 absolute top-2 left-2 hover:bg-transparent bg-transparent opacity-80"
                         onClick={() => setMuteStatus(!isMuted)}
                     >
                         {isMuted ? (
-                            <LucideVolumeOff className="size-5" />
+                            <LucideVolumeOff className="size-5 fill-current" />
                         ) : (
-                            <LucideVolume2 className="size-5" />
+                            <LucideVolume2 className="size-5 fill-current" />
                         )}
                     </Button>
                     {!isPlaying && (
@@ -92,13 +92,13 @@ export default function VideoPlayer({
                             onClick={togglePlayPause}
                             className="size-20 p-2 absolute flex items-center justify-center bg-primary/60 hover:bg-primary/50 rounded-full z-10 transition-opacity duration-300"
                         >
-                            <LucidePlay className="fill-primary-foreground stroke-white size-8" />
+                            <LucidePlay className="fill-white stroke-white size-8" />
                         </Button>
                     )}
                     <video
                         ref={videoRef}
                         src={videoSrc}
-                        className="w-full aspect-9/16 h-full object-cover"
+                        className="w-full h-full object-cover"
                         loop
                         playsInline
                         muted={isMuted}
@@ -106,12 +106,12 @@ export default function VideoPlayer({
                         onLoadedData={() => setIsLoaded(true)}
                     />
                     {!isLoaded && (
-                        <div className="absolute inset-0">
+                        <div className="h-full w-full absolute inset-0">
                             <Image
                                 quality={25}
                                 width={100}
                                 height={100}
-                                src={thumbnail}
+                                src={thumbnail || DEFAULT_THUMBNAIL}
                                 alt="video thumbnail"
                                 className="h-full w-full object-cover"
                             />

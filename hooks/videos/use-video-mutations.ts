@@ -3,6 +3,7 @@ import { useAuth } from "@/providers/Auth"
 import {
     bookmarkVideo,
     commentVideo,
+    deleteCommentAction,
     downloadVideoAction,
     likeVideo,
     shareVideoAction,
@@ -12,7 +13,7 @@ import {
 import { VideoCommentInteraction, VideoInteraction } from "@/types/videos"
 import { useState } from "react"
 
-export default function useVideoMutation() {
+export function useVideoMutation() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const { user, profile } = useAuth()
@@ -109,6 +110,20 @@ export default function useVideoMutation() {
             return { commentId, comment }
         })
     }
+    const deleteComment = async (commentId: string, videoId: string) => {
+        return mutateWithAuth(async () => {
+            await deleteCommentAction(commentId, videoId)
+        })
+    }
 
-    return { loading, error, toggleLike, toggleBookmark, shareVideo, addComment, downloadVideo }
+    return {
+        loading,
+        error,
+        toggleLike,
+        toggleBookmark,
+        deleteComment,
+        shareVideo,
+        addComment,
+        downloadVideo,
+    }
 }

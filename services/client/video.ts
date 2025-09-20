@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase/firebase.browser"
-import { Video, VideoComment } from "#/videos"
+import { Video, VideoComment, VideoWithStats } from "#/videos"
 import {
     and,
     collection,
@@ -14,7 +14,7 @@ import {
     where,
 } from "firebase/firestore"
 import { DOC } from "@/services"
-import { replaceWithCDN, serializeTimestamp } from "@/lib/utils"
+import { recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
 
 export async function getVideos(lastVideoId: string) {
@@ -32,18 +32,45 @@ export async function getVideos(lastVideoId: string) {
 
     const videoDocs = await getDocs(videoDocsQuery)
 
-    const videos = videoDocs.docs.map((v) => {
-        const videoData = v.data()
-        return {
-            id: v.id,
-            ...videoData,
-            thumbnail: replaceWithCDN(videoData.videoUrl) || DEFAULT_THUMBNAIL,
-            videoUrl: replaceWithCDN(videoData.videoUrl),
-            timestamp: serializeTimestamp(videoData.timestamp),
-        }
-    })
+    const videos = await Promise.all(
+        videoDocs.docs.map(async (v) => {
+            const videoData = v.data()
+            const videoStats = await getVideoStats(v.id)
+            return {
+                id: v.id,
+                ...videoData,
+                thumbnail: recoverThumbnail(
+                    replaceWithCDN(videoData.thumbnail || DEFAULT_THUMBNAIL),
+                    replaceWithCDN(videoData.videoUrl),
+                ),
+                videoUrl: replaceWithCDN(videoData.videoUrl),
+                timestamp: serializeTimestamp(videoData.timestamp),
+                ...videoStats,
+            }
+        }),
+    )
 
-    return videos as unknown as Video[]
+    return videos as unknown as VideoWithStats[]
+}
+
+async function getVideoStats(videoId: string) {
+    const [views, likes, bookmarks, shares, downloads, comments] = await Promise.all([
+        getViews(videoId),
+        getLikes(videoId),
+        getBookmarks(videoId),
+        getShares(videoId),
+        getDownloads(videoId),
+        getComments(videoId),
+    ])
+
+    return {
+        views: views.length,
+        shares: shares.length,
+        downloads: downloads.length,
+        likes,
+        bookmarks,
+        comments,
+    }
 }
 
 export async function getViews(videoId: string) {

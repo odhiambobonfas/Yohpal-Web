@@ -21,6 +21,12 @@ export async function commentVideo(interaction: VideoCommentInteraction) {
     return docRef.id
 }
 
+export async function deleteCommentAction(commentId: string, videoId: string) {
+    const commentRef = doc(db, "comments", videoId, "messages", commentId)
+
+    await deleteDoc(commentRef)
+}
+
 export async function likeVideo(interaction: VideoInteraction) {
     const userLikeRef = doc(
         db,

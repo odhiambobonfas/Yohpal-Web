@@ -21,7 +21,7 @@ interface ProfileHeaderProps {
 export default function ProfileHeader({ user, stats, profileType }: ProfileHeaderProps) {
     const [expanded, setExpanded] = useState(false)
     const wordsToShow = 5
-    const words = user?.bio.split(" ") || [""]
+    const words = user?.bio?.split(" ") || [""]
     const isLong = words.length > wordsToShow
     const visibleText = expanded ? words : words.slice(0, wordsToShow).join(" ")
 
