@@ -133,6 +133,7 @@ export async function getUserUploadedVideos(userId: string) {
     const q = query(
         collection(db, "videos"),
         and(where("userId", "==", userId), where("broken", "==", false)),
+        orderBy("timestamp", "desc"),
     )
     const videoDocsRef = await getDocs(q)
     return videoDocsRef.docs.map((v) => ({ id: v.id, ...v.data() })) as unknown as Video[]

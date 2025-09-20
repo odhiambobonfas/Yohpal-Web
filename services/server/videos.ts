@@ -87,6 +87,7 @@ export async function getUserVideoUploads(userId: string) {
         .collection("videos")
         .where("userId", "==", userId)
         .where("broken", "==", false)
+        .orderBy("timestamp", "desc")
         .get()
 
     if (videoUploads.empty) return []
