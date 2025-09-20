@@ -28,9 +28,11 @@ import { toast } from "sonner"
 export function ResponsiveShareDialog({
     children,
     videoId,
+    onAction
 }: {
     videoId: string
     children: React.ReactNode
+    onAction: () => void
 }) {
     const [open, setOpen] = React.useState(false)
     const isMobile = useIsMobile()
@@ -50,6 +52,7 @@ export function ResponsiveShareDialog({
         if (!window) return
         await window.navigator.clipboard.writeText(shareLink)
         toast.success("Link copied to clipboard")
+        onAction()
         setOpen(false)
     }
 

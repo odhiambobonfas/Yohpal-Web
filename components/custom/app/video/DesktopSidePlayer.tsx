@@ -4,7 +4,9 @@ import { FormEvent, useEffect, useState } from "react"
 import { useUser } from "@/hooks/user/use-user"
 import { useVideo } from "@/hooks/videos/use-video"
 import { useAuth } from "@/providers/Auth"
-import useSWR from "swr"
+import { useUserMutation } from "@/hooks/user/use-user-mutation"
+
+import useSWR, { mutate } from "swr"
 import Link from "next/link"
 
 import { Video, VideoComment, VideoCommentInteraction } from "#/videos"
@@ -19,6 +21,10 @@ import CommentsLoading from "@/components/custom/app/comments/CommentsLoading"
 import CommentCard from "@/components/custom/app/comments/CommentCard"
 import NoCommentsCard from "@/components/custom/app/comments/NoCommentsCard"
 import { ResponsiveShareDialog } from "@/components/custom/app/video/ResponsiveShareDialog"
+
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
+import updateLocale from "dayjs/plugin/updateLocale"
 
 import {
     LucideBookmark,
@@ -68,8 +74,14 @@ export default function DesktopSidePlayer({
     const { isAuthenticated, profile } = useAuth()
     const { getProfile, getFollowing } = useUser()
     const { getVideoStats } = useVideo()
+    const {
+        loading: userMutationLoading,
+        error: userMutatioError,
+        toggleFollow,
+    } = useUserMutation()
 
     // optimistic ui updates
+    const [optimisticFollow, setOptimisticFollow] = useState<boolean | null>(null)
     const [optimisticLike, setOptimisticLike] = useState<{ liked: boolean; count: number } | null>(
         null,
     )
@@ -112,7 +124,8 @@ export default function DesktopSidePlayer({
     }, [video.id])
 
     const loading = videoStatsLoading || profileLoading || followingsLoading
-    const isFollowing = (followings && followings.includes(video.userId)) || false
+    const isFollowing =
+        optimisticFollow ?? (followings && followings.includes(video.userId)) ?? false
 
     // current stats with optimistic updates
     const currentStats = {
@@ -126,6 +139,21 @@ export default function DesktopSidePlayer({
         userBookmarked: optimisticBookmark?.bookmarked ?? stats?.userBookmarked ?? false,
     }
 
+    const handleFollowToggle = async () => {
+        if (!isAuthenticated) return
+
+        setOptimisticFollow(!isFollowing)
+
+        const res = await toggleFollow(video.userId, isFollowing)
+
+        if (res) await mutate([`user-following`, profile?.uid])
+
+        if (userMutatioError) {
+            console.error("Failed to follow: ", userMutatioError)
+            setOptimisticFollow(null)
+        }
+        setTimeout(() => setOptimisticFollow(null), 1000)
+    }
     const handleLike = async () => {
         if (!isAuthenticated || !stats) return
 
@@ -272,9 +300,14 @@ export default function DesktopSidePlayer({
 
                         {isAuthenticated && (
                             <Button
-                                className={`rounded-full text-lg px-5 py-2 ${!isFollowing ? "border-primary bg-none" : ""}`}
+                                onClick={handleFollowToggle}
+                                className={`rounded-full text-lg px-5 py-2 ${
+                                    !(optimisticFollow ?? isFollowing)
+                                        ? "border-primary bg-none"
+                                        : ""
+                                }`}
                             >
-                                {isFollowing ? (
+                                {(optimisticFollow ?? isFollowing) ? (
                                     <>
                                         <LucideUserMinus2 /> Unfollow
                                     </>
@@ -312,18 +345,10 @@ export default function DesktopSidePlayer({
                         />
                         {currentStats.likes}
                     </Button>
-                    <Button variant={"ghost"} className="text-foreground">
+                    <Button variant={"ghost"} className="text-muted-foreground">
                         <LucideMessageCircleMore /> {currentStats.comments.length}
                     </Button>
-                    <Button
-                        variant={"ghost"}
-                        className="text-foreground"
-                        onClick={handleShare}
-                        disabled={!isAuthenticated || mutationLoading}
-                    >
-                        <LucideShare2 className="text-emerald-800/60" />
-                        {currentStats.shares}
-                    </Button>
+
                     <Button
                         variant={"ghost"}
                         className={
@@ -337,18 +362,25 @@ export default function DesktopSidePlayer({
                         />
                         {currentStats.bookmarks}
                     </Button>
+                    <ResponsiveShareDialog videoId={video.id} onAction={handleShare}>
+                        <Button
+                            variant={"ghost"}
+                            className="text-foreground"
+                            disabled={mutationLoading}
+                        >
+                            <LucideShare2 className="text-emerald-800/60" />
+                            {currentStats.shares}
+                        </Button>
+                    </ResponsiveShareDialog>
 
                     <Button
                         variant={"ghost"}
                         className="text-foreground"
                         onClick={handleDownload}
-                        disabled={!isAuthenticated || mutationLoading}
+                        disabled={mutationLoading}
                     >
                         <LucideDownload /> {currentStats.downloads}
                     </Button>
-                    <ResponsiveShareDialog videoId={video.id}>
-                        <Button>hello</Button>
-                    </ResponsiveShareDialog>
                 </div>
             </div>
             <div className="h-full py-3 w-full flex gap-3 flex-col">
@@ -362,7 +394,6 @@ export default function DesktopSidePlayer({
                         onChange={(e) => setCommentText(e.target.value)}
                         className="rounded-full p-3 text-lg"
                         placeholder="What's going on..."
-                        disabled={!isAuthenticated || mutationLoading}
                     />
                     <Button
                         type="submit"
