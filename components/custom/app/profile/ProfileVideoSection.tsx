@@ -10,7 +10,7 @@ import {
     LucideEye,
     LucideHeart,
 } from "lucide-react"
-import { Video, VideoWithStats } from "@/types/videos"
+import {VideoWithStats } from "@/types/videos"
 import ProfileVideoLoading from "./ProfileVideoLoading"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from "next/image"

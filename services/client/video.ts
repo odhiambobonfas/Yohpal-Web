@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase/firebase.browser"
-import { Video, VideoComment, VideoWithStats } from "#/videos"
+import {VideoComment, VideoWithStats } from "#/videos"
 import {
     and,
     collection,
