@@ -55,14 +55,18 @@ export default function MobileInteractions({
             </Button>
 
             <CommentDrawer
-                isDisabled={commentMutation.disabled}
+                isDisabled={!video.allowComments || commentMutation.disabled}
                 isLoading={isLoading}
                 comments={currentStats.comments}
                 handleComment={handleComment}
                 commentText={commentMutation.text}
                 setCommentText={commentMutation.setText}
             >
-                <Button className="flex flex-col gap-1 text-white p-2 size-12" variant={"ghost"}>
+                <Button
+                    disabled={!video.allowComments}
+                    className="flex flex-col gap-1 text-white p-2 size-12"
+                    variant={"ghost"}
+                >
                     <LucideMessageCircleMore className="size-7 fill-current" />
                     <span className="text-xs">{currentStats.comments.length}</span>
                 </Button>
@@ -79,7 +83,7 @@ export default function MobileInteractions({
                 <span className="text-xs">{currentStats.bookmarks}</span>
             </Button>
 
-            <ResponsiveShareDialog videoId={"blue"} onAction={handleShare}>
+            <ResponsiveShareDialog videoId={video.id} onAction={handleShare}>
                 <Button className="flex flex-col gap-1 text-white p-2 size-12" variant={"ghost"}>
                     <LucideShare2 className="size-7" />
                     <span className="text-xs">{currentStats.shares}</span>
