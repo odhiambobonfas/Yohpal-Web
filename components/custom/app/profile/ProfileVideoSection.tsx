@@ -166,6 +166,6 @@ function viewProfileVideos(userId: string, videoId: string) {
     const params = new URLSearchParams({
         u: userId,
         v: videoId,
-    })yield
+    })
     return `/?${params.toString()}`
 }
