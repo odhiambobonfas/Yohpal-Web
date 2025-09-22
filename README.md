@@ -1,63 +1,125 @@
-> This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
 ## Getting Started
-First, run the development server:
 
-```bash
-npm/<your_beloved_pkg_manager> install
-npm/<your_beloved_pkg_manager> run dev
+1. **Clone repo**
+```console
+git clone <url>
+git switch -c <your_branch>
 ```
 
+2. **Install dependencies**
+```console
+npm/<your_beloved_pkg_manager> install
+```
+
+3. **Run development server**
+```console
+npm/<your_beloved_pkg_manager> run dev
+```
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+4. **Run linter**
+```console
+npm/<your_beloved_pkg_manager> run lint
+```
+
 
 ## Project Overview
 
 ```
 .
 ├── app
+│   ├── api/
+│   ├── auth/
 │   ├── favicon.ico
 │   ├── globals.css
 │   ├── layout.tsx
+│   ├── not-found.tsx
 │   ├── (organization)/
 │   └── (yohpal)/
 ├── components/
 │   ├── custom/
-│   ├── ThemeProvider.tsx
+│   │   ├── app/
+│   │   └── orgarnization/
 │   └── ui/
 ├── components.json
+├── constants/
 ├── eslint.config.mjs
 ├── hooks/
 ├── lib/
 ├── next.config.ts
 ├── package.json
+├── package-lock.json
 ├── pnpm-lock.yaml
 ├── postcss.config.mjs
-├── public
-│   ├── org/
-│   └── app/
+├── providers/
+├── public/
 ├── README.md
+├── services/
+│   ├── client/
+│   └── server/
 ├── tsconfig.json
 └── types/
 ```
 
 ## Directory Overview
+
 `app/` - Next.js App Router pages and layouts
-- (organization) and (yohpal) are route groups for visual organization
-> [Grouped Routes](https://nextjs.org/docs/app/getting-started/project-structure#route-groups-and-private-folders)
+- (organization) and (yohpal) are route groups for visual organization [^{grouped-routes}]
+
 - `(organization)` contains all organization-related pages
 - `(yohpal)` contains the main application pages
 - `globals.css` provides shared styling across both sections
 
 `components/` - Reusable UI components
 - `custom/` - Custom-built components specific to this project
-- `ui/` - Components from shadcn/ui
+  - `app/` - components specific to `app/` functionality
+  - `organization/` - components used inside organization-related routes
 
-`hooks/` - Custom React hooks
-`lib/` - Utility functions and shared logic
-`public/` - Static assets (accessible via /org/, /app/, etc.)
+- `ui/` - Components sourced and extended from [shadcn/ui](https://ui.shadcn.com)
+
+`constants/` - Centralized constants (app-wide values, enums, and config-like constants)
+
+`hooks/` - Custom React hooks (client-side state and reusable logic)
+
+`lib/` - General-purpose utilities and shared logic (API clients, formatters, helpers, etc.)
+
+`providers/` - React context providers and application-level state management (auth, theme, etc.)
+
+`public/` - Static assets (images, icons, files accessible directly via `/`)
+
+`services/` - Business logic layer
+- `client/` - interacts with Firebase **client SDK** (used in the browser)
+- `server/` - interacts with Firebase **admin SDK** (server-only logic, SSR or API routes)
+
 `types/` - TypeScript type definitions for the entire project
+
+
+## Conventions
+
+### Naming
+- Variables, functions, and parameters: `camelCase`
+- Components, classes, types, and interfaces: `PascalCase`
+- Constants: `UPPER_CASE`
+- Unused variables/params: prefix with `__` (e.g. `__unusedVar`)
+
+### Hooks
+- Group hooks by domain inside subfolders (e.g. `hooks/user/`).
+- **No side effects in `use...` hooks** — they are guaranteed readonly (data fetching, selectors, derived state).
+- **Mutations must be explicit**: hooks that modify state/data must be named with the `Mutation` suffix (e.g. `useUserMutations`).
+
+### Services
+- Business logic **must not leak into components**.
+- Use `services/client` for browser SDK logic, `services/server` for admin/server-side logic.
+
+### Providers
+- Keep global context/state management in `providers/`.
+- Providers should avoid heavy business logic — delegate that to `services/`.
+
 
 ## Learn More
 > [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+>
 > [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+[^{grouped-routes}]: [Grouped Routes](https://nextjs.org/docs/app/getting-started/project-structure#route-groups-and-private-folders)
+
