@@ -37,6 +37,7 @@ export async function getLandingVideos(videoId: string | undefined) {
 
     const videosDocs = await videoRef
         .where("broken", "==", false)
+        .where("privacy", "==", "Everyone")
         .orderBy("timestamp", "desc")
         .limit(VIDEO_LIMIT)
         .get()

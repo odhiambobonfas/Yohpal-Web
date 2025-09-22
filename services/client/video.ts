@@ -27,6 +27,7 @@ export async function getVideos(lastVideoId: string) {
         orderBy(documentId(), "desc"),
         startAfter(lastVideoRef),
         where("broken", "==", false),
+        where("privacy", "==", "Everyone"),
         limit(VIDEO_LIMIT),
     )
 

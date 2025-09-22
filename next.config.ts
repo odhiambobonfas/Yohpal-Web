@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
             },
             {
                 protocol: "http",
-                hostname: "cdn.yohpal.com",
+                hostname: "cdn.stream.yohpal.com",
                 pathname: "/**",
             },
         ],

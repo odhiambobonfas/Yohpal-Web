@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge"
 
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { DEFAULT_THUMBNAIL } from "@/constants"
+import { CDN_URL, DEFAULT_THUMBNAIL, OLD_URL } from "@/constants"
 
 dayjs.extend(relativeTime)
 
@@ -28,11 +28,8 @@ export function serializeTimestamp(timestamp: string | FirebaseTimestamp): strin
 }
 
 export function replaceWithCDN(link: string): string {
-    const oldUrl = "https://firebasestorage.googleapis.com/v0/b/yohlab.firebasestorage.app/o/"
-    const cdnUrl = "http://cdn.yohpal.com/"
-
-    const regex = new RegExp(`\\b${oldUrl}\\b`, "g")
-    const newLink = link.replace(regex, cdnUrl)
+    const regex = new RegExp(`\\b${OLD_URL}\\b`, "g")
+    const newLink = link.replace(regex, CDN_URL)
     return newLink
 }
 
