@@ -145,10 +145,7 @@ export async function getUserVideoUploads(userId: string) {
                 id: v.id,
                 ...videoData,
                 videoUrl: replaceWithCDN(videoData.videoUrl),
-                thumbnail: recoverThumbnail(
-                    replaceWithCDN(videoData.thumbnail || DEFAULT_THUMBNAIL),
-                    replaceWithCDN(videoData.videoUrl),
-                ),
+                thumbnail: recoverThumbnail(videoData.thumbnail),
                 timestamp: serializeTimestamp(videoData.timestamp),
                 ...videoStats,
             }
