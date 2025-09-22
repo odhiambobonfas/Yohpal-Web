@@ -75,8 +75,8 @@ export function useVideo() {
     }
 
     // TODO::(253894320916) - handle infinite scroll for both directions
-    const getPaginatedVideos = async (lastVideoId: string) => {
-        return await getVideos(lastVideoId)
+    const getPaginatedVideos = async (lastVideoId: string, userId: string | undefined) => {
+        return await getVideos(lastVideoId, userId)
     }
     return {
         loading,
