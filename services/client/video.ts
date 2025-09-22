@@ -11,15 +11,20 @@ import {
     orderBy,
     query,
     startAfter,
+    startAt,
     where,
 } from "firebase/firestore"
 import { DOC } from "@/services"
 import { recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
-import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
+import { VIDEO_LIMIT } from "@/constants"
 
-export async function getVideos(lastVideoId: string) {
-    const videosRef = collection(db, "videos")
+const videosRef = collection(db, "videos")
+
+export async function getVideos(lastVideoId: string, userId: string | undefined) {
     const lastVideoRef = await getDoc(doc(videosRef, lastVideoId))
+    if (userId) {
+        return await getVideosFromProfile(userId, lastVideoId)
+    }
 
     const videoDocsQuery = query(
         videosRef,
@@ -27,6 +32,7 @@ export async function getVideos(lastVideoId: string) {
         orderBy(documentId(), "desc"),
         startAfter(lastVideoRef),
         where("broken", "==", false),
+        where("privacy", "==", "Everyone"),
         limit(VIDEO_LIMIT),
     )
 
@@ -39,10 +45,7 @@ export async function getVideos(lastVideoId: string) {
             return {
                 id: v.id,
                 ...videoData,
-                thumbnail: recoverThumbnail(
-                    replaceWithCDN(videoData.thumbnail || DEFAULT_THUMBNAIL),
-                    replaceWithCDN(videoData.videoUrl),
-                ),
+                thumbnail: recoverThumbnail(videoData.thumbnail),
                 videoUrl: replaceWithCDN(videoData.videoUrl),
                 timestamp: serializeTimestamp(videoData.timestamp),
                 ...videoStats,
@@ -51,6 +54,52 @@ export async function getVideos(lastVideoId: string) {
     )
 
     return videos as unknown as VideoWithStats[]
+}
+
+async function getVideosFromProfile(userId: string, videoId: string | undefined) {
+    let videoQuery = query(
+        videosRef,
+        where("userId", "==", userId),
+        where("broken", "==", false),
+        where("privacy", "==", "Everyone"),
+        orderBy("timestamp", "desc"),
+        limit(VIDEO_LIMIT),
+    )
+
+    if (videoId) {
+        const videoDoc = await getDoc(doc(videosRef, videoId))
+        if (videoDoc.exists()) {
+            const videoData = videoDoc.data()
+            videoQuery = query(
+                videosRef,
+                where("userId", "==", userId),
+                where("broken", "==", false),
+                where("privacy", "==", "Everyone"),
+                orderBy("timestamp", "desc"),
+                startAt(videoData.timestamp),
+                limit(VIDEO_LIMIT),
+            )
+        }
+    }
+
+    const videoDocs = await getDocs(videoQuery)
+    if (videoDocs.empty) return []
+
+    return await Promise.all(
+        videoDocs.docs.map(async (v) => {
+            const videoStats = await getVideoStats(v.id)
+            const videoData = v.data()
+            delete videoData["campaignMeta"]
+            return {
+                id: v.id,
+                ...videoData,
+                videoUrl: replaceWithCDN(videoData.videoUrl),
+                thumbnail: recoverThumbnail(videoData.thumbnail),
+                timestamp: serializeTimestamp(videoData.timestamp),
+                ...videoStats,
+            } as VideoWithStats
+        }),
+    )
 }
 
 async function getVideoStats(videoId: string) {

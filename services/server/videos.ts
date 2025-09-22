@@ -6,8 +6,13 @@ import { DOC } from ".."
 
 const videoRef = db.collection("videos")
 
-export async function getLandingVideos(videoId: string | undefined) {
+export async function getLandingVideos(videoId: string | undefined, userId: string | undefined) {
     const videos: VideoWithStats[] = []
+    let fetchedId: string | undefined
+
+    if (userId) {
+        return await getVideosFromProfile(userId, videoId)
+    }
 
     if (videoId) {
         const videoDoc = await videoRef.doc(videoId).get()
@@ -23,13 +28,11 @@ export async function getLandingVideos(videoId: string | undefined) {
                 id: videoDoc.id,
                 ...videoData,
                 videoUrl: replaceWithCDN(videoData.videoUrl),
-                thumbnail: recoverThumbnail(
-                    replaceWithCDN(videoData.thumbnail || DEFAULT_THUMBNAIL),
-                    replaceWithCDN(videoData.videoUrl),
-                ),
+                thumbnail: recoverThumbnail(videoData.thumbnail),
                 timestamp: serializeTimestamp(videoData.timestamp),
                 ...videoStats,
-            } as unknown as VideoWithStats
+            } as VideoWithStats
+            fetchedId = cleanVideoData.id
 
             videos.push(cleanVideoData)
         }
@@ -37,12 +40,15 @@ export async function getLandingVideos(videoId: string | undefined) {
 
     const videosDocs = await videoRef
         .where("broken", "==", false)
+        .where("privacy", "==", "Everyone")
         .orderBy("timestamp", "desc")
         .limit(VIDEO_LIMIT)
         .get()
 
     const moreVids = (await Promise.all(
         videosDocs.docs.map(async (v) => {
+            if (v.id === fetchedId) return null
+
             // TODO(583fae8a3d42):: find a way to deal with campaignMeta
             const videoData = v.data()
             delete videoData["campaignMeta"]
@@ -57,11 +63,47 @@ export async function getLandingVideos(videoId: string | undefined) {
                 ...videoStats,
             }
         }),
-    )) as unknown as VideoWithStats[]
+    )) as (VideoWithStats | null)[]
 
-    videos.push(...moreVids)
+    videos.push(...(moreVids.filter(Boolean) as VideoWithStats[]))
 
     return videos
+}
+
+async function getVideosFromProfile(userId: string, videoId: string | undefined) {
+    let query = videoRef
+        .where("userId", "==", userId)
+        .where("broken", "==", false)
+        .where("privacy", "==", "Everyone")
+        .orderBy("timestamp", "desc")
+
+    if (videoId) {
+        const videoDoc = await videoRef.doc(videoId).get()
+        if (videoDoc.exists) {
+            const videoData = videoDoc.data()
+            query = query.startAt(videoData!.timestamp)
+        }
+    }
+
+    const videoDocs = await query.limit(VIDEO_LIMIT).get()
+    if (videoDocs.empty) return []
+
+    return await Promise.all(
+        videoDocs.docs.map(async (v) => {
+            const videoStats = await getVideoStats(v.id)
+            const videoData = v.data()
+            delete videoData["campaignMeta"]
+
+            return {
+                id: v.id,
+                ...videoData,
+                videoUrl: replaceWithCDN(videoData.videoUrl),
+                thumbnail: recoverThumbnail(videoData.thumbnail),
+                timestamp: serializeTimestamp(videoData.timestamp),
+                ...videoStats,
+            } as VideoWithStats
+        }),
+    )
 }
 
 async function getVideoStats(videoId: string) {

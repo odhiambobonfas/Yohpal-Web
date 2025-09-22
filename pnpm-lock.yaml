@@ -48,7 +48,7 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       dayjs:
-        specifier: ^1.11.18
+        specifier: 1.11.18
         version: 1.11.18
       firebase:
         specifier: 12.2.1

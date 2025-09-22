@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge"
 
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { DEFAULT_THUMBNAIL } from "@/constants"
+import { CDN_URL, DEFAULT_THUMBNAIL, OLD_URL } from "@/constants"
 
 dayjs.extend(relativeTime)
 
@@ -28,18 +28,16 @@ export function serializeTimestamp(timestamp: string | FirebaseTimestamp): strin
 }
 
 export function replaceWithCDN(link: string): string {
-    const oldUrl = "https://firebasestorage.googleapis.com/v0/b/yohlab.firebasestorage.app/o/"
-    const cdnUrl = "http://cdn.yohpal.com/"
-
-    const regex = new RegExp(`\\b${oldUrl}\\b`, "g")
-    const newLink = link.replace(regex, cdnUrl)
+    const regex = new RegExp(`\\b${OLD_URL}\\b`, "g")
+    const newLink = link.replace(regex, CDN_URL)
     return newLink
 }
 
-// Some video thumbnails point to the same resource as the video
-// we check if they are similar return default thumbnail url instead
-export function recoverThumbnail(thumbnailUrl: string, videoUrl: string) {
-    return thumbnailUrl === videoUrl ? DEFAULT_THUMBNAIL : thumbnailUrl
+// if a thumbnail has an mp4 anywhere, skip it, use default one instead
+export function recoverThumbnail(thumbnailUrl: string | undefined) {
+    if (!thumbnailUrl) return DEFAULT_THUMBNAIL
+
+    return thumbnailUrl.includes("mp4") ? DEFAULT_THUMBNAIL : replaceWithCDN(thumbnailUrl)
 }
 
 export function formatTime(timestamp: string) {

@@ -28,7 +28,7 @@ import { toast } from "sonner"
 export function ResponsiveShareDialog({
     children,
     videoId,
-    onAction
+    onAction,
 }: {
     videoId: string
     children: React.ReactNode

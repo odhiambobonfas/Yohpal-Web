@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useVideo } from "@/hooks/videos/use-video"
 import DebugWindow from "@/components/custom/DebugWindow"
 import { useVirtualizer } from "@tanstack/react-virtual"
+import { useSearchParams } from "next/navigation"
 import Interactions from "./Interactions"
 
 const FETCH_TRIGGER_OFFSET = 10
@@ -14,6 +15,9 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
     const [activeId, setActiveId] = useState<string | null>(videos[0]?.id ?? null)
     const [isFetchingNext, setIsFetchingNext] = useState(false)
     const [lastFetchedVideoId, setLastFetchedVideoId] = useState<string | null>(null)
+
+    const searchParams = useSearchParams()
+    const userId = searchParams.get("u") || undefined
 
     const parentRef = useRef<HTMLDivElement | null>(null)
     const { loading, getPaginatedVideos } = useVideo()
@@ -38,13 +42,16 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         setIsFetchingNext(true)
         setLastFetchedVideoId(lastVideo.id)
 
-        const newVideos = await getPaginatedVideos(lastVideo.id)
+        const newVideos = await getPaginatedVideos(lastVideo.id, userId)
         if (newVideos?.length) {
-            setAllVideos((prev) => [...prev, ...newVideos])
+            // skips shared video as its already been watched, no need to show it again
+            const existingIds = new Set(allVideos.map((v) => v.id))
+            const uniqueNewVideos = newVideos.filter((v) => !existingIds.has(v.id))
+            setAllVideos((prev) => [...prev, ...uniqueNewVideos])
         }
 
         setIsFetchingNext(false)
-    }, [allVideos, lastFetchedVideoId, isFetchingNext, loading, getPaginatedVideos])
+    }, [allVideos, lastFetchedVideoId, isFetchingNext, loading, getPaginatedVideos, userId])
 
     useEffect(() => {
         if (loading || isFetchingNext) return

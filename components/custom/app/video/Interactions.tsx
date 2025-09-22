@@ -10,6 +10,7 @@ import useSWR from "swr"
 import DesktopPlayerInteractions from "./DesktopPlayerInteractions"
 import { DEFAULT_THUMBNAIL } from "@/constants"
 import MobileInteractions from "./MobileInteractions"
+import ClientOnly from "../../ClientOnly"
 
 export default function Interactions({ video }: { video: VideoWithStats }) {
     const isMobile = useIsMobile()
@@ -211,21 +212,23 @@ export default function Interactions({ video }: { video: VideoWithStats }) {
     }
 
     return (
-        <DesktopPlayerInteractions
-            handleBookmark={handleBookmark}
-            handleDownload={handleDownload}
-            handleComment={(e: FormEvent) => handleComment(e)}
-            handleShare={handleShare}
-            handleLikeToggle={handleLikeToggle}
-            handleFollowToggle={handleFollowToggle}
-            currentStats={currentStats}
-            isLoading={loading}
-            userAuthed={isAuthenticated}
-            userFollowed={isFollowing}
-            error={mutationError}
-            ownerProfilePicture={ownerProfile?.profile_picture || DEFAULT_THUMBNAIL}
-            video={video}
-            commentMutation={{ disabled: loading, setText: setCommentText, text: commentText }}
-        />
+        <ClientOnly>
+            <DesktopPlayerInteractions
+                handleBookmark={handleBookmark}
+                handleDownload={handleDownload}
+                handleComment={(e: FormEvent) => handleComment(e)}
+                handleShare={handleShare}
+                handleLikeToggle={handleLikeToggle}
+                handleFollowToggle={handleFollowToggle}
+                currentStats={currentStats}
+                isLoading={loading}
+                userAuthed={isAuthenticated}
+                userFollowed={isFollowing}
+                error={mutationError}
+                ownerProfilePicture={ownerProfile?.profile_picture || DEFAULT_THUMBNAIL}
+                video={video}
+                commentMutation={{ disabled: loading, setText: setCommentText, text: commentText }}
+            />
+        </ClientOnly>
     )
 }
