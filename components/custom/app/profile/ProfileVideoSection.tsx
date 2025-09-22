@@ -15,7 +15,7 @@ import ProfileVideoLoading from "./ProfileVideoLoading"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-
+import { useRouter } from "next/navigation"
 interface ProfileVideosSectionProps {
     uploads: VideoWithStats[] | undefined
     liked: VideoWithStats[] | undefined
@@ -111,10 +111,15 @@ function ScrollableVideoPreview({ videos }: { videos: VideoWithStats[] }) {
 }
 
 function ProfileVideoPreview({ videos }: { videos: VideoWithStats[] }) {
+    const router = useRouter()
     return (
         <div className="grid grid-cols-3 md:grid-cols-5 gap-2 p-2">
             {videos.map((v) => (
-                <div key={v.id} className="relative overflow-hidden rounded-lg">
+                <div
+                    key={v.id}
+                    onClick={() => router.push(viewProfileVideos(v.userId, v.id))}
+                    className="relative overflow-hidden rounded-lg"
+                >
                     <Image
                         src={v.thumbnail}
                         width={100}
@@ -122,7 +127,7 @@ function ProfileVideoPreview({ videos }: { videos: VideoWithStats[] }) {
                         alt="thumbnail"
                         className="h-full w-full object-cover"
                     />
-                    <VideoStats video={v}/>
+                    <VideoStats video={v} />
                 </div>
             ))}
         </div>
@@ -155,4 +160,12 @@ function VideoStats({ video }: { video: VideoWithStats }) {
             </Button>
         </div>
     )
+}
+
+function viewProfileVideos(userId: string, videoId: string) {
+    const params = new URLSearchParams({
+        u: userId,
+        v: videoId,
+    })yield
+    return `/?${params.toString()}`
 }
