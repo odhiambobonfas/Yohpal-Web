@@ -18,7 +18,6 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
 
     const searchParams = useSearchParams()
     const userId = searchParams.get("u") || undefined
-    const sharedVideoId = searchParams.get("v") || undefined
 
     const parentRef = useRef<HTMLDivElement | null>(null)
     const { loading, getPaginatedVideos } = useVideo()
