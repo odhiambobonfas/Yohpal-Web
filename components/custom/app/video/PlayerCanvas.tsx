@@ -46,7 +46,9 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         const newVideos = await getPaginatedVideos(lastVideo.id, userId)
         if (newVideos?.length) {
             // skips shared video as its already been watched, no need to show it again
-            setAllVideos((prev) => [...prev, ...newVideos.filter((v) => v.id !== sharedVideoId)])
+            const existingIds = new Set(allVideos.map((v) => v.id))
+            const uniqueNewVideos = newVideos.filter((v) => !existingIds.has(v.id))
+            setAllVideos((prev) => [...prev, ...uniqueNewVideos])
         }
 
         setIsFetchingNext(false)
