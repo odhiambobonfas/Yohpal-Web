@@ -140,7 +140,7 @@ export default function DesktopPlayerInteractions({
                     </Button>
                     <ResponsiveShareDialog videoId={video.id} onAction={handleShare}>
                         <Button variant={"ghost"} className="text-foreground" disabled={isLoading}>
-                            <LucideShare2 className="text-emerald-800/60" />
+                            <LucideShare2 />
                             {currentStats.shares}
                         </Button>
                     </ResponsiveShareDialog>

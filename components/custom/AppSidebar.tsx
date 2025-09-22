@@ -28,6 +28,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
                         <SidebarMenuButton size="lg" asChild className="hover:bg-sidebar">
                             <Link href="/" className="flex items-center gap-2">
                                 <Image
+                                    priority={true}
                                     src="/logo_circular.png"
                                     className="size-8 shrink-0"
                                     width={100}

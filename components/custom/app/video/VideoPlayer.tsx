@@ -6,6 +6,8 @@ import { LucidePlay, LucideVolume2, LucideVolumeOff } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 
+const STORAGE_KEY = "canPlayWithSound"
+
 export default function VideoPlayer({
     videoSrc,
     videoId,
@@ -25,6 +27,30 @@ export default function VideoPlayer({
     const [isLoaded, setIsLoaded] = useState(false)
     const [isMuted, setMuteStatus] = useState(true)
     const [isPlaying, setPlaying] = useState(true)
+
+    useEffect(() => {
+        const saved = localStorage.getItem(STORAGE_KEY)
+        if (saved === "allowed") {
+            setMuteStatus(false)
+        }
+    }, [])
+
+    useEffect(() => {
+        function unlock() {
+            setMuteStatus(false)
+            localStorage.setItem(STORAGE_KEY, "allowed")
+            window.removeEventListener("click", unlock)
+            window.removeEventListener("touchstart", unlock)
+        }
+
+        window.addEventListener("click", unlock)
+        window.addEventListener("touchstart", unlock)
+
+        return () => {
+            window.removeEventListener("click", unlock)
+            window.removeEventListener("touchstart", unlock)
+        }
+    }, [])
 
     // load current +- 10
     const shouldRender = Math.abs(index - activeIndex) <= 10

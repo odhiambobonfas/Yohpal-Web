@@ -40,10 +40,7 @@ export async function getVideos(lastVideoId: string) {
             return {
                 id: v.id,
                 ...videoData,
-                thumbnail: recoverThumbnail(
-                    replaceWithCDN(videoData.thumbnail || DEFAULT_THUMBNAIL),
-                    replaceWithCDN(videoData.videoUrl),
-                ),
+                thumbnail: recoverThumbnail(videoData.thumbnail),
                 videoUrl: replaceWithCDN(videoData.videoUrl),
                 timestamp: serializeTimestamp(videoData.timestamp),
                 ...videoStats,

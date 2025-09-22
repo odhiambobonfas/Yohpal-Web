@@ -33,10 +33,11 @@ export function replaceWithCDN(link: string): string {
     return newLink
 }
 
-// Some video thumbnails point to the same resource as the video
-// we check if they are similar return default thumbnail url instead
-export function recoverThumbnail(thumbnailUrl: string, videoUrl: string) {
-    return thumbnailUrl === videoUrl ? DEFAULT_THUMBNAIL : thumbnailUrl
+// if a thumbnail has an mp4 anywhere, skip it, use default one instead
+export function recoverThumbnail(thumbnailUrl: string | undefined) {
+    if (!thumbnailUrl) return DEFAULT_THUMBNAIL
+
+    return thumbnailUrl.includes("mp4") ? DEFAULT_THUMBNAIL : replaceWithCDN(thumbnailUrl)
 }
 
 export function formatTime(timestamp: string) {

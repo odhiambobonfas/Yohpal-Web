@@ -23,10 +23,7 @@ export async function getLandingVideos(videoId: string | undefined) {
                 id: videoDoc.id,
                 ...videoData,
                 videoUrl: replaceWithCDN(videoData.videoUrl),
-                thumbnail: recoverThumbnail(
-                    replaceWithCDN(videoData.thumbnail || DEFAULT_THUMBNAIL),
-                    replaceWithCDN(videoData.videoUrl),
-                ),
+                thumbnail: recoverThumbnail(videoData.thumbnail),
                 timestamp: serializeTimestamp(videoData.timestamp),
                 ...videoStats,
             } as unknown as VideoWithStats
