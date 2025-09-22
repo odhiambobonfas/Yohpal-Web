@@ -161,8 +161,16 @@ export async function getDownloads(videoId: string) {
 export async function getVideo(videoId: string) {
     const videoDocRef = doc(db, "videos", videoId)
     const videoDoc = await getDoc(videoDocRef)
+
     if (!videoDoc.exists()) return null
-    return { id: videoDoc.id, ...videoDoc.data() } as unknown as Video
+
+    const videoStats = await getVideoStats(videoId)
+
+    return {
+        id: videoDoc.id,
+        ...videoDoc.data(),
+        ...videoStats,
+    } as unknown as VideoWithStats
 }
 
 export async function getComments(videoId: string) {
@@ -185,7 +193,13 @@ export async function getUserUploadedVideos(userId: string) {
         orderBy("timestamp", "desc"),
     )
     const videoDocsRef = await getDocs(q)
-    return videoDocsRef.docs.map((v) => ({ id: v.id, ...v.data() })) as unknown as Video[]
+    const videos = await Promise.all(
+        videoDocsRef.docs.map(async (v) => {
+            const videoStats = await getVideoStats(v.id)
+            return { id: v.id, ...v.data(), ...videoStats }
+        }),
+    )
+    return videos as unknown as VideoWithStats[]
 }
 
 export async function getMultiVideosData(videoIds: string[]) {

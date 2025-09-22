@@ -134,18 +134,28 @@ export async function getUserVideoUploads(userId: string) {
 
     if (videoUploads.empty) return []
 
-    // TODO::(583fae8a3d42)
-    return videoUploads.docs.map((v) => {
-        const videoData = v.data()
-        delete videoData["campaignMeta"]
-        return {
-            id: v.id,
-            ...videoData,
-            videoUrl: replaceWithCDN(videoData.videoUrl),
-            thumbnail: replaceWithCDN(videoData.thumbnail) || DEFAULT_THUMBNAIL,
-            timestamp: serializeTimestamp(videoData.timestamp),
-        }
-    }) as Video[]
+    const videos = await Promise.all(
+        videoUploads.docs.map(async (v) => {
+            const videoData = v.data()
+            delete videoData["campaignMeta"]
+
+            const videoStats = await getVideoStats(v.id)
+
+            return {
+                id: v.id,
+                ...videoData,
+                videoUrl: replaceWithCDN(videoData.videoUrl),
+                thumbnail: recoverThumbnail(
+                    replaceWithCDN(videoData.thumbnail || DEFAULT_THUMBNAIL),
+                    replaceWithCDN(videoData.videoUrl),
+                ),
+                timestamp: serializeTimestamp(videoData.timestamp),
+                ...videoStats,
+            }
+        }),
+    )
+
+    return videos as unknown as VideoWithStats[]
 }
 
 async function getVideoLikes(videoId: string) {
