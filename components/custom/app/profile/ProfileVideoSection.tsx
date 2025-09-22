@@ -10,7 +10,7 @@ import {
     LucideEye,
     LucideHeart,
 } from "lucide-react"
-import {VideoWithStats } from "@/types/videos"
+import { VideoWithStats } from "@/types/videos"
 import ProfileVideoLoading from "./ProfileVideoLoading"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from "next/image"
@@ -118,7 +118,7 @@ function ProfileVideoPreview({ videos }: { videos: VideoWithStats[] }) {
                 <div
                     key={v.id}
                     onClick={() => router.push(viewProfileVideos(v.userId, v.id))}
-                    className="relative overflow-hidden rounded-lg"
+                    className="relative overflow-hidden rounded-lg cursor-pointer"
                 >
                     <Image
                         src={v.thumbnail}
