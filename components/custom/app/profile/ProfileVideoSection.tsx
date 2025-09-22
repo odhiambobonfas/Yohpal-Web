@@ -1,18 +1,27 @@
 "use client"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Upload, Heart, Bookmark, History, LucideUpload, LucideBan } from "lucide-react"
-import { Video } from "@/types/videos"
+import {
+    Upload,
+    Heart,
+    Bookmark,
+    History,
+    LucideUpload,
+    LucideBan,
+    LucideEye,
+    LucideHeart,
+} from "lucide-react"
+import { Video, VideoWithStats } from "@/types/videos"
 import ProfileVideoLoading from "./ProfileVideoLoading"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from "next/image"
+import { Button } from "@/components/ui/button"
 
 interface ProfileVideosSectionProps {
-    uploads: Video[] | undefined
-    liked: Video[] | undefined
-    bookmarked: Video[] | undefined
-    history: Video[] | undefined
+    uploads: VideoWithStats[] | undefined
+    liked: VideoWithStats[] | undefined
+    bookmarked: VideoWithStats[] | undefined
+    history: VideoWithStats[] | undefined
 }
-
 export default function ProfileVideosSection({
     loading,
     videos,
@@ -93,7 +102,7 @@ export default function ProfileVideosSection({
     )
 }
 
-function ScrollableVideoPreview({ videos }: { videos: Video[] }) {
+function ScrollableVideoPreview({ videos }: { videos: VideoWithStats[] }) {
     return (
         <ScrollArea className="h-[70svh]">
             <ProfileVideoPreview videos={videos} />
@@ -101,11 +110,11 @@ function ScrollableVideoPreview({ videos }: { videos: Video[] }) {
     )
 }
 
-function ProfileVideoPreview({ videos }: { videos: Video[] }) {
+function ProfileVideoPreview({ videos }: { videos: VideoWithStats[] }) {
     return (
         <div className="grid grid-cols-3 md:grid-cols-5 gap-2 p-2">
             {videos.map((v) => (
-                <div key={v.id} className="overflow-hidden rounded-lg">
+                <div key={v.id} className="relative overflow-hidden rounded-lg">
                     <Image
                         src={v.thumbnail}
                         width={100}
@@ -113,6 +122,7 @@ function ProfileVideoPreview({ videos }: { videos: Video[] }) {
                         alt="thumbnail"
                         className="h-full w-full object-cover"
                     />
+                    <VideoStats video={v}/>
                 </div>
             ))}
         </div>
@@ -128,6 +138,21 @@ function ProfileNoVideos() {
                     no videos
                 </span>
             </div>
+        </div>
+    )
+}
+
+function VideoStats({ video }: { video: VideoWithStats }) {
+    return (
+        <div className="flex justify-around absolute bottom-2 w-full">
+            <Button className="bg-transparent">
+                <LucideHeart />
+                <span>{video.likes.length}</span>
+            </Button>
+            <Button className="bg-transparent">
+                <LucideEye />
+                <span>{video.views}</span>
+            </Button>
         </div>
     )
 }
