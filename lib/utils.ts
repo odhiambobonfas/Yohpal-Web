@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge"
 
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { CDN_URL, DEFAULT_THUMBNAIL, OLD_URL } from "@/constants"
+import {  DEFAULT_THUMBNAIL } from "@/constants"
 
 dayjs.extend(relativeTime)
 
@@ -28,9 +28,10 @@ export function serializeTimestamp(timestamp: string | FirebaseTimestamp): strin
 }
 
 export function replaceWithCDN(link: string): string {
-    const regex = new RegExp(`\\b${OLD_URL}\\b`, "g")
-    const newLink = link.replace(regex, CDN_URL)
-    return newLink
+    return link
+    // const regex = new RegExp(`\\b${OLD_URL}\\b`, "g")
+    // const newLink = link.replace(regex, CDN_URL)
+    // return newLink
 }
 
 // if a thumbnail has an mp4 anywhere, skip it, use default one instead
