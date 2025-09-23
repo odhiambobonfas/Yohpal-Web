@@ -45,7 +45,7 @@ export default function DesktopPlayerInteractions({
 }: InteractionMutationProps) {
     return (
         <div className="w-6/12 px-3 gap-3 flex flex-col h-full">
-            <Card className="w-full m-0 p-0 min-h-28">
+            <Card className="w-full m-0 p-0 ">
                 <CardContent className="w-full p-4">
                     <div className="inline-flex items-center gap-4 justify-between w-full">
                         <div className="w-4/6 inline-flex items-center gap-2">
@@ -96,7 +96,9 @@ export default function DesktopPlayerInteractions({
                         )}
                     </div>
                     {video.caption && (
-                        <p className="py-2 text-foreground text-lg">{video.caption}</p>
+                        <div className="py-2 text-foreground text-lg max-h-24 overflow-y-auto">
+                            {video.caption}
+                        </div>
                     )}
                     <div className="inline-flex gap-2">
                         {video.tags && video.tags.map((t, idx) => <span key={idx}>{t}</span>)}
@@ -155,7 +157,7 @@ export default function DesktopPlayerInteractions({
                     </Button>
                 </div>
             </div>
-            <div className="h-full py-3 w-full flex gap-3 flex-col">
+            <div className="h-120 py-3 w-full flex gap-3 flex-col">
                 <form
                     onSubmit={handleComment}
                     className="inline-flex w-full items-center gap-2 h-10"
