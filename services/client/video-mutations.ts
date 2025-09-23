@@ -177,3 +177,29 @@ export async function downloadVideoAction(interaction: VideoInteraction) {
         setDoc(videoDownloadsRef, { userId: interaction.userId, timestamp: serverTimestamp() }),
     ])
 }
+
+export async function updateViewAction(interaction: VideoInteraction) {
+    const userVideoWatchRef = doc(
+        db,
+        "users",
+        interaction.userId,
+        "watched",
+        DOC,
+        "videoIds",
+        interaction.videoId,
+    )
+    const videoWatchRef = doc(
+        db,
+        "videos",
+        interaction.videoId,
+        "views",
+        DOC,
+        "userIds",
+        interaction.userId,
+    )
+
+    await Promise.all([
+        setDoc(userVideoWatchRef, { videoId: interaction.videoId, timestamp: serverTimestamp() }),
+        setDoc(videoWatchRef, { userId: interaction.userId, timestamp: serverTimestamp() }),
+    ])
+}

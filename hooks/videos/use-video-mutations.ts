@@ -9,6 +9,7 @@ import {
     shareVideoAction,
     unbookmarkVideo,
     unlikeVideo,
+    updateViewAction,
 } from "@/services/client/video-mutations"
 import { VideoCommentInteraction, VideoInteraction } from "@/types/videos"
 import { useState } from "react"
@@ -95,6 +96,10 @@ export function useVideoMutation() {
         })
     }
 
+    const addView = async (videoId: string, userId: string | undefined) => {
+        if (userId) await updateViewAction({ videoId, userId })
+    }
+
     const addComment = async (videoId: string, text: string) => {
         return mutateWithAuth(async () => {
             const comment: VideoCommentInteraction = {
@@ -110,6 +115,7 @@ export function useVideoMutation() {
             return { commentId, comment }
         })
     }
+
     const deleteComment = async (commentId: string, videoId: string) => {
         return mutateWithAuth(async () => {
             await deleteCommentAction(commentId, videoId)
@@ -125,5 +131,6 @@ export function useVideoMutation() {
         shareVideo,
         addComment,
         downloadVideo,
+        addView,
     }
 }
