@@ -8,7 +8,7 @@ import {
     SidebarRail,
 } from "@/components/ui/sidebar"
 import React from "react"
-import { LucideAlbum, LucideHome, LucideGlobeLock } from "lucide-react"
+import { LucideAlbum, LucideHome, LucideGlobeLock, LucideScrollText } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -16,6 +16,7 @@ const navItems = [
     { icon: LucideHome, title: "Home", link: "/" },
     { icon: LucideAlbum, title: "About Us", link: "/about" },
     { icon: LucideGlobeLock, title: "Privacy Policy", link: "/privacy" },
+    { icon: LucideScrollText, title: "Terms & Conditions", link: "/terms" },
 ]
 
 export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

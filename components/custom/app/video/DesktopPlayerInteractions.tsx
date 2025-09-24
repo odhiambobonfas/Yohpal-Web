@@ -95,6 +95,10 @@ export default function DesktopPlayerInteractions({
                             </Button>
                         )}
                     </div>
+                    <span className="text-sm text-muted-foreground font-semibold">
+                        {video.title || "Yohpal monetizing Creativity"}
+                    </span>
+
                     {video.caption && (
                         <div className="py-2 text-foreground text-lg max-h-24 overflow-y-auto">
                             {video.caption}
