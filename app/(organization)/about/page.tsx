@@ -330,7 +330,7 @@ export default function Page() {
             {/* footer section */}
             <footer className="flex flex-col dark:bg-secondary items-center justify-center">
                 <div className="border-t-2 w-fit flex flex-col items-center p-3 capitalize">
-                    <span className="inline-flex gap-2 items-center">
+                    <span className="inline-flex gap-2 items-center text-xs">
                         <LucideCopyright className="size-5" /> Copyright {new Date().getFullYear()}
                         <b>Yohpal International</b> All rights reserved
                     </span>
