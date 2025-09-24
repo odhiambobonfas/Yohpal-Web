@@ -41,6 +41,7 @@ export function ResponsiveShareDialog({
     React.useEffect(() => {
         if (typeof window !== "undefined") {
             const currentUrl = new URL(window.location.href)
+            currentUrl.searchParams.delete("u")
             currentUrl.searchParams.set("v", videoId)
             setShareLink(currentUrl.toString())
         }

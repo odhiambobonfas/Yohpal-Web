@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { FormEvent, useState } from "react"
 import { useEmailAuth } from "@/hooks/auth/use-email-auth"
-import { LucideLoader } from "lucide-react"
+import { LucideEye, LucideEyeOff, LucideLoader } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 export default function Page() {
@@ -27,6 +27,7 @@ export default function Page() {
         if (success) router.push("/")
     }
 
+    const [showPassword, setShowPassword] = useState(false)
     return (
         <div className="h-screen flex items-center justify-center">
             <div className="w-full md:w-4/6 min-h-full md:min-h-[40svh] drop-shadow-2xl rounded-lg bg-background grid grid-cols-1 md:grid-cols-2 overflow-hidden">
@@ -49,13 +50,26 @@ export default function Page() {
                         </div>
                         <div className="flex flex-col gap-2">
                             <Label htmlFor="password">Password</Label>
-                            <Input
-                                onChange={(e) => setPassword(e.target.value)}
-                                type="password"
-                                placeholder="password"
-                                required
-                                className="text-lg"
-                            />
+                            <div className="relative">
+                                <Input
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="password"
+                                    required
+                                    className="text-lg pr-10" // extra padding so text doesn't overlap icon
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-3 flex items-center text-muted-foreground"
+                                >
+                                    {showPassword ? (
+                                        <LucideEyeOff size={20} />
+                                    ) : (
+                                        <LucideEye size={20} />
+                                    )}
+                                </button>
+                            </div>
                         </div>
                         <Button className="w-full text-primary-foreground font-semibold text-lg p-3">
                             {loading && <LucideLoader className="animate-spin" />}
