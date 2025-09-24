@@ -8,7 +8,6 @@ import { useVirtualizer } from "@tanstack/react-virtual"
 import { useSearchParams } from "next/navigation"
 import Interactions from "./Interactions"
 import { useVideoMutation } from "@/hooks/videos/use-video-mutations"
-import { useUser } from "@/hooks/user/use-user"
 import { useAuth } from "@/providers/Auth"
 
 const FETCH_TRIGGER_OFFSET = 10
@@ -24,7 +23,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
     const userId = searchParams.get("u") || undefined
 
     const parentRef = useRef<HTMLDivElement | null>(null)
-    const { loading, getPaginatedVideos } = useVideo()
+    const { loading, getClientPaginatedVideos } = useVideo(user?.uid)
     const { addView } = useVideoMutation()
 
     const estimateSize = () => parentRef.current?.clientHeight ?? 850
@@ -47,7 +46,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         setIsFetchingNext(true)
         setLastFetchedVideoId(lastVideo.id)
 
-        const newVideos = await getPaginatedVideos(lastVideo.id, userId)
+        const newVideos = await getClientPaginatedVideos(lastVideo.id)
         if (newVideos?.length) {
             // skips shared video as its already been watched, no need to show it again
             const existingIds = new Set(allVideos.map((v) => v.id))
@@ -56,7 +55,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         }
 
         setIsFetchingNext(false)
-    }, [allVideos, lastFetchedVideoId, isFetchingNext, loading, getPaginatedVideos, userId])
+    }, [allVideos, lastFetchedVideoId, isFetchingNext, loading, getClientPaginatedVideos, userId])
 
     useEffect(() => {
         if (loading || isFetchingNext) return

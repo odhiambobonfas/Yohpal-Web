@@ -9,7 +9,7 @@ async function loginWithEmailAndPassword(user: AuthUser) {
 
 async function signUpWithEmailAndPassword(user: AuthUser) {
     const userCredentials = await createUserWithEmailAndPassword(auth, user.email, user.password)
-    return userCredentials
+    return userCredentials.user
 }
 
 async function logout() {

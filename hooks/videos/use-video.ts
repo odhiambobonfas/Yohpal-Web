@@ -1,6 +1,5 @@
 import { Video } from "#/videos"
 import { getError } from "@/lib/utils"
-import { useAuth } from "@/providers/Auth"
 import {
     getBookmarks,
     getComments,
@@ -13,12 +12,11 @@ import {
 } from "@/services/client/video"
 import { useState } from "react"
 
-export function useVideo() {
+export function useVideo(userId: string | undefined) {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const { user } = useAuth()
 
-    const getVideoStats = async (videoId: string) => {
+    const getClientVideoStats = async (videoId: string) => {
         try {
             setLoading(true)
             setError(null)
@@ -38,8 +36,8 @@ export function useVideo() {
                 likes: likes,
                 bookmarks: bookmarks,
                 comments: comments,
-                userLiked: user ? likes.includes(user.uid) : false,
-                userBookmarked: user ? bookmarks.includes(user.uid) : false,
+                userLiked: userId ? likes.includes(userId) : false,
+                userBookmarked: userId ? bookmarks.includes(userId) : false,
             }
         } catch (e) {
             const errorMsg = getError(e)
@@ -75,14 +73,14 @@ export function useVideo() {
     }
 
     // TODO::(253894320916) - handle infinite scroll for both directions
-    const getPaginatedVideos = async (lastVideoId: string, userId: string | undefined) => {
+    const getClientPaginatedVideos = async (lastVideoId: string) => {
         return await getVideos(lastVideoId, userId)
     }
     return {
         loading,
         error,
         singleVideo,
-        getVideoStats,
-        getPaginatedVideos,
+        getClientVideoStats,
+        getClientPaginatedVideos,
     }
 }
