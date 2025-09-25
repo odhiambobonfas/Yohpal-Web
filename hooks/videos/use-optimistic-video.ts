@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useState } from "react"
 
 import { OptimisticVideoState, VideoComment, VideoWithStats } from "#/videos"
 
@@ -11,30 +11,6 @@ export default function useOptimisticVideo(
     const [optimisticStates, setOptimisticStates] = useState<Map<string, OptimisticVideoState>>(
         new Map(),
     )
-
-    useEffect(() => {
-        setOptimisticStates((prev) => {
-            if (prev.has(activeVideo.id)) return prev
-            const base: OptimisticVideoState = {
-                likes: {
-                    liked: activeVideo.likes.includes(userId ?? ""),
-                    count: activeVideo.likes.length,
-                },
-                bookmarks: {
-                    bookmarked: activeVideo.bookmarks.includes(userId ?? ""),
-                    count: activeVideo.bookmarks.length,
-                },
-                shares: activeVideo.shares,
-                views: activeVideo.views,
-                downloads: activeVideo.downloads,
-                comments: activeVideo.comments ?? [],
-                following: followings?.includes(activeVideo.userId) ?? false,
-            }
-            const newMap = new Map(prev)
-            newMap.set(activeVideo.id, base)
-            return newMap
-        })
-    }, [activeVideo, userId, followings])
 
     const updateOptimisticState = useCallback(
         (videoId: string, update: Partial<OptimisticVideoState>) => {
@@ -62,7 +38,7 @@ export default function useOptimisticVideo(
             shares: optimist?.shares ?? activeVideo.shares ?? 0,
             views: optimist?.views ?? activeVideo.views ?? 0,
             downloads: optimist?.downloads ?? activeVideo.downloads ?? 0,
-            comments: optimist?.comments ?? activeVideo.comments,
+            comments: [...(optimist?.comments ?? []), ...(activeVideo.comments ?? [])],
             userBookmarked: userBookmarked,
             userLiked: userLiked,
             isFollowing: isFollowing,
