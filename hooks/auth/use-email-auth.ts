@@ -1,15 +1,15 @@
 import { useState } from "react"
 
 import { AuthUser } from "#/users"
+import { createCookie } from "@/actions/cookies"
+import { createSession, destroySession } from "@/actions/session"
+import { COOKIES } from "@/constants"
+import { getError } from "@/lib/utils"
 import {
     loginWithEmailAndPassword,
-    signUpWithEmailAndPassword,
     logout,
+    signUpWithEmailAndPassword,
 } from "@/services/client/auth"
-import { getError } from "@/lib/utils"
-import { createSession, destroySession } from "@/actions/session"
-import { createCookie } from "@/actions/cookies"
-import { COOKIES } from "@/constants"
 
 export function useEmailAuth() {
     const [loading, setLoading] = useState(false)
