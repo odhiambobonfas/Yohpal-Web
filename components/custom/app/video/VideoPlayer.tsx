@@ -1,11 +1,11 @@
 "use client"
-import { LucidePlay, LucideVolume2, LucideVolumeOff } from "lucide-react"
-import Image from "next/image"
-import { useEffect, useRef, useState } from "react"
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { DEFAULT_THUMBNAIL } from "@/constants"
+import { useAutoPauseVideo } from "@/hooks/videos/auto-pause-video"
+import { LucidePlay, LucideVolume2, LucideVolumeOff } from "lucide-react"
+import Image from "next/image"
+import { useEffect, useRef, useState } from "react"
 
 const STORAGE_KEY = "canPlayWithSound"
 
@@ -56,6 +56,7 @@ export default function VideoPlayer({
     // load current +- 10
     const shouldRender = Math.abs(index - activeIndex) <= 10
     const isActive = activeVideoId === videoId
+    useAutoPauseVideo(videoRef, { id: videoId, isActive, unloadOnPause: false })
 
     useEffect(() => {
         const el = videoRef.current

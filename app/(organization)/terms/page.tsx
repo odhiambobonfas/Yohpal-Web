@@ -1,6 +1,6 @@
 export default function Page() {
     return (
-        <div className="flex flex-col justify-center w-full items-center p-6">
+        <div className="flex flex-col justify-center w-full items-center p-6 mt-5">
             <h1 className="text-3xl font-semibold mb-2">Terms and Conditions</h1>
             <h1 className="text-2xl font-semibold mb-8 text-center">
                 YOHPAL GENERAL TERMS AND CONDITIONS
@@ -184,7 +184,7 @@ export default function Page() {
                         Protection Officer via{" "}
                         <a
                             href="mailto:support@yohpal.com"
-                            className="text-blue-600 hover:underline"
+                            className="text-primary hover:underline"
                         >
                             support@yohpal.com
                         </a>
@@ -283,14 +283,14 @@ export default function Page() {
                     </p>
                 </div>
 
-                <div className="bg-gray-50 p-6 rounded-lg">
+                <div className="bg-background p-6 rounded-lg border-2">
                     <h2 className="text-xl font-semibold mb-4">
                         For Inquiries And Official Correspondence, Please Contact:
                     </h2>
                     <div className="space-y-2">
                         <p className="text-muted-foreground">
                             <strong>Phone:</strong>{" "}
-                            <a href="tel:+254758873938" className="text-blue-600 hover:underline">
+                            <a href="tel:+254758873938" className="text-primary hover:underline">
                                 +254 758 873 938
                             </a>
                         </p>
@@ -298,7 +298,7 @@ export default function Page() {
                             <strong>Email:</strong>{" "}
                             <a
                                 href="mailto:support@yohpal.com"
-                                className="text-blue-600 hover:underline"
+                                className="text-primary hover:underline"
                             >
                                 support@yohpal.com
                             </a>
@@ -308,7 +308,7 @@ export default function Page() {
                         </p>
                     </div>
                     <div className="mt-6 text-center">
-                        <p className="text-lg font-semibold text-blue-600">
+                        <p className="text-lg font-semibold text-primary">
                             Yohpal: Monetizing Creativity
                         </p>
                     </div>
