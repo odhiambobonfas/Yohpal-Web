@@ -1,4 +1,6 @@
 "use client"
+import { useState } from "react"
+
 import { getError } from "@/lib/utils"
 import {
     getBookmarkedVideos,
@@ -10,7 +12,6 @@ import {
     getWatchedVideos,
 } from "@/services/client/user"
 import { getUserUploadedVideos } from "@/services/client/video"
-import { useState } from "react"
 
 export function useUser() {
     const [loading, setLoading] = useState(false)

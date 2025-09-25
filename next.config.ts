@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
                 pathname: "/v0/b/yohlab.firebasestorage.app/o/**",
             },
             {
-                protocol: "http",
+                protocol: "https",
                 hostname: "cdn.stream.yohpal.com",
                 pathname: "/**",
             },

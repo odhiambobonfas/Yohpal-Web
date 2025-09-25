@@ -1,8 +1,9 @@
+import Link from "next/link"
+
 import { VideoComment } from "#/videos"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatTime, serializeTimestamp } from "@/lib/utils"
-import Link from "next/link"
 
 export default function CommentCard({ comment }: { comment: VideoComment }) {
     return (

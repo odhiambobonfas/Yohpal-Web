@@ -1,5 +1,6 @@
-import { FirebaseTimestamp } from "#/base"
 import { FormEvent } from "react"
+
+import { FirebaseTimestamp } from "#/base"
 
 export interface Video {
     id: string
@@ -96,4 +97,14 @@ export interface InteractionMutationProps {
         setText: (c: string) => void
         disabled: boolean
     }
+}
+
+export interface OptimisticVideoState {
+    likes?: { liked: boolean; count: number }
+    bookmarks?: { bookmarked: boolean; count: number }
+    views?: number
+    shares?: number
+    downloads?: number
+    comments?: VideoComment[]
+    following?: boolean
 }

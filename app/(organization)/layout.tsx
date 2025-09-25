@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import "@/app/globals.css"
 import NavHeader from "@/components/custom/orgarnization/NavHeader"
 

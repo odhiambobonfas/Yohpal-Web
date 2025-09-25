@@ -1,10 +1,11 @@
-import type { Metadata } from "next"
 import "@/app/globals.css"
-import { Toaster } from "sonner"
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import AppSidebar from "@/components/custom/AppSidebar"
 import { Separator } from "@radix-ui/react-separator"
+import type { Metadata } from "next"
+import { Toaster } from "sonner"
+
+import AppSidebar from "@/components/custom/AppSidebar"
 import UserDropDown from "@/components/custom/app/UserDropDown"
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 
 export const metadata: Metadata = {
     title: "Yohpal",

@@ -1,6 +1,7 @@
+import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore"
+
 import { db } from "@/lib/firebase/firebase.browser"
 import { VideoCommentInteraction, VideoInteraction } from "#/videos"
-import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore"
 import { DOC } from "@/services"
 
 export async function commentVideo(interaction: VideoCommentInteraction) {
@@ -175,5 +176,31 @@ export async function downloadVideoAction(interaction: VideoInteraction) {
     await Promise.all([
         setDoc(userDownloadsRef, { videoId: interaction.videoId, timestamp: serverTimestamp() }),
         setDoc(videoDownloadsRef, { userId: interaction.userId, timestamp: serverTimestamp() }),
+    ])
+}
+
+export async function updateViewAction(interaction: VideoInteraction) {
+    const userVideoWatchRef = doc(
+        db,
+        "users",
+        interaction.userId,
+        "watched",
+        DOC,
+        "videoIds",
+        interaction.videoId,
+    )
+    const videoWatchRef = doc(
+        db,
+        "videos",
+        interaction.videoId,
+        "views",
+        DOC,
+        "userIds",
+        interaction.userId,
+    )
+
+    await Promise.all([
+        setDoc(userVideoWatchRef, { videoId: interaction.videoId, timestamp: serverTimestamp() }),
+        setDoc(videoWatchRef, { userId: interaction.userId, timestamp: serverTimestamp() }),
     ])
 }

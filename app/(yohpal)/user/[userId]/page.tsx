@@ -1,7 +1,7 @@
 import ProfileHeader from "@/components/custom/app/profile/ProfileHeader"
+import ProfileHeaderLoading from "@/components/custom/app/profile/ProfileHeaderLoading"
+import ProfileVideoLoading from "@/components/custom/app/profile/ProfileVideoLoading"
 import ProfileVideosSection from "@/components/custom/app/profile/ProfileVideoSection"
-import { getUserProfile, getUserProfileStats } from "@/services/server/user"
-import { getUserVideoUploads } from "@/services/server/videos"
 import {
     AlertDialog,
     AlertDialogContent,
@@ -10,10 +10,12 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { getUserProfile } from "@/services/client/user"
+import { getUserProfileStats } from "@/services/server/user"
+import { getUserVideoUploads } from "@/services/server/videos"
 import { LucideBan } from "lucide-react"
 import Link from "next/link"
-import ProfileHeaderLoading from "@/components/custom/app/profile/ProfileHeaderLoading"
-import ProfileVideoLoading from "@/components/custom/app/profile/ProfileVideoLoading"
+
 export default async function Page({ params }: { params: Promise<{ userId: string }> }) {
     const { userId } = await params
 

@@ -1,4 +1,5 @@
 import { useState } from "react"
+
 import { AuthUser } from "#/users"
 import {
     loginWithEmailAndPassword,
@@ -6,6 +7,9 @@ import {
     logout,
 } from "@/services/client/auth"
 import { getError } from "@/lib/utils"
+import { createSession, destroySession } from "@/actions/session"
+import { createCookie } from "@/actions/cookies"
+import { COOKIES } from "@/constants"
 
 export function useEmailAuth() {
     const [loading, setLoading] = useState(false)
@@ -14,8 +18,15 @@ export function useEmailAuth() {
     const login = async (user: AuthUser) => {
         setLoading(true)
         setError(null)
+
         try {
-            await loginWithEmailAndPassword(user)
+            const userCreds = await loginWithEmailAndPassword(user)
+            await createSession(await userCreds.getIdToken())
+
+            if (!userCreds.emailVerified) {
+                await createCookie({ name: COOKIES.EmailNotVerified, value: "false" })
+            }
+
             return { success: true }
         } catch (e) {
             const errorMsg = getError(e) || "Login failed"
@@ -30,7 +41,8 @@ export function useEmailAuth() {
         setLoading(true)
         setError(null)
         try {
-            await signUpWithEmailAndPassword(user)
+            const userCreds = await signUpWithEmailAndPassword(user)
+            await createSession(await userCreds.getIdToken())
             return { success: true }
         } catch (e) {
             const errorMsg = getError(e) || "Sign up failed"
@@ -46,6 +58,8 @@ export function useEmailAuth() {
         setError(null)
         try {
             await logout()
+            await destroySession()
+
             return { success: true }
         } catch (e) {
             const errorMsg = getError(e) || "Log Out failed"
