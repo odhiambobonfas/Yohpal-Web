@@ -50,7 +50,7 @@ export default function Page() {
 
     return (
         <>
-            <div className="min-h-screen flex flex-col md:flex-row overflow-y-auto">
+            <div className="min-h-screen flex flex-col md:flex-row justify-center overflow-y-auto">
                 <div className="flex flex-col w-full max-w-md justify-center border-b md:border-b-0 md:border-r md:w-1/2 p-4">
                     <CardHeader>
                         <CardTitle>Set Up Your Profile</CardTitle>
@@ -99,7 +99,7 @@ export default function Page() {
                         <Button className="mt-4 w-full">Verify Email</Button>
                     </CardFooter>
                 </div>
-                <div className="flex flex-col bg-background justify-center p-4 w-full md:w-1/2">
+                <div className="flex flex-col bg-background justify-center  p-4 w-full md:w-1/2">
                     <h1 className="text-xl font-bold mb-2">Personalize Your Feed</h1>
                     <h4 className="text-sm text-gray-600 mb-4">
                         Select 3 topics so we can recommend the best content for you
