@@ -2,13 +2,14 @@
 import Image from "next/image"
 import Link from "next/link"
 import "@/app/globals.css"
+import { FormEvent, useState } from "react"
+import { LucideEye, LucideEyeOff, LucideLoader } from "lucide-react"
+import { useRouter } from "next/navigation"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { FormEvent, useState } from "react"
 import { useEmailAuth } from "@/hooks/auth/use-email-auth"
-import { LucideEye, LucideEyeOff, LucideLoader } from "lucide-react"
-import { useRouter } from "next/navigation"
 
 export default function Page() {
     const router = useRouter()

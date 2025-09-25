@@ -1,5 +1,4 @@
 "use client"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
     Upload,
     Heart,
@@ -10,12 +9,17 @@ import {
     LucideEye,
     LucideHeart,
 } from "lucide-react"
-import { VideoWithStats } from "@/types/videos"
-import ProfileVideoLoading from "./ProfileVideoLoading"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { VideoWithStats } from "@/types/videos"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Button } from "@/components/ui/button"
+
+import ProfileVideoLoading from "./ProfileVideoLoading"
+
+
 interface ProfileVideosSectionProps {
     uploads: VideoWithStats[] | undefined
     liked: VideoWithStats[] | undefined

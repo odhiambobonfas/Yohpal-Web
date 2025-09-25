@@ -1,6 +1,7 @@
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth"
+
 import { AuthUser } from "#/users"
 import { auth } from "@/lib/firebase/firebase.browser"
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth"
 
 async function loginWithEmailAndPassword(user: AuthUser) {
     const userDetails = await signInWithEmailAndPassword(auth, user.email, user.password)

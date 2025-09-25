@@ -1,10 +1,11 @@
 "use client"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { DEFAULT_THUMBNAIL } from "@/constants"
 import { LucidePlay, LucideVolume2, LucideVolumeOff } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { DEFAULT_THUMBNAIL } from "@/constants"
 
 const STORAGE_KEY = "canPlayWithSound"
 

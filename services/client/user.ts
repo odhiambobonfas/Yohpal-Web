@@ -1,7 +1,9 @@
+import { collection, doc, getDoc, getDocs } from "firebase/firestore"
+
 import { db } from "@/lib/firebase/firebase.browser"
 import { YPUser } from "#/users"
-import { collection, doc, getDoc, getDocs } from "firebase/firestore"
 import { DOC } from "@/services"
+
 import { getMultiVideosData } from "./video"
 
 export async function getUserProfile(userId: string) {

@@ -1,6 +1,7 @@
+import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore"
+
 import { db } from "@/lib/firebase/firebase.browser"
 import { VideoCommentInteraction, VideoInteraction } from "#/videos"
-import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore"
 import { DOC } from "@/services"
 
 export async function commentVideo(interaction: VideoCommentInteraction) {

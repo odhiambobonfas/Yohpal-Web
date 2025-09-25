@@ -2,6 +2,7 @@
 import { useState, createContext, type ReactNode, useEffect, useContext, useCallback } from "react"
 import { User as FirebaseUser } from "firebase/auth"
 import { onAuthStateChanged } from "firebase/auth"
+
 import { auth } from "@/lib/firebase/firebase.browser"
 import { YPUser } from "#/users"
 import { useUser } from "@/hooks/user/use-user"

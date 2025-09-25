@@ -1,5 +1,6 @@
-import { db } from "@/lib/firebase/firebase.browser"
 import { deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore"
+
+import { db } from "@/lib/firebase/firebase.browser"
 
 export async function followUser(userId: string, toFollowUserId: string) {
     const myFollowingRef = doc(

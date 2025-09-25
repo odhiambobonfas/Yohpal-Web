@@ -1,3 +1,8 @@
+import { LucideAlbum, LucideGlobeLock, LucideHome, LucideScrollText } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import React from "react"
+
 import {
     Sidebar,
     SidebarContent,
@@ -7,10 +12,6 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from "@/components/ui/sidebar"
-import React from "react"
-import { LucideAlbum, LucideHome, LucideGlobeLock, LucideScrollText } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
 
 const navItems = [
     { icon: LucideHome, title: "Home", link: "/" },

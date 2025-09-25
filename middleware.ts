@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+
 import { COOKIES } from "./constants"
 
 export async function middleware(request: NextRequest) {

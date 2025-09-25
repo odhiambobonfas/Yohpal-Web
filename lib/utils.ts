@@ -1,9 +1,9 @@
-import { FirebaseTimestamp } from "@/types/base"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+
+import { FirebaseTimestamp } from "@/types/base"
 import { CDN_URL, DEFAULT_THUMBNAIL, OLD_URL } from "@/constants"
 
 dayjs.extend(relativeTime)

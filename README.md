@@ -58,6 +58,7 @@ npm/<your_beloved_pkg_manager> run lint
 │   ├── client/
 │   └── server/
 ├── tsconfig.json
+├── actions/
 └── types/
 ```
 
@@ -92,6 +93,8 @@ npm/<your_beloved_pkg_manager> run lint
 - `server/` - interacts with Firebase **admin SDK** (server-only logic, SSR or API routes)
 
 `types/` - TypeScript type definitions for the entire project
+
+`actions/` - Server only actions are located, e.g handling setting/unsetting cookies from the client
 
 
 ## Conventions

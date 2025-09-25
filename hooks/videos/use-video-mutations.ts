@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import { getError } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
 import {
@@ -12,9 +14,8 @@ import {
     updateViewAction,
 } from "@/services/client/video-mutations"
 import { VideoCommentInteraction, VideoInteraction } from "@/types/videos"
-import { useState } from "react"
 
-export function useVideoMutation() {
+export default function useVideoMutation() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const { user, profile } = useAuth()

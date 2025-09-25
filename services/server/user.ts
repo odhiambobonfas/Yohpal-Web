@@ -1,6 +1,7 @@
 import { db } from "@/lib/firebase/firebase.admin"
 import { YPUser } from "#/users"
 import { DOC } from "@/services"
+
 import { getUserVideoUploads } from "./videos"
 
 export async function getUserProfile(userId: string) {

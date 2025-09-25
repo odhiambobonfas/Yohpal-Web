@@ -1,5 +1,3 @@
-import { db } from "@/lib/firebase/firebase.browser"
-import {VideoComment, VideoWithStats } from "#/videos"
 import {
     and,
     collection,
@@ -14,6 +12,9 @@ import {
     startAt,
     where,
 } from "firebase/firestore"
+
+import { db } from "@/lib/firebase/firebase.browser"
+import {VideoComment, VideoWithStats } from "#/videos"
 import { DOC } from "@/services"
 import { recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 import { VIDEO_LIMIT } from "@/constants"

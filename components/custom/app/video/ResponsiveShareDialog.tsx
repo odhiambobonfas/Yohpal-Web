@@ -1,6 +1,9 @@
 "use client"
 
 import * as React from "react"
+import { LucideCopy } from "lucide-react"
+import { toast } from "sonner"
+
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -22,8 +25,6 @@ import {
 } from "@/components/ui/drawer"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { Input } from "@/components/ui/input"
-import { LucideCopy } from "lucide-react"
-import { toast } from "sonner"
 
 export function ResponsiveShareDialog({
     children,

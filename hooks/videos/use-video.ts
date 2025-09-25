@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import { Video } from "#/videos"
 import { getError } from "@/lib/utils"
 import {
@@ -10,9 +12,8 @@ import {
     getVideos,
     getViews,
 } from "@/services/client/video"
-import { useState } from "react"
 
-export function useVideo(userId: string | undefined) {
+export default function useVideo(userId: string | undefined) {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
