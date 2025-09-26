@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import {
     LucideBookmark,
     LucideDownload,
@@ -13,18 +12,19 @@ import {
     LucideUserMinus2,
     LucideUserPlus2,
 } from "lucide-react"
+import Link from "next/link"
 
 import { InteractionMutationProps } from "#/videos"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { AvatarImage } from "@/components/ui/avatar"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import CommentCard from "@/components/custom/app/comments/CommentCard"
 import NoCommentsCard from "@/components/custom/app/comments/NoCommentsCard"
 import { ResponsiveShareDialog } from "@/components/custom/app/video/ResponsiveShareDialog"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatTime } from "@/lib/utils"
+import { useAuth } from "@/providers/Auth"
 
 export default function DesktopPlayerInteractions({
     handleBookmark,
@@ -41,6 +41,7 @@ export default function DesktopPlayerInteractions({
     video,
     commentMutation,
 }: InteractionMutationProps) {
+    const { profile } = useAuth()
     return (
         <div className="w-6/12 px-3 gap-3 flex flex-col h-full">
             <Card className="w-full m-0 p-0 ">
@@ -73,8 +74,7 @@ export default function DesktopPlayerInteractions({
                                 </span>
                             </span>
                         </div>
-
-                        {userAuthed && (
+                        {userAuthed && video.userId !== profile?.uid && (
                             <Button
                                 onClick={handleFollowToggle}
                                 className={`rounded-full text-lg px-5 py-2 ${

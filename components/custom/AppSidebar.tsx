@@ -6,6 +6,7 @@ import React from "react"
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
@@ -16,8 +17,8 @@ import {
 const navItems = [
     { icon: LucideHome, title: "Home", link: "/" },
     { icon: LucideAlbum, title: "About Us", link: "/about" },
-    { icon: LucideGlobeLock, title: "Privacy Policy", link: "/privacy" },
-    { icon: LucideScrollText, title: "Terms & Conditions", link: "/terms" },
+    { icon: LucideGlobeLock, title: "Privacy Policy", position: "bottom", link: "/privacy" },
+    { icon: LucideScrollText, title: "Terms & Conditions", position: "bottom", link: "/terms" },
 ]
 
 export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -44,28 +45,56 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
             </SidebarHeader>
             <SidebarContent className="p-2">
                 <SidebarMenu>
-                    {navItems.map((item, idx) => (
-                        <Link
-                            href={item.link}
-                            className="w-full inline-flex  items-center p-1"
-                            key={idx}
-                        >
-                            <SidebarMenuItem className="w-full">
-                                <SidebarMenuButton
-                                    tooltip={item.title}
-                                    className="hover:bg-primary/5 cursor-pointer"
-                                >
-                                    <item.icon />
-                                    <span className="text-lg group-data-[collapsible=icon]/sidebar:hidden">
-                                        {item.title}
-                                    </span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </Link>
-                    ))}
+                    {navItems.map((item, idx) =>
+                        item.position !== "bottom" ? (
+                            <Link
+                                href={item.link}
+                                className="w-full inline-flex  items-center p-1"
+                                key={idx}
+                            >
+                                <SidebarMenuItem className="w-full">
+                                    <SidebarMenuButton
+                                        tooltip={item.title}
+                                        className="hover:bg-primary/5 cursor-pointer"
+                                    >
+                                        <item.icon />
+                                        <span className="text-lg group-data-[collapsible=icon]/sidebar:hidden">
+                                            {item.title}
+                                        </span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </Link>
+                        ) : null,
+                    )}
                 </SidebarMenu>
             </SidebarContent>
             <SidebarRail />
+            <SidebarFooter>
+                {" "}
+                <SidebarMenu>
+                    {navItems.map((item, idx) =>
+                        item.position === "bottom" ? (
+                            <Link
+                                href={item.link}
+                                className="w-full inline-flex  items-center p-1"
+                                key={idx}
+                            >
+                                <SidebarMenuItem className="w-full">
+                                    <SidebarMenuButton
+                                        tooltip={item.title}
+                                        className="hover:bg-primary/5 cursor-pointer"
+                                    >
+                                        <item.icon />
+                                        <span className="text-lg group-data-[collapsible=icon]/sidebar:hidden">
+                                            {item.title}
+                                        </span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            </Link>
+                        ) : null,
+                    )}
+                </SidebarMenu>
+            </SidebarFooter>
         </Sidebar>
     )
 }
