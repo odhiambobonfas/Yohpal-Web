@@ -10,7 +10,7 @@ export interface YPUser {
     Country: string
     refererCode: string
     referralCode: string
-    contentPreferences: string[]
+    contentPreferences: string[] | undefined
 }
 
 export interface AuthUser {

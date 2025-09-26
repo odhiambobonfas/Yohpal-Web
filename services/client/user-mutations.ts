@@ -56,15 +56,17 @@ export async function updateProfile({
     userName,
     firstName,
     lastName,
+    country,
     userId,
 }: {
     userName: string
     firstName: string
     lastName: string
+    country: string
     userId: string
 }) {
     const userRef = doc(db, "users", userId)
-    await updateDoc(userRef, { firstName, lastName, userName })
+    await updateDoc(userRef, { firstName, lastName, userName, country })
 }
 
 export async function updatePreferences(preferences: string[], userId: string) {

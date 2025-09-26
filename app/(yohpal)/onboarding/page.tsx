@@ -13,7 +13,16 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { COOKIES } from "@/constants"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { COOKIES, INTERESTS, SUPPORTED_COUNTRIES } from "@/constants"
 import { useEmailAuth } from "@/hooks/auth/use-email-auth"
 import { useUserMutation } from "@/hooks/user/use-user-mutation"
 import { cn } from "@/lib/utils"
@@ -21,24 +30,6 @@ import { useAuth } from "@/providers/Auth"
 import { LucideCheck, LucideLoader2, LucideMail } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-
-const interests = [
-    "Kids",
-    "Politics & News",
-    "Sports & Talents",
-    "Agribusiness & Env",
-    "Education (Basic)",
-    "Education (Advanced / Tertiary)",
-    "Food & Culinary",
-    "Technology & Innovation",
-    "Health & Fitness",
-    "Travel & Lifestyle",
-    "Finance & Business",
-    "Entertainment & Pop Culture",
-    "Gaming & Esports",
-    "Motivation & Self-Help",
-    "Religion & Spirituality",
-]
 
 const sanitizeUserName = (name: string | undefined): string =>
     !name || name.toLowerCase().startsWith("user") ? "" : name
@@ -56,6 +47,7 @@ export default function Page() {
     const [userName, setUserName] = useState("")
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
+    const [country, setCountry] = useState("")
     const [usernameSuggestions, setUsernameSuggestions] = useState<string[]>([])
     const { verifyEmail, loading: verificationEmailLoading } = useEmailAuth()
     const {
@@ -73,6 +65,7 @@ export default function Page() {
             setFirstName((prev) => prev || profile.firstName)
             setLastName((prev) => prev || profile.lastName)
             setSelected((prev) => (prev.length ? prev : (profile?.contentPreferences ?? [])))
+            setCountry((prev) => prev || profile.Country)
         }
     }, [profile])
 
@@ -122,6 +115,7 @@ export default function Page() {
         await completeOnboarding({
             firstName,
             lastName,
+            country,
             userName: safeUserName,
             preferences: selected,
         })
@@ -239,6 +233,26 @@ export default function Page() {
                                 )}
                             </div>
                         </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="country" className="text-muted-foreground">
+                                Country
+                            </Label>
+                            <Select required onValueChange={(c) => setCountry(c)}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a country" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Countries</SelectLabel>
+                                        {SUPPORTED_COUNTRIES.map((country, idx) => (
+                                            <SelectItem value={country} key={idx}>
+                                                {country}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </div>
                 </CardContent>
 
@@ -266,7 +280,7 @@ export default function Page() {
                 </h4>
 
                 <div className="flex flex-wrap gap-2 overflow-y-auto">
-                    {interests.map((interest) => (
+                    {INTERESTS.map((interest) => (
                         <Badge
                             key={interest}
                             onClick={() => toggleInterest(interest)}

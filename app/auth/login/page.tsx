@@ -1,10 +1,10 @@
 "use client"
+import "@/app/globals.css"
+import { LucideEye, LucideEyeOff, LucideLoader } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import "@/app/globals.css"
-import { FormEvent, useState } from "react"
-import { LucideEye, LucideEyeOff, LucideLoader } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { FormEvent, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,11 +31,12 @@ export default function Page() {
     const [showPassword, setShowPassword] = useState(false)
     return (
         <div className="h-screen flex items-center justify-center">
-            <div className="w-full md:w-4/6 min-h-full md:min-h-[40svh] drop-shadow-2xl rounded-lg bg-background grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+            <div className="w-full md:w-4/6 min-h-full items-center  md:min-h-[40svh] drop-shadow-2xl rounded-lg bg-background grid grid-cols-1 md:grid-cols-2 overflow-hidden">
                 <div className="col-span-1 p-5 flex flex-col my-2 gap-5">
-                    <div className="min-h-24 flex flex-col gap-2 py-3">
+                    <div className="min-h-24 flex items-center flex-col gap-2 py-3">
+                        <Image width={50} height={50} src="/logo_circular.png" alt="Yohpal logo" />
                         <h4 className="text-4xl font-semibold">YOHPAL</h4>
-                        <h5 className="text-lg">Welcome back to Yohpal website!</h5>
+                        <h5 className="text-lg">Welcome to Yohpal website!</h5>
                     </div>
                     {error && <span className="text-red-500">{error}</span>}
                     <form onSubmit={handleLogin} className="w-full flex flex-col gap-5">
@@ -57,7 +58,7 @@ export default function Page() {
                                     type={showPassword ? "text" : "password"}
                                     placeholder="password"
                                     required
-                                    className="text-lg pr-10" // extra padding so text doesn't overlap icon
+                                    className="text-lg pr-10"
                                 />
                                 <button
                                     type="button"
@@ -92,7 +93,7 @@ export default function Page() {
                         </p>
                     </form>
                 </div>
-                <div className="hidden md:block col-span-1">
+                <div className="hidden h-full md:block col-span-1">
                     <Image
                         src="/app/auth-bg.jpg"
                         width={500}

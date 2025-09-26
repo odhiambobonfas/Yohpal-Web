@@ -52,16 +52,18 @@ export function useUserMutation() {
         userName,
         firstName,
         lastName,
+        country,
         preferences,
     }: {
         userName: string
         firstName: string
         lastName: string
+        country: string
         preferences: string[]
     }) => {
         return mutateWithAuth(async () => {
             await Promise.all([
-                updateProfile({ firstName, lastName, userName, userId: user!.uid }),
+                updateProfile({ firstName, lastName, userName, userId: user!.uid, country }),
                 updatePreferences(preferences, user!.uid),
             ])
         })
