@@ -39,6 +39,14 @@ const isValidUserName = (name: string | undefined): boolean => {
     return sanitized.length > 0
 }
 
+const sanitizeUserName = (name: string | undefined): string =>
+    !name || name.toLowerCase().startsWith("user") ? "" : name
+
+const isValidUserName = (name: string | undefined): boolean => {
+    const sanitized = sanitizeUserName(name)
+    return sanitized.length > 0
+}
+
 export default function Page() {
     const router = useRouter()
     const [selected, setSelected] = useState<string[]>([])
