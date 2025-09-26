@@ -1,5 +1,5 @@
-import { getLandingVideos } from "@/services/server/videos"
 import PlayerCanvas from "@/components/custom/app/video/PlayerCanvas"
+import { getLandingVideos } from "@/services/server/videos"
 
 export default async function Home({
     searchParams,

@@ -31,5 +31,6 @@ export function getFirebaseAdmin() {
 const firebaseAdmin = getFirebaseAdmin()
 
 const db = firebaseAdmin.firestore()
+const auth = firebaseAdmin.auth()
 
-export { firebaseAdmin, db }
+export { firebaseAdmin, db, auth }

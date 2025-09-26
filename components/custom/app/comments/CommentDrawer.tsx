@@ -1,3 +1,6 @@
+import { LucideLoader, LucideSend } from "lucide-react"
+import { FormEvent } from "react"
+
 import { VideoComment } from "#/videos"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -9,10 +12,10 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer"
-import { LucideLoader, LucideSend } from "lucide-react"
+
 import CommentCard from "./CommentCard"
 import NoCommentsCard from "./NoCommentsCard"
-import { FormEvent } from "react"
+
 
 interface CommentOperations {
     comments: VideoComment[]

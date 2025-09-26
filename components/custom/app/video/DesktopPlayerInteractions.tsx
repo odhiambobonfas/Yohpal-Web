@@ -1,19 +1,6 @@
 "use client"
 
 import Link from "next/link"
-
-import { InteractionMutationProps } from "#/videos"
-
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { AvatarImage } from "@/components/ui/avatar"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import CommentCard from "@/components/custom/app/comments/CommentCard"
-import NoCommentsCard from "@/components/custom/app/comments/NoCommentsCard"
-import { ResponsiveShareDialog } from "@/components/custom/app/video/ResponsiveShareDialog"
-
 import {
     LucideBookmark,
     LucideDownload,
@@ -26,6 +13,17 @@ import {
     LucideUserMinus2,
     LucideUserPlus2,
 } from "lucide-react"
+
+import { InteractionMutationProps } from "#/videos"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { AvatarImage } from "@/components/ui/avatar"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import CommentCard from "@/components/custom/app/comments/CommentCard"
+import NoCommentsCard from "@/components/custom/app/comments/NoCommentsCard"
+import { ResponsiveShareDialog } from "@/components/custom/app/video/ResponsiveShareDialog"
 import { formatTime } from "@/lib/utils"
 
 export default function DesktopPlayerInteractions({

@@ -1,7 +1,8 @@
+import { useState } from "react"
+
 import { getError } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
 import { followUser, unfollowUser } from "@/services/client/user-mutations"
-import { useState } from "react"
 
 export function useUserMutation() {
     const [loading, setLoading] = useState(false)

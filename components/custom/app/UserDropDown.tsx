@@ -1,4 +1,17 @@
 "use client"
+import {
+    User,
+    Settings,
+    LogOut,
+    CircleUser,
+    LucideMoon,
+    LucideSun,
+    LucideLaptopMinimal,
+} from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useTheme } from "next-themes"
+
 import { useAuth } from "@/providers/Auth"
 import { useEmailAuth } from "@/hooks/auth/use-email-auth"
 import {
@@ -15,18 +28,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-    User,
-    Settings,
-    LogOut,
-    CircleUser,
-    LucideMoon,
-    LucideSun,
-    LucideLaptopMinimal,
-} from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useTheme } from "next-themes"
 
 export default function UserDropDown({ className }: { className: string | undefined }) {
     const { isAuthenticated, user, profile, loading } = useAuth()

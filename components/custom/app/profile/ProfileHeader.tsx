@@ -1,7 +1,8 @@
 "use client"
+import { useState } from "react"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { YPUser } from "@/types/users"
-import { useState } from "react"
 
 interface ProfileHeaderProps {
     user: YPUser | null

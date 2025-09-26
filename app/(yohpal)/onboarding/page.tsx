@@ -1,9 +1,8 @@
 "use client"
 import { useEffect, useState } from "react"
-import { cn } from "@/lib/utils"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { useAuth } from "@/providers/Auth"
 import {
     CardContent,
     CardDescription,
@@ -11,8 +10,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
+import { useAuth } from "@/providers/Auth"
+
 const interests = [
     "Kids",
     "Politics & News",
@@ -35,10 +37,16 @@ export default function Page() {
     const [selected, setSelected] = useState<string[]>([])
     const { profile } = useAuth()
     const [email, setEmail] = useState("")
+    const [userName, setUserName] = useState("")
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
 
     useEffect(() => {
-        if (profile?.email) {
+        if (profile) {
             setEmail(profile.email)
+            setUserName(profile.userName)
+            setFirstName(profile.firstName)
+            setLastName(profile.lastName)
         }
     }, [profile])
 
@@ -46,6 +54,10 @@ export default function Page() {
         setSelected((prev) =>
             prev.includes(interest) ? prev.filter((i) => i !== interest) : [...prev, interest],
         )
+    }
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
     }
 
     return (
@@ -58,13 +70,15 @@ export default function Page() {
                     </CardHeader>
 
                     <CardContent>
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <div className="flex flex-col gap-4">
                                 <div className="grid gap-2">
                                     <Label htmlFor="username">Username</Label>
                                     <Input
                                         id="username"
                                         type="text"
+                                        value={userName}
+                                        onChange={(e) => setUserName(e.target.value)}
                                         placeholder="your_username"
                                         required
                                     />
@@ -72,21 +86,39 @@ export default function Page() {
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="firstName">First Name</Label>
-                                    <Input id="firstName" type="text" placeholder="John" required />
+                                    <Input
+                                        id="firstName"
+                                        type="text"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        placeholder="John"
+                                        required
+                                    />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="lastName">Last Name</Label>
-                                    <Input id="lastName" type="text" placeholder="Doe" required />
+                                    <Label htmlFor="lastName" className="text-muted-foreground">
+                                        Last Name
+                                    </Label>
+                                    <Input
+                                        id="lastName"
+                                        type="text"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                        placeholder="Doe"
+                                        required
+                                    />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email">Confirm Email</Label>
+                                    <Label htmlFor="email" className="text-muted-foreground">
+                                        Confirm Email
+                                    </Label>
                                     <Input
                                         id="email"
                                         type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
+                                        defaultValue={profile?.email}
+                                        disabled
                                         placeholder="m@example.com"
                                         required
                                     />
@@ -102,7 +134,7 @@ export default function Page() {
                 <div className="flex flex-col bg-background justify-center  p-4 w-full md:w-1/2">
                     <h1 className="text-xl font-bold mb-2">Personalize Your Feed</h1>
                     <h4 className="text-sm text-gray-600 mb-4">
-                        Select 3 topics so we can recommend the best content for you
+                        Select atleast 3 topics so we can recommend the best content for you
                     </h4>
 
                     <div className="flex flex-wrap gap-2 overflow-y-auto">
@@ -123,9 +155,6 @@ export default function Page() {
                     </div>
 
                     <div className="sticky bottom-0 left-0 right-0 bg-background py-2 mt-10 flex flex-row gap-2">
-                        <Button variant="outline" className="flex-1">
-                            Skip for now
-                        </Button>
                         <Button className="flex-1" disabled={selected.length < 3}>
                             Continue
                         </Button>
