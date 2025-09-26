@@ -1,7 +1,7 @@
 import { collection, doc, getDoc, getDocs } from "firebase/firestore"
 
-import { db } from "@/lib/firebase/firebase.browser"
 import { YPUser } from "#/users"
+import { db } from "@/lib/firebase/firebase.browser"
 import { DOC } from "@/services"
 
 import { getMultiVideosData } from "./video"
@@ -10,7 +10,7 @@ export async function getUserProfile(userId: string) {
     const userDocRef = doc(db, "users", userId)
     const userDoc = await getDoc(userDocRef)
 
-    if (!userDoc.exists()) throw new Error("User not found")
+    if (!userDoc.exists()) return null
 
     const data = userDoc.data()
     return { id: userDoc.id, ...data } as unknown as YPUser
