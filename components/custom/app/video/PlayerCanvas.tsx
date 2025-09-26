@@ -18,6 +18,8 @@ import useVideoMutation from "@/hooks/videos/use-video-mutations"
 import { useAuth } from "@/providers/Auth"
 import { getWatchedVideos } from "@/services/client/user"
 
+import { Button } from "@/components/ui/button"
+import { LucideChevronDown, LucideChevronUp } from "lucide-react"
 import DesktopPlayerInteractions from "./DesktopPlayerInteractions"
 import VideoPlayer from "./VideoPlayer"
 
@@ -43,6 +45,21 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
     const activeIndex = allVideos.findIndex((v) => v.id === activeId)
     const activeVideo = activeIndex >= 0 ? allVideos[activeIndex] : allVideos[0]
 
+    function moveNext() {
+        const currentIndex = allVideos.findIndex((v) => v.id === activeId)
+        const nextId = currentIndex + 1
+        if (nextId > allVideos.length - 1) return
+        setActiveId(allVideos[nextId].id)
+        rowVirtualizer.scrollToIndex(nextId)
+    }
+
+    function movePrev() {
+        const currentIndex = allVideos.findIndex((v) => v.id === activeId)
+        const nextId = currentIndex - 1
+        if (nextId < 0) return
+        setActiveId(allVideos[nextId].id)
+        rowVirtualizer.scrollToIndex(nextId)
+    }
     const {
         loading: mutationLoading,
         error: mutationError,
@@ -270,6 +287,26 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                 <div>Fetching: {isFetchingNext ? "Yes" : "No"}</div>
             </DebugWindow>
             <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
+                {!isMobile && (
+                    <div className="flex flex-col justify-center gap-5 rounded-full mr-[10%]">
+                        <Button
+                            className="rounded-full size-15"
+                            variant={"secondary"}
+                            onClick={movePrev}
+                            disabled = {activeIndex === 0}
+                        >
+                            <LucideChevronUp className="size-10 text-primary" />
+                        </Button>
+                        <Button
+                            className="rounded-full size-15"
+                            variant={"secondary"}
+                            onClick={moveNext}
+                            disabled = {activeIndex === allVideos.length-1}
+                        >
+                            <LucideChevronDown className="size-10 text-primary" />
+                        </Button>
+                    </div>
+                )}
                 <div className="w-full md:w-4/6 h-full flex flex-row items-center justify-center md:p-2 md:gap-2">
                     <div
                         ref={parentRef}
