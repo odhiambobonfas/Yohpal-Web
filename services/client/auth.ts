@@ -1,4 +1,9 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth"
+import {
+    createUserWithEmailAndPassword,
+    sendEmailVerification,
+    signInWithEmailAndPassword,
+    signOut,
+} from "firebase/auth"
 
 import { AuthUser } from "#/users"
 import { auth } from "@/lib/firebase/firebase.browser"
@@ -17,4 +22,8 @@ async function logout() {
     await signOut(auth)
 }
 
-export { loginWithEmailAndPassword, signUpWithEmailAndPassword, logout }
+async function verifyEmailAction() {
+    if (auth.currentUser) await sendEmailVerification(auth.currentUser)
+}
+
+export { loginWithEmailAndPassword, logout, signUpWithEmailAndPassword, verifyEmailAction }

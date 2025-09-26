@@ -1,4 +1,4 @@
-import { deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore"
+import { deleteDoc, doc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
 
 import { db } from "@/lib/firebase/firebase.browser"
 
@@ -50,4 +50,24 @@ export async function unfollowUser(userId: string, toUnfollowUserId: string) {
     )
 
     await Promise.all([deleteDoc(myFollowingRef), deleteDoc(otherFollowersRef)])
+}
+
+export async function updateProfile({
+    userName,
+    firstName,
+    lastName,
+    userId,
+}: {
+    userName: string
+    firstName: string
+    lastName: string
+    userId: string
+}) {
+    const userRef = doc(db, "users", userId)
+    await updateDoc(userRef, { firstName, lastName, userName })
+}
+
+export async function updatePreferences(preferences: string[], userId: string) {
+    const userRef = doc(db, "users", userId)
+    await updateDoc(userRef, { contentPreferences: preferences })
 }
