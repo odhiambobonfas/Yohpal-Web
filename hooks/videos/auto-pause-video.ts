@@ -1,14 +1,16 @@
+import { getError } from "@/lib/utils"
 import { useEffect, useRef } from "react"
 
 type Options = {
     id?: string
     isActive?: boolean
     unloadOnPause?: boolean
+    updatePlayState: (state: boolean) => void
 }
 
 export function useAutoPauseVideo(
     videoRef: React.RefObject<HTMLVideoElement | null>,
-    { id, isActive = false, unloadOnPause = false }: Options = {},
+    { id, isActive = false, unloadOnPause = false, updatePlayState }: Options,
 ) {
     const wasPlayingRef = useRef(false)
     const savedSrcRef = useRef<string | null>(null)
@@ -17,17 +19,18 @@ export function useAutoPauseVideo(
         const pauseSelf = () => {
             const v = videoRef.current
             if (!v) return
-
             wasPlayingRef.current = !v.paused && !v.ended
-
-            if (!v.paused) v.pause()
-
+            if (!v.paused) {
+                v.pause()
+                updatePlayState(false)
+            }
             try {
                 if ("mediaSession" in navigator) {
                     navigator.mediaSession.playbackState = "none"
                 }
-            } catch (e) {}
-
+            } catch (e) {
+                console.error(`[PAUSE ERR]: ${getError(e)}`)
+            }
             if (unloadOnPause && v.src) {
                 savedSrcRef.current = v.src
                 v.removeAttribute("src")
@@ -38,7 +41,6 @@ export function useAutoPauseVideo(
         const playSelfIfActive = async () => {
             const v = videoRef.current
             if (!v) return
-
             if (!isActive) return
 
             window.dispatchEvent(
@@ -52,7 +54,11 @@ export function useAutoPauseVideo(
 
             try {
                 await v.play()
-            } catch (err) {}
+                updatePlayState(true)
+            } catch (e) {
+                updatePlayState(false)
+                console.error(`[PLAY ERR]: ${getError(e)}`)
+            }
         }
 
         const onVisibilityChange = () => {
@@ -91,7 +97,10 @@ export function useAutoPauseVideo(
 
             const v = videoRef.current
             if (!v) return
-            if (!v.paused) v.pause()
+            if (!v.paused) {
+                v.pause()
+                updatePlayState(false)
+            }
         }
 
         document.addEventListener("visibilitychange", onVisibilityChange)
@@ -107,5 +116,5 @@ export function useAutoPauseVideo(
             window.removeEventListener("pageshow", onPageshow)
             window.removeEventListener("yohpal:pause-all", onPauseAllEvent as EventListener)
         }
-    }, [videoRef, id, isActive, unloadOnPause])
+    }, [videoRef, id, isActive, unloadOnPause, updatePlayState])
 }

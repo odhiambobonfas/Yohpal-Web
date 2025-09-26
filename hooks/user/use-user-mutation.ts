@@ -2,7 +2,12 @@ import { useState } from "react"
 
 import { getError } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
-import { followUser, unfollowUser } from "@/services/client/user-mutations"
+import {
+    followUser,
+    unfollowUser,
+    updatePreferences,
+    updateProfile,
+} from "@/services/client/user-mutations"
 
 export function useUserMutation() {
     const [loading, setLoading] = useState(false)
@@ -43,5 +48,26 @@ export function useUserMutation() {
         })
     }
 
-    return { loading, error, toggleFollow }
+    const completeOnboarding = async ({
+        userName,
+        firstName,
+        lastName,
+        country,
+        preferences,
+    }: {
+        userName: string
+        firstName: string
+        lastName: string
+        country: string
+        preferences: string[]
+    }) => {
+        return mutateWithAuth(async () => {
+            await Promise.all([
+                updateProfile({ firstName, lastName, userName, userId: user!.uid, country }),
+                updatePreferences(preferences, user!.uid),
+            ])
+        })
+    }
+
+    return { loading, error, toggleFollow, completeOnboarding }
 }

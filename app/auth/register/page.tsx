@@ -1,10 +1,10 @@
 "use client"
+import "@/app/globals.css"
+import { LucideEye, LucideEyeOff, LucideLoader } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import "@/app/globals.css"
-import { FormEvent, useState } from "react"
-import { LucideLoader, LucideEye, LucideEyeOff } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { FormEvent, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,7 +20,7 @@ export default function Page() {
 
     const [confirmError, setConfirmError] = useState<string | null>(null)
 
-    const { loading, error, login } = useEmailAuth()
+    const { loading, error, signUp } = useEmailAuth()
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault()
@@ -33,16 +33,17 @@ export default function Page() {
         if (!email || !password) {
             return
         }
-        const { success } = await login({ email, password })
+        const { success } = await signUp({ email, password })
         if (success) router.push("/")
     }
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     return (
         <div className="h-screen flex items-center justify-center">
-            <div className="w-full md:w-4/6 min-h-full md:min-h-[40svh] drop-shadow-2xl rounded-lg bg-background grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+            <div className="w-full md:w-4/6 items-center min-h-full md:min-h-[40svh] drop-shadow-2xl rounded-lg bg-background grid grid-cols-1 md:grid-cols-2 overflow-hidden">
                 <div className="col-span-1 p-5 flex flex-col my-2 gap-5">
-                    <div className="min-h-24 flex flex-col gap-2 py-3">
+                    <div className="min-h-24 flex items-center flex-col gap-2 py-3">
+                        <Image width={50} height={50} src="/logo_circular.png" alt="Yohpal logo" />
                         <h4 className="text-4xl font-semibold">YOHPAL</h4>
                         <h5 className="text-lg">Welcome to Yohpal website!</h5>
                     </div>
@@ -131,7 +132,7 @@ export default function Page() {
                         </p>
                     </form>
                 </div>
-                <div className="hidden md:block col-span-1">
+                <div className="hidden h-full md:block col-span-1">
                     <Image
                         src="/app/auth-bg.jpg"
                         width={500}

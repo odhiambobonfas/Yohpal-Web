@@ -9,6 +9,7 @@ import {
     loginWithEmailAndPassword,
     logout,
     signUpWithEmailAndPassword,
+    verifyEmailAction,
 } from "@/services/client/auth"
 
 export function useEmailAuth() {
@@ -70,5 +71,18 @@ export function useEmailAuth() {
         }
     }
 
-    return { login, signUp, logOut, loading, error }
+    const verifyEmail = async () => {
+        setLoading(true)
+        setError(null)
+        try {
+            await verifyEmailAction()
+        } catch (e) {
+            const errMsg = getError(e) || "Failed to send verification link"
+            setError(errMsg)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return { login, signUp, logOut, verifyEmail, loading, error }
 }

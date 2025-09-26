@@ -7,3 +7,23 @@ export const COOKIES = {
     Session: "__auth",
     EmailNotVerified: "__emailVerified",
 }
+
+export const INTERESTS = [
+    "Kids",
+    "Politics & News",
+    "Sports & Talents",
+    "Agribusiness & Env",
+    "Education (Basic)",
+    "Education (Advanced / Tertiary)",
+    "Food & Culinary",
+    "Technology & Innovation",
+    "Health & Fitness",
+    "Travel & Lifestyle",
+    "Finance & Business",
+    "Entertainment & Pop Culture",
+    "Gaming & Esports",
+    "Motivation & Self-Help",
+    "Religion & Spirituality",
+]
+
+export const SUPPORTED_COUNTRIES = ["Kenya", "Tanzania", "Uganda", "South-Sudan", "Sudan"]

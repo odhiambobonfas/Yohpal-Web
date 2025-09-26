@@ -56,7 +56,12 @@ export default function VideoPlayer({
     // load current +- 10
     const shouldRender = Math.abs(index - activeIndex) <= 10
     const isActive = activeVideoId === videoId
-    useAutoPauseVideo(videoRef, { id: videoId, isActive, unloadOnPause: false })
+    useAutoPauseVideo(videoRef, {
+        id: videoId,
+        isActive,
+        unloadOnPause: false,
+        updatePlayState: setPlaying,
+    })
 
     useEffect(() => {
         const el = videoRef.current
@@ -64,9 +69,12 @@ export default function VideoPlayer({
 
         if (isActive) {
             el.currentTime = 0
-            el.play().catch(() => {})
+            el.play()
+                .then(() => setPlaying(true))
+                .catch(() => {})
         } else {
             el.pause()
+            setPlaying(true)
         }
     }, [isActive])
 
