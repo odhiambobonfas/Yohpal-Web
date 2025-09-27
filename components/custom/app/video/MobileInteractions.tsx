@@ -9,12 +9,14 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { InteractionMutationProps } from "#/videos"
 import CommentDrawer from "@/components/custom/app/comments/CommentDrawer"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import { formatTime } from "@/lib/utils"
 
+import { useState } from "react"
+import InteractionsLoginPrompt from "./InteractionsLoginPrompt"
 import { ResponsiveShareDialog } from "./ResponsiveShareDialog"
 
 export default function MobileInteractions({
@@ -28,9 +30,18 @@ export default function MobileInteractions({
     ownerProfilePicture,
     video,
     commentMutation,
+    userAuthed,
 }: InteractionMutationProps) {
+    const [showAuthDialog, setShowAuthDialog] = useState(false)
+    const openAuthDialog = () => setShowAuthDialog(true)
+
     return (
         <>
+            <InteractionsLoginPrompt
+                open={showAuthDialog}
+                closePrompt={() => setShowAuthDialog(false)}
+            />
+
             <div className="absolute right-3 bottom-15 flex flex-col items-center gap-4">
                 <Link
                     href={`/user/${video.userId}`}
@@ -51,7 +62,7 @@ export default function MobileInteractions({
                 </Button>
 
                 <Button
-                    onClick={handleLikeToggle}
+                    onClick={userAuthed ? handleLikeToggle : openAuthDialog}
                     className="flex flex-col gap-1 text-white p-2 size-12"
                     variant={"ghost"}
                 >
@@ -80,7 +91,7 @@ export default function MobileInteractions({
                 </CommentDrawer>
 
                 <Button
-                    onClick={handleBookmark}
+                    onClick={userAuthed ? handleBookmark : openAuthDialog}
                     className="flex flex-col gap-1 text-white p-2 size-12"
                     variant={"ghost"}
                 >
@@ -113,7 +124,9 @@ export default function MobileInteractions({
                 <span className="text-secondary-foreground text-xs bg-secondary items-center justify-center px-2 py-1 w-fit rounded-full">
                     {formatTime(video.timestamp)}
                 </span>
-                <p className="text-background font-semibold">{video.title || "Yohpal Monetizing Creativity"}</p>
+                <p className="text-background font-semibold">
+                    {video.title || "Yohpal Monetizing Creativity"}
+                </p>
                 <p className="text-background">
                     {video.caption?.split(" ").slice(0, 6).join(" ") +
                         (video.caption?.split(" ").length > 6 ? "…" : "")}

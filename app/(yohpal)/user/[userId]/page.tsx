@@ -1,20 +1,9 @@
 import ProfileHeader from "@/components/custom/app/profile/ProfileHeader"
-import ProfileHeaderLoading from "@/components/custom/app/profile/ProfileHeaderLoading"
-import ProfileVideoLoading from "@/components/custom/app/profile/ProfileVideoLoading"
+import ProfileNotFound from "@/components/custom/app/profile/ProfileNotFound"
 import ProfileVideosSection from "@/components/custom/app/profile/ProfileVideoSection"
-import {
-    AlertDialog,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { getUserProfile } from "@/services/client/user"
 import { getUserProfileStats } from "@/services/server/user"
 import { getUserVideoUploads } from "@/services/server/videos"
-import { LucideBan } from "lucide-react"
-import Link from "next/link"
 
 export default async function Page({ params }: { params: Promise<{ userId: string }> }) {
     const { userId } = await params
@@ -25,7 +14,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
         getUserVideoUploads(userId),
     ])
 
-    if (!user) return <NotFound />
+    if (!user) return <ProfileNotFound />
 
     return (
         <div className="h-screen">
@@ -51,30 +40,5 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
                 }}
             />
         </div>
-    )
-}
-
-function NotFound() {
-    return (
-        <>
-            <ProfileHeaderLoading />
-            <ProfileVideoLoading />
-            <AlertDialog open>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <LucideBan className="text-primary" />
-                        <AlertDialogTitle>User not found</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            We were unable to find the user you are looking for
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <Link className="font-bold text-primary" href="/">
-                            Go back Home
-                        </Link>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </>
     )
 }

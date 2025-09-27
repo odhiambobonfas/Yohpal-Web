@@ -109,13 +109,6 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         getCurrentStats,
     } = useOptimisticVideo(activeVideo, profile?.uid, userExtra?.[0], userExtra?.[1])
 
-    const stableHandleViewUpdate = useCallback(
-        (videoId: string) => {
-            updateOptimisticView(videoId)
-        },
-        [updateOptimisticView],
-    )
-
     const estimateSize = () => parentRef.current?.clientHeight ?? 850
 
     const rowVirtualizer = useVirtualizer({
@@ -163,7 +156,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                         const id = entry.target.getAttribute("data-id")
                         if (id && id !== activeId) {
                             setActiveId(id)
-                            stableHandleViewUpdate(id)
+                            updateOptimisticView(id)
                             addView(id, user?.uid)
                         }
                     }
@@ -176,7 +169,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         videoElements.forEach((el) => observer.observe(el))
 
         return () => observer.disconnect()
-    }, [virtualItems, activeId, user?.uid, stableHandleViewUpdate, addView])
+    }, [virtualItems, activeId, user?.uid, updateOptimisticView, addView])
 
     const handleFollowToggle = async (videoId: string) => {
         if (!isAuthenticated) return
@@ -213,7 +206,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
     }
 
     const handleDownload = async (videoId: string) => {
-        updateOptimisticDownload(videoId)
+        if (isAuthenticated) updateOptimisticDownload(videoId)
 
         const link = document.createElement("a")
         link.href = `/api/proxy/${videoId}`
@@ -293,7 +286,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                             className="rounded-full size-15"
                             variant={"secondary"}
                             onClick={movePrev}
-                            disabled = {activeIndex === 0}
+                            disabled={activeIndex === 0}
                         >
                             <LucideChevronUp className="size-10 text-primary" />
                         </Button>
@@ -301,7 +294,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                             className="rounded-full size-15"
                             variant={"secondary"}
                             onClick={moveNext}
-                            disabled = {activeIndex === allVideos.length-1}
+                            disabled={activeIndex === allVideos.length - 1}
                         >
                             <LucideChevronDown className="size-10 text-primary" />
                         </Button>
