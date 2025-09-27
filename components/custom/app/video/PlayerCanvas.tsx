@@ -171,6 +171,19 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         return () => observer.disconnect()
     }, [virtualItems, activeId, user?.uid, updateOptimisticView, addView])
 
+    const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
+
+    useEffect(() => {
+        const saved = localStorage.getItem("autoscrollEnabled")
+        if (saved !== null) {
+            setAutoScrollEnabled(saved === "true")
+        }
+    }, [])
+
+    useEffect(() => {
+        localStorage.setItem("autoscrollEnabled", String(autoScrollEnabled))
+    }, [autoScrollEnabled])
+
     const handleFollowToggle = async (videoId: string) => {
         if (!isAuthenticated) return
 
@@ -341,6 +354,11 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                                             thumbnail={video.thumbnail}
                                             index={virtualRow.index}
                                             activeIndex={activeIndex}
+                                            onEnded={() => {
+                                                if (autoScrollEnabled) moveNext()
+                                            }}
+                                            autoScrollEnabled={autoScrollEnabled}
+                                            setAutoScrollEnabled={setAutoScrollEnabled}
                                         />
                                     </div>
                                 )

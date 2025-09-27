@@ -1,9 +1,16 @@
 "use client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { DEFAULT_THUMBNAIL } from "@/constants"
 import { useAutoPauseVideo } from "@/hooks/videos/auto-pause-video"
-import { LucidePlay, LucideVolume2, LucideVolumeOff } from "lucide-react"
+import { LucidePlay, LucideVolume2, LucideVolumeOff, MoreVertical } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 
@@ -16,6 +23,9 @@ export default function VideoPlayer({
     thumbnail,
     index,
     activeIndex,
+    onEnded,
+    autoScrollEnabled,
+    setAutoScrollEnabled,
 }: {
     videoId: string
     videoSrc: string
@@ -23,6 +33,9 @@ export default function VideoPlayer({
     thumbnail: string
     index: number
     activeIndex: number
+    onEnded?: () => void
+    autoScrollEnabled: boolean
+    setAutoScrollEnabled: (val: boolean) => void
 }) {
     const videoRef = useRef<HTMLVideoElement | null>(null)
     const [isLoaded, setIsLoaded] = useState(false)
@@ -123,6 +136,22 @@ export default function VideoPlayer({
                             <LucideVolume2 className="size-5 fill-current" />
                         )}
                     </Button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild className="absolute top-2 right-2">
+                            <MoreVertical className="text-background" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56 relative">
+                            <div className="flex items-center space-x-2 p-2">
+                                <Switch
+                                    id="enableAutoScroll"
+                                    checked={autoScrollEnabled}
+                                    onCheckedChange={(checked) => setAutoScrollEnabled(checked)}
+                                />
+                                <Label htmlFor="enableAutoScroll">Enable Autoscroll</Label>
+                            </div>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
                     {!isPlaying && (
                         <Button
                             onClick={togglePlayPause}
@@ -135,11 +164,12 @@ export default function VideoPlayer({
                         ref={videoRef}
                         src={videoSrc}
                         className="w-full h-full object-cover"
-                        loop
+                        loop={!autoScrollEnabled}
                         playsInline
                         muted={isMuted}
                         onClick={togglePlayPause}
                         onLoadedData={() => setIsLoaded(true)}
+                        onEnded={autoScrollEnabled ? onEnded : undefined}
                     />
                     {!isLoaded && (
                         <div className="h-full w-full absolute inset-0">
