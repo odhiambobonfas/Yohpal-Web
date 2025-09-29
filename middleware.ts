@@ -6,6 +6,14 @@ export async function middleware(request: NextRequest) {
     const cookieStore = request.cookies
     const isAuthed = cookieStore.has(COOKIES.Session)
 
+    // redirects old php routes to the `/`
+    if (
+        request.nextUrl.pathname.startsWith("/main") ||
+        request.nextUrl.pathname.startsWith("/pages")
+    ) {
+        return NextResponse.redirect(new URL("/", request.url))
+    }
+
     // they should be able to view the home page
     if (!isAuthed && request.nextUrl.pathname === "/") return NextResponse.next()
 
@@ -29,5 +37,5 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
 }
 export const config = {
-    matcher: ["/profile", "/auth/:path*", "/", "/onboarding"],
+    matcher: ["/profile", "/auth/:path*", "/", "/onboarding", "/main:path*", "/pages:path*"],
 }

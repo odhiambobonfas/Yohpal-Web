@@ -1,8 +1,7 @@
 import ProfileHeader from "@/components/custom/app/profile/ProfileHeader"
 import ProfileNotFound from "@/components/custom/app/profile/ProfileNotFound"
 import ProfileVideosSection from "@/components/custom/app/profile/ProfileVideoSection"
-import { getUserProfile } from "@/services/client/user"
-import { getUserProfileStats } from "@/services/server/user"
+import { getUserProfile, getUserProfileStats } from "@/services/server/user"
 import { getUserVideoUploads } from "@/services/server/videos"
 
 export default async function Page({ params }: { params: Promise<{ userId: string }> }) {

@@ -1,10 +1,10 @@
 import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
+import { twMerge } from "tailwind-merge"
 
-import { FirebaseTimestamp } from "@/types/base"
 import { CDN_URL, DEFAULT_THUMBNAIL, OLD_URL } from "@/constants"
+import { FirebaseTimestamp } from "@/types/base"
 
 dayjs.extend(relativeTime)
 
@@ -33,11 +33,10 @@ export function replaceWithCDN(link: string): string {
     return newLink
 }
 
-// if a thumbnail has an mp4 anywhere, skip it, use default one instead
 export function recoverThumbnail(thumbnailUrl: string | undefined) {
     if (!thumbnailUrl) return DEFAULT_THUMBNAIL
 
-    return thumbnailUrl.includes("mp4") ? DEFAULT_THUMBNAIL : replaceWithCDN(thumbnailUrl)
+    return replaceWithCDN(thumbnailUrl)
 }
 
 export function formatTime(timestamp: string) {
