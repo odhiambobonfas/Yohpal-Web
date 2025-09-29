@@ -2,9 +2,11 @@
 import {
     LucideArrowDownToLine,
     LucideBookmark,
+    LucideCheck,
     LucideEye,
     LucideHeart,
     LucideMessageCircleMore,
+    LucidePlus,
     LucideShare2,
 } from "lucide-react"
 import Link from "next/link"
@@ -25,12 +27,14 @@ export default function MobileInteractions({
     handleDownload,
     handleShare,
     handleLikeToggle,
+    handleFollowToggle,
     isLoading,
     currentStats,
     ownerProfilePicture,
     video,
     commentMutation,
     userAuthed,
+    userFollowed,
 }: InteractionMutationProps) {
     const [showAuthDialog, setShowAuthDialog] = useState(false)
     const openAuthDialog = () => setShowAuthDialog(true)
@@ -47,13 +51,25 @@ export default function MobileInteractions({
                     href={`/user/${video.userId}`}
                     className="flex flex-col items-center text-white gap-2"
                 >
-                    <Avatar className="size-10">
-                        <AvatarImage
-                            src={ownerProfilePicture}
-                            className="object-cover bg-blue-100"
-                        />
-                        <AvatarFallback>{video.userName[0]}</AvatarFallback>
-                    </Avatar>
+                    <div className="relative">
+                        <Avatar className="size-10">
+                            <AvatarImage
+                                src={ownerProfilePicture}
+                                className="object-cover bg-blue-100"
+                            />
+                            <AvatarFallback>{video.userName[0]}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex rounded-full size-5 items-center justify-center right-0 bottom-0 absolute translate-x-1/4 translate-y-1/4 shadow-md">
+                            {userFollowed ? (
+                                <LucideCheck className="bg-green-500 p-0.5 rounded-full size-5" />
+                            ) : (
+                                <LucidePlus
+                                    className="bg-primary p-0.5 rounded-full size-5"
+                                    onClick={handleFollowToggle}
+                                />
+                            )}
+                        </div>
+                    </div>
                 </Link>
 
                 <Button className="flex flex-col gap-1 text-white p-2 size-12" variant={"ghost"}>

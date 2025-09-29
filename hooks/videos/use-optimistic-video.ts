@@ -106,6 +106,7 @@ export default function useOptimisticVideo(
             const currentStats = getCurrentStats()
             const newFollowing = !currentStats.isFollowing
             updateOptimisticState(videoId, { following: newFollowing })
+            console.log(newFollowing)
         },
         [getCurrentStats, updateOptimisticState],
     )

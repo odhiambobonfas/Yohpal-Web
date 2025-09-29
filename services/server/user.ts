@@ -29,7 +29,7 @@ export async function getUserProfileStats(userId: string) {
     ])
 
     return {
-        followers: followers.length,
+        followers: followers,
         following: following.length,
         uploadedVideos: uploadedVideos.length,
         views: views.length,

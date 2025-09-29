@@ -46,7 +46,7 @@ export function useUser() {
 
             return {
                 uploadedStat: uploaded.length,
-                followersStat: followers.length,
+                followersStat: followers,
                 followingStat: following.length,
                 likedStat: liked.length,
                 viewedStat: viewed.length,
