@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
-import "./globals.css"
 import { Toaster } from "sonner"
+import "./globals.css"
 
-import { ThemeProvider } from "@/providers/ThemeProvider"
 import { YPAuthProvider } from "@/providers/Auth"
+import { ThemeProvider } from "@/providers/ThemeProvider"
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -18,7 +18,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
     title: "Yohpal",
-    description: "Yohpal International limited",
+    description: `Discover Yohpal; a digital platform that connects people, businesses, and
+    communities through innovative tools and services. Explore features
+    designed to simplify your online experience and empower your digital
+    journey. Join Yohpal today and be part of the future of digital
+    connection`,
 }
 
 export default function RootLayout({

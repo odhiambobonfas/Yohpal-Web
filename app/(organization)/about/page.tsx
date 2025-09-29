@@ -309,7 +309,10 @@ export default function Page() {
             </section>
 
             {/* Contact section */}
-            <section className="py-20 min-h-[60svh] p-5 md:p-2 flex flex-col items-center justify-center text-pretty">
+            <section
+                id="contact"
+                className="py-20 min-h-[60svh] p-5 md:p-2 flex flex-col items-center justify-center text-pretty"
+            >
                 <h2 className="text-4xl capitalize font-semibold">Contact</h2>
                 <div className="w-2/6 md:w-1/6 h-1 bg-primary rounded-full my-2"></div>
 
@@ -333,7 +336,8 @@ export default function Page() {
             <footer className="flex flex-col dark:bg-secondary items-center justify-center">
                 <div className="border-t-2 w-fit flex flex-col items-center p-3 capitalize">
                     <span className="inline-flex gap-2 items-center text-xs">
-                        <LucideCopyright className="size-5" /> Copyright {new Date().getFullYear()}
+                        <LucideCopyright className="size-3 text-muted-foreground" />
+                        Copyright {new Date().getFullYear()}
                         <b>Yohpal International</b> All rights reserved
                     </span>
                 </div>

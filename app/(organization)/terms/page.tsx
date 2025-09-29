@@ -1,3 +1,12 @@
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+    title: "Yohpal | Terms and Conditions",
+    description: `The Yohpal Terms and Conditions define how you can use our services
+    responsibly and securely. This page explains your rights, obligations,
+    and the guidelines that govern our platform. Review our terms to stay
+    informed and protected while using Yohpal.`,
+}
 export default function Page() {
     return (
         <div className="flex flex-col justify-center w-full items-center p-6 mt-5">

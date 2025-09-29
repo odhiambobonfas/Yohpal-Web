@@ -5,10 +5,10 @@ import NavHeader from "@/components/custom/orgarnization/NavHeader"
 
 export const metadata: Metadata = {
     title: "Yohpal International",
-    description: `YohPal is a next-generation digital ecosystem combining
-  social media, services, e-commerce, messaging, and digital finance.
-  Whether you're a creator, hustler, shopper, or entrepreneur — YohPal is your
-  all-in-one platform to grow, connect, and thrive.`,
+    description: `Yohpal is a forward-thinking digital enterprise dedicated to innovation,
+    inclusivity, and impact. Our mission is to empower individuals and
+    organizations with tools that drive growth and meaningful engagement.
+    Learn more about our vision, values, and the team behind Yohpal.`,
 }
 
 export default function OrganizationLayout({
