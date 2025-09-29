@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { formatTime } from "@/lib/utils"
 
+import { useAuth } from "@/providers/Auth"
 import { useState } from "react"
 import InteractionsLoginPrompt from "./InteractionsLoginPrompt"
 import { ResponsiveShareDialog } from "./ResponsiveShareDialog"
@@ -38,6 +39,7 @@ export default function MobileInteractions({
 }: InteractionMutationProps) {
     const [showAuthDialog, setShowAuthDialog] = useState(false)
     const openAuthDialog = () => setShowAuthDialog(true)
+    const { profile } = useAuth()
 
     return (
         <>
@@ -48,7 +50,7 @@ export default function MobileInteractions({
 
             <div className="absolute right-3 bottom-15 flex flex-col items-center gap-4">
                 <Link
-                    href={`/user/${video.userId}`}
+                    href={video.userId !== profile?.uid ? `/user/${video.userId}` : "/profile"}
                     className="flex flex-col items-center text-white gap-2"
                 >
                     <div className="relative">
@@ -59,16 +61,18 @@ export default function MobileInteractions({
                             />
                             <AvatarFallback>{video.userName[0]}</AvatarFallback>
                         </Avatar>
-                        <div className="flex rounded-full size-5 items-center justify-center right-0 bottom-0 absolute translate-x-1/4 translate-y-1/4 shadow-md">
-                            {userFollowed ? (
-                                <LucideCheck className="bg-green-500 p-0.5 rounded-full size-5" />
-                            ) : (
-                                <LucidePlus
-                                    className="bg-primary p-0.5 rounded-full size-5"
-                                    onClick={handleFollowToggle}
-                                />
-                            )}
-                        </div>
+                        {video.userId !== profile?.uid && (
+                            <div className="flex rounded-full size-5 items-center justify-center right-0 bottom-0 absolute translate-x-1/4 translate-y-1/4 shadow-md">
+                                {userFollowed ? (
+                                    <LucideCheck className="bg-green-500 p-0.5 rounded-full size-5" />
+                                ) : (
+                                    <LucidePlus
+                                        className="bg-primary p-0.5 rounded-full size-5"
+                                        onClick={handleFollowToggle}
+                                    />
+                                )}
+                            </div>
+                        )}
                     </div>
                 </Link>
 

@@ -70,27 +70,29 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
             <div className="ml-4 flex-1 flex-col flex items-center md:items-start">
                 <div className="flex flex-row gap-7">
                     <h1 className="mb-2 text-3xl font-bold">{user?.userName}</h1>
-                    <Button
-                        onClick={() => {
-                            handleFollowToggle({
-                                targetUserId: user!.uid,
-                                isFollowing: userFollowed,
-                            })
-                        }}
-                        className={`rounded-full text-lg px-5 py-2 ${
-                            userFollowed ? "border-primary bg-none" : ""
-                        }`}
-                    >
-                        {userFollowed ? (
-                            <>
-                                <LucideUserMinus2 /> Unfollow
-                            </>
-                        ) : (
-                            <>
-                                <LucideUserPlus2 /> Follow
-                            </>
-                        )}
-                    </Button>
+                    {profileType === "public" && (
+                        <Button
+                            onClick={() => {
+                                handleFollowToggle({
+                                    targetUserId: user!.uid,
+                                    isFollowing: userFollowed,
+                                })
+                            }}
+                            className={`rounded-full text-lg px-5 py-2 ${
+                                userFollowed ? "border-primary bg-none" : ""
+                            }`}
+                        >
+                            {userFollowed ? (
+                                <>
+                                    <LucideUserMinus2 /> Unfollow
+                                </>
+                            ) : (
+                                <>
+                                    <LucideUserPlus2 /> Follow
+                                </>
+                            )}
+                        </Button>
+                    )}
                 </div>
                 {profileType === "personal" && (
                     <span className="text-muted-foreground mb-2">{user?.email}</span>
