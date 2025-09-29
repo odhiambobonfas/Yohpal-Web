@@ -284,7 +284,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
     const stableRemeasure = useCallback(() => rowVirtualizer.measure(), [rowVirtualizer])
     useEffect(() => {
         stableRemeasure()
-    }, [rowVirtualizer])
+    }, [stableRemeasure])
 
     const isLoading = userMutationLoading || followingsLoading || mutationLoading
     const currentStats = getCurrentStats()
