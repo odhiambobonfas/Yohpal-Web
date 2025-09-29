@@ -25,6 +25,13 @@ import VideoPlayer from "./VideoPlayer"
 
 const FETCH_TRIGGER_OFFSET = 10
 
+const swrConfig = {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
+    dedupingInterval: 60000,
+    errorRetryCount: 2,
+}
+
 export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
     const [allVideos, setAllVideos] = useState(videos)
     const [activeId, setActiveId] = useState<string | null>(videos[0]?.id ?? null)
@@ -75,13 +82,6 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         error: userMutationError,
         toggleFollow,
     } = useUserMutation()
-
-    const swrConfig = {
-        revalidateOnFocus: false,
-        revalidateOnReconnect: true,
-        dedupingInterval: 60000,
-        errorRetryCount: 2,
-    }
 
     const { data: userExtra, isLoading: followingsLoading } = useSWR(
         ["user-extra", profile?.uid],
@@ -266,6 +266,13 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         })
     }
 
+    // fixes the different screen sizing issues
+    // tells virtualizer to re-measure when the layout is loaded to the dom
+    const stableRemeasure = useCallback(() => rowVirtualizer.measure(), [rowVirtualizer])
+    useEffect(() => {
+        stableRemeasure()
+    }, [rowVirtualizer])
+
     const isLoading = userMutationLoading || followingsLoading || mutationLoading
     const currentStats = getCurrentStats()
 
@@ -278,6 +285,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                 <div>ID: {activeVideo?.id?.slice(-6)}</div>
                 <div>Loading: {loading ? "Yes" : "No"}</div>
                 <div>Fetching: {isFetchingNext ? "Yes" : "No"}</div>
+                <div>parentSize: {parentRef.current?.clientHeight}</div>
             </DebugWindow>
             <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
                 {!isMobile && (
@@ -304,7 +312,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                     <div
                         ref={parentRef}
                         data-root-scroll
-                        className="flex-1 aspect-9/16 h-full overflow-y-auto snap-y snap-mandatory no-scrollbar"
+                        className="flex-1 h-full overflow-y-auto snap-y snap-mandatory no-scrollbar"
                     >
                         <div
                             style={{
