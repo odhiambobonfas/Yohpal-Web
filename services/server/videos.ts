@@ -1,7 +1,7 @@
-import { db } from "@/lib/firebase/firebase.admin"
 import { VideoComment, VideoWithStats } from "#/videos"
-import { replaceWithCDN, serializeTimestamp, recoverThumbnail } from "@/lib/utils"
 import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
+import { db } from "@/lib/firebase/firebase.admin"
+import { recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 
 import { DOC } from ".."
 
@@ -41,7 +41,7 @@ export async function getLandingVideos(videoId: string | undefined, userId: stri
 
     const videosDocs = await videoRef
         .where("broken", "==", false)
-        .where("privacy", "==", "Everyone")
+        .where("privacy", "in", ["Everyone"]) // add the others (followers only I think)
         .orderBy("timestamp", "desc")
         .limit(VIDEO_LIMIT)
         .get()
@@ -130,6 +130,7 @@ export async function getUserVideoUploads(userId: string) {
         .collection("videos")
         .where("userId", "==", userId)
         .where("broken", "==", false)
+        .where("privacy", "in", ["Everyone"]) // add the others (followers only I think)
         .orderBy("timestamp", "desc")
         .get()
 
