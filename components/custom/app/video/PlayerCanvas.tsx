@@ -301,26 +301,28 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                 <div>parentSize: {parentRef.current?.clientHeight}</div>
             </DebugWindow>
             <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
-                {!isMobile && (
-                    <div className="flex flex-col justify-center gap-5 rounded-full mr-[10%]">
-                        <Button
-                            className="rounded-full size-15"
-                            variant={"secondary"}
-                            onClick={movePrev}
-                            disabled={activeIndex === 0}
-                        >
-                            <LucideChevronUp className="size-10 text-primary" />
-                        </Button>
-                        <Button
-                            className="rounded-full size-15"
-                            variant={"secondary"}
-                            onClick={moveNext}
-                            disabled={activeIndex === allVideos.length - 1}
-                        >
-                            <LucideChevronDown className="size-10 text-primary" />
-                        </Button>
-                    </div>
-                )}
+                <ClientOnly>
+                    {!isMobile && (
+                        <div className="flex flex-col justify-center gap-5 rounded-full mr-[10%]">
+                            <Button
+                                className="rounded-full size-15"
+                                variant={"secondary"}
+                                onClick={movePrev}
+                                disabled={activeIndex === 0}
+                            >
+                                <LucideChevronUp className="size-10 text-primary" />
+                            </Button>
+                            <Button
+                                className="rounded-full size-15"
+                                variant={"secondary"}
+                                onClick={moveNext}
+                                disabled={activeIndex === allVideos.length - 1}
+                            >
+                                <LucideChevronDown className="size-10 text-primary" />
+                            </Button>
+                        </div>
+                    )}
+                </ClientOnly>
                 <div className="w-full md:w-4/6 h-full flex flex-row items-center justify-center md:p-2 md:gap-2">
                     <div
                         ref={parentRef}
