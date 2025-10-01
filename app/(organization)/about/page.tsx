@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 
+import Link from "next/link"
 import {
     contactInfo,
     founderDetails,
@@ -12,6 +13,7 @@ import {
     howWeWorkList,
     leaderShip,
     ourServicesList,
+    storeLinks,
     whoWeAreList,
 } from "./_lib/data"
 
@@ -46,6 +48,7 @@ export default function Page() {
                             >
                                 Explore the platform
                             </Button>
+                            <StoreButtons />
                         </div>
 
                         <div className="md:w-3/6 w-full items-center justify-center p-2">
@@ -343,5 +346,32 @@ export default function Page() {
                 </div>
             </footer>
         </>
+    )
+}
+
+function StoreButtons() {
+    return (
+        <div className="grid grid-cols-2 gap-4 md:gap-6 w-fit items-center justify-start">
+            <Link href={storeLinks.appStore} target="_blank" className="h-14 flex items-start">
+                <Image
+                    src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us"
+                    alt="Download Yohpal on the App Store"
+                    height={48}
+                    width={144}
+                    loading="eager"
+                    className="h-full w-auto p-0.5"
+                    unoptimized
+                />
+            </Link>
+            <Link href={storeLinks.playStore} target="_blank" className="h-14 flex items-center">
+                <Image
+                    src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                    alt="Get it on Google Play"
+                    height={48}
+                    width={162}
+                    className="h-full w-auto transform scale-[1.3] md:scale-125"
+                />
+            </Link>
+        </div>
     )
 }
