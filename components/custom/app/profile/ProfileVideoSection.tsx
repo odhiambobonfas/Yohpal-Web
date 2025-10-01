@@ -1,24 +1,23 @@
 "use client"
 import {
-    Upload,
-    Heart,
     Bookmark,
+    Heart,
     History,
-    LucideUpload,
     LucideBan,
     LucideEye,
     LucideHeart,
+    LucideUpload,
+    Upload,
 } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { VideoWithStats } from "@/types/videos"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Button } from "@/components/ui/button"
 
 import ProfileVideoLoading from "./ProfileVideoLoading"
-
 
 interface ProfileVideosSectionProps {
     uploads: VideoWithStats[] | undefined
@@ -47,7 +46,7 @@ export default function ProfileVideosSection({
                     {!loading && videos.uploads && videos.uploads.length > 0 ? (
                         <ProfileVideoPreview videos={videos.uploads} />
                     ) : (
-                        !loading && <h1>Empty</h1>
+                        !loading && <ProfileNoVideos />
                     )}
                 </ScrollArea>
             </section>
