@@ -70,7 +70,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
             <div className="ml-4 flex-1 flex-col flex items-center md:items-start">
                 <div className="flex flex-row gap-7">
                     <h1 className="mb-2 text-3xl font-bold">{user?.userName}</h1>
-                    {profileType === "public" && (
+                    {profileType === "public" && isAuthenticated && (
                         <Button
                             onClick={() => {
                                 handleFollowToggle({

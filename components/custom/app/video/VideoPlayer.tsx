@@ -4,6 +4,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import {
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Label } from "@/components/ui/label"
@@ -136,18 +138,26 @@ export default function VideoPlayer({
                             <LucideVolume2 className="size-5 fill-current" />
                         )}
                     </Button>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild className="absolute top-2 right-2">
-                            <MoreVertical className="text-background" />
+                    <DropdownMenu modal={false}>
+                        <DropdownMenuTrigger asChild className="absolute top-2 right-2 z-10">
+                            <Button className="bg-transparent hover:bg-transparent" size="icon">
+                                <MoreVertical className="fill-current" />
+                            </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56 relative">
+                        <DropdownMenuContent
+                            className="min-w-56 relative"
+                            align="end"
+                            avoidCollisions
+                        >
+                            <DropdownMenuLabel className="text-muted-foreground">Settings</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
                             <div className="flex items-center space-x-2 p-2">
                                 <Switch
                                     id="enableAutoScroll"
                                     checked={autoScrollEnabled}
                                     onCheckedChange={(checked) => setAutoScrollEnabled(checked)}
                                 />
-                                <Label htmlFor="enableAutoScroll">Enable Autoscroll</Label>
+                                <Label htmlFor="enableAutoScroll">Autoscroll</Label>
                             </div>
                         </DropdownMenuContent>
                     </DropdownMenu>

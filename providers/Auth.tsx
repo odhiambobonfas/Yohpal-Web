@@ -1,11 +1,10 @@
 "use client"
-import { useState, createContext, type ReactNode, useEffect, useContext, useCallback } from "react"
-import { User as FirebaseUser } from "firebase/auth"
-import { onAuthStateChanged } from "firebase/auth"
+import { User as FirebaseUser, onAuthStateChanged } from "firebase/auth"
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from "react"
 
-import { auth } from "@/lib/firebase/firebase.browser"
 import { YPUser } from "#/users"
 import { useUser } from "@/hooks/user/use-user"
+import { auth } from "@/lib/firebase/firebase.browser"
 
 type AuthContextType = {
     user: FirebaseUser | null
@@ -29,6 +28,8 @@ export function YPAuthProvider({ children }: { children: ReactNode }) {
             if (user) {
                 const ypUser = await stableGetProfile(user.uid)
                 setUserProfile(ypUser)
+            } else {
+                setUserProfile(null)
             }
             setLoading(false)
         })
