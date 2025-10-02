@@ -1,3 +1,4 @@
+import { getCompanyGeneralSettings } from "@/services/server/org/settings"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -7,7 +8,8 @@ export const metadata: Metadata = {
     and the guidelines that govern our platform. Review our terms to stay
     informed and protected while using Yohpal.`,
 }
-export default function Page() {
+export default async function Page() {
+    const settings = await getCompanyGeneralSettings()
     return (
         <div className="flex flex-col justify-center w-full items-center p-6 mt-5">
             <h1 className="text-3xl font-semibold mb-2">Terms and Conditions</h1>
@@ -195,7 +197,7 @@ export default function Page() {
                             href="mailto:support@yohpal.com"
                             className="text-primary hover:underline"
                         >
-                            support@yohpal.com
+                            {settings?.companyEmail}
                         </a>
                         .
                     </p>
@@ -300,7 +302,7 @@ export default function Page() {
                         <p className="text-muted-foreground">
                             <strong>Phone:</strong>{" "}
                             <a href="tel:+254758873938" className="text-primary hover:underline">
-                                +254 758 873 938
+                                {settings?.companyPhone}
                             </a>
                         </p>
                         <p className="text-muted-foreground">
@@ -309,7 +311,7 @@ export default function Page() {
                                 href="mailto:support@yohpal.com"
                                 className="text-primary hover:underline"
                             >
-                                support@yohpal.com
+                                {settings?.companyEmail}
                             </a>
                         </p>
                         <p className="text-muted-foreground">
