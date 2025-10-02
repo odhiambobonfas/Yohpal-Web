@@ -22,7 +22,7 @@ export function useEmailAuth() {
 
         try {
             const userCreds = await loginWithEmailAndPassword(user)
-            await createSession(await userCreds.getIdToken())
+            await createSession({ token: await userCreds.getIdToken(), uid: userCreds.uid })
 
             if (!userCreds.emailVerified) {
                 await createCookie({ name: COOKIES.EmailNotVerified, value: "false" })
@@ -43,7 +43,7 @@ export function useEmailAuth() {
         setError(null)
         try {
             const userCreds = await signUpWithEmailAndPassword(user)
-            await createSession(await userCreds.getIdToken())
+            await createSession({ token: await userCreds.getIdToken(), uid: userCreds.uid })
             return { success: true }
         } catch (e) {
             const errorMsg = getError(e) || "Sign up failed"

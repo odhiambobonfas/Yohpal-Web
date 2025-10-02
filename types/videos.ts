@@ -48,6 +48,11 @@ export interface VideoComment {
     profile_picture: string
     likes: number
     timestamp: FirebaseTimestamp
+    // added to make working with comment interactions
+    // much easier
+    videoId: string
+    userHasLiked: boolean
+    deleted: boolean
 }
 
 export interface VideoCommentInteraction {
@@ -65,12 +70,15 @@ export interface VideoInteraction {
 }
 
 export interface InteractionMutationProps {
-    handleComment: (e: FormEvent) => void
     handleDownload: () => void
     handleShare: () => void
     handleBookmark: () => void
     handleLikeToggle: () => void
     handleFollowToggle: () => void
+
+    handleComment: (e: FormEvent) => void
+    handleCommentDelete: (commentId: string, videoId: string) => void
+    handleCommentLikeToggle: (commentId: string, videoId: string, wasLiked: boolean) => void
 
     isLoading: boolean
     error: string | null
@@ -87,7 +95,6 @@ export interface InteractionMutationProps {
     }
 
     userFollowed: boolean
-    userAuthed: boolean
     ownerProfilePicture: string
 
     video: Video

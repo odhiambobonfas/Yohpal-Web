@@ -149,7 +149,9 @@ export default function VideoPlayer({
                             align="end"
                             avoidCollisions
                         >
-                            <DropdownMenuLabel className="text-muted-foreground">Settings</DropdownMenuLabel>
+                            <DropdownMenuLabel className="text-muted-foreground">
+                                Settings
+                            </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <div className="flex items-center space-x-2 p-2">
                                 <Switch
@@ -176,7 +178,7 @@ export default function VideoPlayer({
                         className="w-full h-full object-cover"
                         loop={!autoScrollEnabled}
                         playsInline
-                        muted={isMuted}
+                        muted
                         onClick={togglePlayPause}
                         onLoadedData={() => setIsLoaded(true)}
                         onEnded={autoScrollEnabled ? onEnded : undefined}

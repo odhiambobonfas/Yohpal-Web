@@ -1,18 +1,22 @@
 import { VideoComment, VideoWithStats } from "#/videos"
-import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
+import { COOKIES, DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
 import { db } from "@/lib/firebase/firebase.admin"
 import { recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 
+import { cookies } from "next/headers"
 import { DOC } from ".."
 
 const videoRef = db.collection("videos")
 
 export async function getLandingVideos(videoId: string | undefined, userId: string | undefined) {
+    const cookieStore = await cookies()
+    const loggedInUserId = cookieStore.get(COOKIES.User)?.value
+
     const videos: VideoWithStats[] = []
     let fetchedId: string | undefined
 
     if (userId) {
-        return await getVideosFromProfile(userId, videoId)
+        return await getVideosFromProfile(userId, videoId, loggedInUserId)
     }
 
     if (videoId) {
@@ -23,7 +27,7 @@ export async function getLandingVideos(videoId: string | undefined, userId: stri
             if (!videoData) return
             delete videoData["campaignMeta"]
 
-            const videoStats = await getVideoStats(videoId)
+            const videoStats = await getVideoStats(videoId, loggedInUserId)
 
             const cleanVideoData = {
                 id: videoDoc.id,
@@ -41,7 +45,8 @@ export async function getLandingVideos(videoId: string | undefined, userId: stri
 
     const videosDocs = await videoRef
         .where("broken", "==", false)
-        .where("privacy", "in", ["Everyone"]) // add the others (followers only I think)
+        // TODO(f0bfff672065)
+        .where("privacy", "in", ["Everyone"])
         .orderBy("timestamp", "desc")
         .limit(VIDEO_LIMIT)
         .get()
@@ -50,11 +55,11 @@ export async function getLandingVideos(videoId: string | undefined, userId: stri
         videosDocs.docs.map(async (v) => {
             if (v.id === fetchedId) return null
 
-            // TODO(583fae8a3d42):: find a way to deal with campaignMeta
             const videoData = v.data()
+            // TODO(583fae8a3d42)
             delete videoData["campaignMeta"]
 
-            const videoStats = await getVideoStats(v.id)
+            const videoStats = await getVideoStats(v.id, loggedInUserId)
             return {
                 id: v.id,
                 ...videoData,
@@ -71,7 +76,11 @@ export async function getLandingVideos(videoId: string | undefined, userId: stri
     return videos
 }
 
-async function getVideosFromProfile(userId: string, videoId: string | undefined) {
+async function getVideosFromProfile(
+    userId: string,
+    videoId: string | undefined,
+    loggedInUserId: string | undefined,
+) {
     let query = videoRef
         .where("userId", "==", userId)
         .where("broken", "==", false)
@@ -91,7 +100,7 @@ async function getVideosFromProfile(userId: string, videoId: string | undefined)
 
     return await Promise.all(
         videoDocs.docs.map(async (v) => {
-            const videoStats = await getVideoStats(v.id)
+            const videoStats = await getVideoStats(v.id, loggedInUserId)
             const videoData = v.data()
             delete videoData["campaignMeta"]
 
@@ -107,13 +116,13 @@ async function getVideosFromProfile(userId: string, videoId: string | undefined)
     )
 }
 
-async function getVideoStats(videoId: string) {
+async function getVideoStats(videoId: string, loggedInUserId: string | undefined) {
     const [likes, bookmarks, shares, views, comments] = await Promise.all([
         getVideoLikes(videoId),
         getVideoBookmarks(videoId),
         getVideoShares(videoId),
         getVideoViews(videoId),
-        getVideoComments(videoId),
+        getVideoComments(videoId, loggedInUserId),
     ])
 
     return {
@@ -130,7 +139,8 @@ export async function getUserVideoUploads(userId: string) {
         .collection("videos")
         .where("userId", "==", userId)
         .where("broken", "==", false)
-        .where("privacy", "in", ["Everyone"]) // add the others (followers only I think)
+        // TODO(f0bfff672065)
+        .where("privacy", "in", ["Everyone"])
         .orderBy("timestamp", "desc")
         .get()
 
@@ -211,14 +221,30 @@ async function getVideoViews(videoId: string) {
     return videoRef.data().count ?? 0
 }
 
-async function getVideoComments(videoId: string) {
-    const commentsRef = await db.collection("comments").doc(videoId).collection("messages").get()
+async function getVideoComments(videoId: string, userId: string | undefined) {
+    const commentsRef = db.collection("comments").doc(videoId).collection("messages")
 
-    if (commentsRef.empty) return []
-    const comments = commentsRef.docs.map((c) => {
-        const data = c.data()
-        return { id: c.id, ...data, timestamp: serializeTimestamp(data.timestamp) }
-    })
+    const commentsRefDoc = await commentsRef.get()
+
+    if (commentsRefDoc.empty) return []
+    const comments = await Promise.all(
+        commentsRefDoc.docs.map(async (c) => {
+            let userLiked = false
+            if (userId) {
+                userLiked = (await commentsRef.doc(c.id).collection("userIds").doc(userId).get())
+                    .exists
+            }
+            const data = c.data()
+            return {
+                id: c.id,
+                ...data,
+                profile_picture: replaceWithCDN(data.profile_picture),
+                timestamp: serializeTimestamp(data.timestamp),
+                userHasLiked: userLiked,
+                videoId: videoId,
+            }
+        }),
+    )
 
     return comments as unknown as VideoComment[]
 }

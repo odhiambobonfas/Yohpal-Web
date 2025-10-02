@@ -18,36 +18,28 @@ import { Button } from "@/components/ui/button"
 import { formatTime } from "@/lib/utils"
 
 import { useAuth } from "@/providers/Auth"
-import { useState } from "react"
-import InteractionsLoginPrompt from "./InteractionsLoginPrompt"
 import { ResponsiveShareDialog } from "./ResponsiveShareDialog"
 
 export default function MobileInteractions({
     handleBookmark,
-    handleComment,
     handleDownload,
     handleShare,
     handleLikeToggle,
     handleFollowToggle,
+    handleComment,
+    handleCommentDelete,
+    handleCommentLikeToggle,
     isLoading,
     currentStats,
     ownerProfilePicture,
     video,
     commentMutation,
-    userAuthed,
     userFollowed,
 }: InteractionMutationProps) {
-    const [showAuthDialog, setShowAuthDialog] = useState(false)
-    const openAuthDialog = () => setShowAuthDialog(true)
     const { profile } = useAuth()
 
     return (
         <>
-            <InteractionsLoginPrompt
-                open={showAuthDialog}
-                closePrompt={() => setShowAuthDialog(false)}
-            />
-
             <div className="absolute right-3 bottom-15 flex flex-col items-center gap-4">
                 <Link
                     href={video.userId !== profile?.uid ? `/user/${video.userId}` : "/profile"}
@@ -82,7 +74,7 @@ export default function MobileInteractions({
                 </Button>
 
                 <Button
-                    onClick={userAuthed ? handleLikeToggle : openAuthDialog}
+                    onClick={handleLikeToggle}
                     className="flex flex-col gap-1 text-white p-2 size-12"
                     variant={"ghost"}
                 >
@@ -97,6 +89,8 @@ export default function MobileInteractions({
                     isLoading={isLoading}
                     comments={currentStats.comments}
                     handleComment={handleComment}
+                    handleCommentDelete={handleCommentDelete}
+                    handleCommentLikeToggle={handleCommentLikeToggle}
                     commentText={commentMutation.text}
                     setCommentText={commentMutation.setText}
                 >
@@ -111,7 +105,7 @@ export default function MobileInteractions({
                 </CommentDrawer>
 
                 <Button
-                    onClick={userAuthed ? handleBookmark : openAuthDialog}
+                    onClick={handleBookmark}
                     className="flex flex-col gap-1 text-white p-2 size-12"
                     variant={"ghost"}
                 >

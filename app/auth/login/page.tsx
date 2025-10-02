@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useEmailAuth } from "@/hooks/auth/use-email-auth"
+import { toast } from "sonner"
 
 export default function Page() {
     const router = useRouter()
@@ -25,7 +26,11 @@ export default function Page() {
             return
         }
         const { success } = await login({ email, password })
-        if (success) router.push("/")
+
+        if (success) {
+            toast.success("Login successfull")
+            router.push("/")
+        }
     }
 
     const [showPassword, setShowPassword] = useState(false)

@@ -2,9 +2,7 @@ import { LucideLoader, LucideSend } from "lucide-react"
 import { FormEvent } from "react"
 
 import { VideoComment } from "#/videos"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import {
     Drawer,
     DrawerContent,
@@ -12,15 +10,20 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer"
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 import CommentCard from "./CommentCard"
 import NoCommentsCard from "./NoCommentsCard"
 
-
 interface CommentOperations {
-    comments: VideoComment[]
     handleComment: (e: FormEvent) => void
     setCommentText: (text: string) => void
+
+    handleCommentDelete: (commentId: string, videoId: string) => void
+    handleCommentLikeToggle: (commentId: string, videoId: string, wasLiked: boolean) => void
+
+    comments: VideoComment[]
     commentText: string
     isLoading: boolean
     isDisabled: boolean
@@ -32,6 +35,8 @@ export default function CommentDrawer({
     isDisabled,
     handleComment,
     setCommentText,
+    handleCommentDelete,
+    handleCommentLikeToggle,
     commentText,
     children,
 }: CommentOperations) {
@@ -47,7 +52,12 @@ export default function CommentDrawer({
                             <NoCommentsCard />
                         ) : (
                             comments.map((comment) => (
-                                <CommentCard key={comment.id} comment={comment} />
+                                <CommentCard
+                                    key={comment.id}
+                                    comment={comment}
+                                    handleCommentDelete={handleCommentDelete}
+                                    handleCommentLikeToggle={handleCommentLikeToggle}
+                                />
                             ))
                         )}
                     </ScrollArea>
