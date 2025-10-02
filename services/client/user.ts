@@ -39,7 +39,7 @@ export async function getWatchedVideos(userId: string) {
 
     const videoIds = profileStatsDocs.docs.map((v) => v.id)
 
-    return getMultiVideosData(videoIds, undefined)
+    return getMultiVideosData(videoIds)
 }
 
 export async function getVideoViews(userId: string) {
@@ -48,7 +48,7 @@ export async function getVideoViews(userId: string) {
     if (profileStatsDocs.empty) return []
 
     const videoIds = profileStatsDocs.docs.map((f) => f.id)
-    return getMultiVideosData(videoIds, userId)
+    return getMultiVideosData(videoIds)
 }
 
 export async function getLikedVideos(userId: string) {
@@ -57,7 +57,7 @@ export async function getLikedVideos(userId: string) {
     if (profileStatsDocs.empty) return []
 
     const videoIds = profileStatsDocs.docs.map((f) => f.id)
-    return getMultiVideosData(videoIds, userId)
+    return getMultiVideosData(videoIds)
 }
 
 export async function getBookmarkedVideos(userId: string) {
@@ -66,5 +66,5 @@ export async function getBookmarkedVideos(userId: string) {
     if (profileStatsDocs.empty) return []
 
     const videoIds = profileStatsDocs.docs.map((f) => f.id)
-    return getMultiVideosData(videoIds, userId)
+    return getMultiVideosData(videoIds)
 }

@@ -32,24 +32,29 @@ export default function useOptimisticVideo(
         const userBookmarked =
             optimist?.bookmarks?.bookmarked ?? activeVideo.bookmarks.includes(userId || "") ?? false
 
-        // Build comment map: real comments as base
-        const commentMap = new Map<string, VideoComment>()
-
-        ;(activeVideo.comments ?? []).forEach((c) => {
-            if (!c.deleted) commentMap.set(c.id, c)
-        })
-
-        // Apply optimistic comments as first-class entries
         const optimisticComments = optimist?.comments ?? []
+        const realComments = activeVideo.comments ?? []
+
+        // Separate new optimistic comments from updates to real comments
+        const newComments: VideoComment[] = []
+        const commentUpdates = new Map<string, VideoComment>()
+
         optimisticComments.forEach((c) => {
-            if (c.deleted) {
-                commentMap.delete(c.id)
-            } else {
-                commentMap.set(c.id, c)
+            const isRealComment = realComments.some((rc) => rc.id === c.id)
+            if (isRealComment) {
+                commentUpdates.set(c.id, c)
+            } else if (!c.deleted) {
+                newComments.push(c)
             }
         })
 
-        const finalComments = Array.from(commentMap.values())
+        // Apply updates to real comments and filter deleted
+        const updatedRealComments = realComments
+            .map((c) => commentUpdates.get(c.id) ?? c)
+            .filter((c) => !c.deleted)
+
+        // New comments first, then real comments (with updates)
+        const finalComments = [...newComments, ...updatedRealComments]
 
         return {
             likes: optimist?.likes?.count ?? activeVideo.likes.length ?? 0,
@@ -58,9 +63,9 @@ export default function useOptimisticVideo(
             views: optimist?.views ?? activeVideo.views ?? 0,
             downloads: optimist?.downloads ?? activeVideo.downloads ?? 0,
             comments: finalComments,
-            userBookmarked: userBookmarked,
-            userLiked: userLiked,
-            isFollowing: isFollowing,
+            userBookmarked,
+            userLiked,
+            isFollowing,
         }
     }, [activeVideo, userId, followings, optimisticStates])
 
@@ -72,7 +77,6 @@ export default function useOptimisticVideo(
         (videoId: string) => {
             const currentViews = optimisticStates.get(videoId)?.views ?? activeVideo.views
 
-            // only update if we haven't seen it
             if (!watchedVideos?.some((v) => v.id === videoId)) {
                 updateOptimisticState(videoId, { views: currentViews + 1 })
             }
@@ -125,7 +129,6 @@ export default function useOptimisticVideo(
             const currentStats = getCurrentStats()
             const newFollowing = !currentStats.isFollowing
             updateOptimisticState(videoId, { following: newFollowing })
-            console.log(newFollowing)
         },
         [getCurrentStats, updateOptimisticState],
     )
@@ -134,6 +137,21 @@ export default function useOptimisticVideo(
         (videoId: string, comment: VideoComment) => {
             const currentComments = optimisticStates.get(videoId)?.comments ?? []
             updateOptimisticState(videoId, { comments: [comment, ...currentComments] })
+        },
+        [optimisticStates, updateOptimisticState],
+    )
+
+    const replaceOptimisticComment = useCallback(
+        (videoId: string, tempId: string, realComment: VideoComment) => {
+            const optimist = optimisticStates.get(videoId)
+            const currentOptimistic = optimist?.comments ?? []
+
+            const tempIdx = currentOptimistic.findIndex((c) => c.id === tempId)
+            if (tempIdx !== -1) {
+                const updatedComments = [...currentOptimistic]
+                updatedComments[tempIdx] = realComment
+                updateOptimisticState(videoId, { comments: updatedComments })
+            }
         },
         [optimisticStates, updateOptimisticState],
     )
@@ -157,18 +175,16 @@ export default function useOptimisticVideo(
                     updateOptimisticState(videoId, { comments: newComments })
                 }
             } else {
-                const allComments = getCurrentStats().comments
-                const comment = allComments.find((c) => c.id === commentId)
-
-                if (comment) {
-                    const deletedComment = { ...comment, deleted: true }
+                const realComment = activeVideo.comments?.find((c) => c.id === commentId)
+                if (realComment) {
+                    const deletedComment = { ...realComment, deleted: true }
                     updateOptimisticState(videoId, {
                         comments: [deletedComment, ...currentOptimistic],
                     })
                 }
             }
         },
-        [optimisticStates, updateOptimisticState, getCurrentStats],
+        [optimisticStates, activeVideo, updateOptimisticState],
     )
 
     const updateOptimisticCommentLike = useCallback(
@@ -189,10 +205,7 @@ export default function useOptimisticVideo(
                 updateOptimisticState(videoId, { comments: updatedComments })
             } else {
                 const realComment = activeVideo.comments?.find((c) => c.id === commentId)
-                if (!realComment) {
-                    console.log(`[COMMENT NOT FOUND]`)
-                    return
-                }
+                if (!realComment) return
 
                 const updatedComment = {
                     ...realComment,
@@ -218,6 +231,7 @@ export default function useOptimisticVideo(
         updateOptimisticComment,
         removeOptimisticComment,
         updateOptimisticCommentLike,
+        replaceOptimisticComment,
         getCurrentStats,
         resetOptimisticStore,
     }

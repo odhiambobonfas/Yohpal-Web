@@ -110,6 +110,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         updateOptimisticComment,
         removeOptimisticComment,
         updateOptimisticCommentLike,
+        resetOptimisticStore,
         getCurrentStats,
     } = useOptimisticVideo(activeVideo, profile?.uid, userExtra?.[0], userExtra?.[1])
 
@@ -135,6 +136,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
             const existingIds = new Set(allVideos.map((v) => v.id))
             const uniqueNewVideos = newVideos.filter((v) => !existingIds.has(v.id))
             setAllVideos((prev) => [...prev, ...uniqueNewVideos])
+            resetOptimisticStore()
         }
 
         setIsFetchingNext(false)
@@ -144,6 +146,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         profile?.uid,
         isFetchingNext,
         loading,
+        resetOptimisticStore,
         getClientPaginatedVideos,
     ])
 
@@ -261,7 +264,6 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
             openAuthDialog()
             return
         }
-
         const text = commentTexts.get(videoId)?.trim()
         if (!text) return
 
@@ -272,8 +274,9 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
             return newMap
         })
 
+        const tempId = `temp-${Date.now()}`
         const tempComment = {
-            id: `temp-${Date.now()}`,
+            id: tempId,
             msg: text,
             username: profile?.userName,
             profile_picture: profile?.profile_picture,
@@ -281,6 +284,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
             likes: 0,
             replies: 0,
             userHasLiked: false,
+            videoId: activeVideo.id,
             deleted: false,
         } as unknown as VideoComment
 
@@ -288,9 +292,11 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
 
         const res = await addComment(videoId, text)
 
-        if (!res?.commentId) {
+        if (res?.commentId) {
+            // TODO(fc8017f17e82):: replace temp comment Id with the one from db
+        } else {
             console.error("Failed to add comment:", mutationError)
-            removeOptimisticComment(videoId, tempComment.id)
+            removeOptimisticComment(videoId, tempId)
             // Restore text on error
             setCommentTexts((prev) => {
                 const newMap = new Map(prev)
@@ -316,8 +322,6 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
 
         updateOptimisticCommentLike(commentId, videoId)
         toggleCommentLike(commentId, videoId, wasLiked)
-        console.log(videoId, " > ", commentId, "\n", mutationError)
-        console.log("comment like triggered", mutationError)
     }
 
     const handleCommentDelete = (commentId: string, videoId: string) => {
@@ -326,7 +330,6 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
             return
         }
 
-        console.log(videoId, " > ", commentId, "\n", mutationError)
         removeOptimisticComment(videoId, commentId)
         deleteComment(commentId, videoId)
     }
