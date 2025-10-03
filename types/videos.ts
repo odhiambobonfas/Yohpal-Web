@@ -115,3 +115,15 @@ export interface OptimisticVideoState {
     comments?: VideoComment[]
     following?: boolean
 }
+
+export interface VideoPlayerProps {
+    videoId: string
+    videoSrc: string
+    activeVideoId: string
+    thumbnail: string
+    index: number
+    activeIndex: number
+    onEnded?: () => void
+    autoScrollEnabled: boolean
+    setAutoScrollEnabled: (val: boolean) => void
+}

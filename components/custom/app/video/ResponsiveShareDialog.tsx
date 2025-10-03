@@ -1,7 +1,7 @@
 "use client"
 
-import * as React from "react"
 import { LucideCopy } from "lucide-react"
+import * as React from "react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -23,8 +23,8 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer"
-import { useIsMobile } from "@/hooks/use-mobile"
 import { Input } from "@/components/ui/input"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export function ResponsiveShareDialog({
     children,

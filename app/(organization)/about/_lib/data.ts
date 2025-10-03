@@ -1,12 +1,9 @@
 import {
-    LucideClock,
     LucideCog,
     LucideEdit,
     LucideLightbulb,
-    LucideMail,
     LucideMapPin,
     LucideMessageCircleDashed,
-    LucidePhone,
     LucideRocket,
     LucideSearch,
     LucideShieldCheck,
@@ -150,11 +147,4 @@ and delivering user-centric, high-performance solutions.`,
         description: `Monicah crafts engaging and accessible user experiences, translating ideas
       into intuitive designs that connect users seamlessly with YohPal’s features`,
     },
-]
-
-export const contactInfo = [
-    { icon: LucideMapPin, title: "Our Address", details: "Nairobi, Kenya" },
-    { icon: LucidePhone, title: "Contact Number", details: "+254 758 873 938" },
-    { icon: LucideMail, title: "Contact Email", details: "support@yohpal.com" },
-    { icon: LucideClock, title: "Opening Hours", details: "Open 24/7" },
 ]

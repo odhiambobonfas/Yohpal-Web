@@ -8,7 +8,6 @@ import { VideoComment, VideoWithStats } from "#/videos"
 import ClientOnly from "@/components/custom/ClientOnly"
 import DebugWindow from "@/components/custom/DebugWindow"
 import MobileInteractions from "@/components/custom/app/video/MobileInteractions"
-import { DEFAULT_THUMBNAIL } from "@/constants"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useUser } from "@/hooks/user/use-user"
 import { useUserMutation } from "@/hooks/user/use-user-mutation"
@@ -446,7 +445,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                             error={mutationError || userMutationError}
                             currentStats={currentStats}
                             userFollowed={currentStats.isFollowing}
-                            ownerProfilePicture={ownerProfile?.profile_picture || DEFAULT_THUMBNAIL}
+                            ownerProfilePicture={ownerProfile!.profile_picture}
                             video={activeVideo}
                             commentMutation={{
                                 text: commentTexts.get(activeVideo.id) ?? "",
@@ -472,9 +471,8 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                                 error={mutationError || userMutationError}
                                 currentStats={currentStats}
                                 userFollowed={currentStats.isFollowing}
-                                ownerProfilePicture={
-                                    ownerProfile?.profile_picture || DEFAULT_THUMBNAIL
-                                }
+                                // we are sure we always have a profile picture
+                                ownerProfilePicture={ownerProfile!.profile_picture}
                                 video={activeVideo}
                                 commentMutation={{
                                     text: commentTexts.get(activeVideo.id) ?? "",

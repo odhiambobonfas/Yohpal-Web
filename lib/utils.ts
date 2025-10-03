@@ -28,6 +28,8 @@ export function serializeTimestamp(timestamp: string | FirebaseTimestamp): strin
 }
 
 export function replaceWithCDN(link: string): string {
+    if (link === DEFAULT_THUMBNAIL) return link
+
     const regex = new RegExp(`\\b${OLD_URL}\\b`, "g")
     const newLink = link.replace(regex, CDN_URL)
     return newLink

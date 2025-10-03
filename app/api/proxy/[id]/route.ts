@@ -3,7 +3,7 @@ import { Video } from "@/types/videos"
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
-    if (!id) return new Response("", { status: 403, statusText: "Missing require field" })
+    if (!id) return new Response("", { status: 403, statusText: "Missing required field" })
 
     const videoDoc = await db.collection("videos").doc(id).get()
     if (!videoDoc.exists) return new Response("", { status: 404, statusText: "Video not found" })

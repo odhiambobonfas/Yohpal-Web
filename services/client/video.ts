@@ -63,7 +63,7 @@ export async function getVideos(
 
 async function getVideosFromProfile(
     userId: string,
-    loggedInUserId: string,
+    loggedInUserId: string | undefined,
     videoId: string | undefined,
 ) {
     let videoQuery = query(

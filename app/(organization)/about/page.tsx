@@ -1,13 +1,9 @@
-"use client"
-import { LucideBell, LucideCheck, LucideCheckCircle2, LucideCopyright } from "lucide-react"
+import { LucideBell, LucidePhone,LucideMail, LucideClock, LucideCheck, LucideCheckCircle2, LucideCopyright, LucideMapPin } from "lucide-react"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 
-import { Button } from "@/components/ui/button"
-
+import { getCompanyGeneralSettings } from "@/services/server/org/settings"
 import Link from "next/link"
 import {
-    contactInfo,
     founderDetails,
     heroCardData,
     howWeWorkList,
@@ -17,8 +13,15 @@ import {
     whoWeAreList,
 } from "./_lib/data"
 
-export default function Page() {
-    const router = useRouter()
+export default async function Page() {
+    const settings = await getCompanyGeneralSettings()
+
+    const contactInfo = [
+        { icon: LucideMapPin, title: "Our Address", details: settings?.companyAddress },
+        { icon: LucidePhone, title: "Contact Number", details: settings?.companyPhone },
+        { icon: LucideMail, title: "Contact Email", details: settings?.companyEmail },
+        { icon: LucideClock, title: "Opening Hours", details: "Open 24/7" },
+    ]
     return (
         <>
             <section className="dark:bg-primary/20 bg-primary/5 py-20 p-2 flex flex-col gap-4 items-center">
@@ -42,12 +45,12 @@ export default function Page() {
                                 you&apos;re a creator, hustler, shopper, or entrepreneur — YohPal is
                                 your all-in-one platform to grow, connect, and thrive.
                             </p>
-                            <Button
-                                className="w-fit cursor-pointer py-6 text-lg px-5 hover:-translate-y-0.5 transition-all ease-in-out duration-200"
-                                onClick={() => router.push("/")}
+                            <Link
+                                href={"/"}
+                                className="bg-primary rounded-lg w-fit cursor-pointer py-3 text-lg px-4 text-primary-foreground hover:-translate-y-0.5 transition-all ease-in-out duration-200"
                             >
                                 Explore the platform
-                            </Button>
+                            </Link>
                             <StoreButtons />
                         </div>
 

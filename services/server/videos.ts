@@ -134,7 +134,7 @@ async function getVideoStats(videoId: string, loggedInUserId: string | undefined
     }
 }
 
-export async function getUserVideoUploads(userId: string) {
+export async function getUserVideoUploads(userId: string, loggedInUserId: string | undefined) {
     const videoUploads = await db
         .collection("videos")
         .where("userId", "==", userId)
@@ -151,7 +151,7 @@ export async function getUserVideoUploads(userId: string) {
             const videoData = v.data()
             delete videoData["campaignMeta"]
 
-            const videoStats = await getVideoStats(v.id)
+            const videoStats = await getVideoStats(v.id, loggedInUserId)
 
             return {
                 id: v.id,

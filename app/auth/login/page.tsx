@@ -23,6 +23,7 @@ export default function Page() {
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault()
         if (!email || !password) {
+            toast.error("All fields are required")
             return
         }
         const { success } = await login({ email, password })

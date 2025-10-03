@@ -1,7 +1,66 @@
+import withPWAInit from "@ducanh2912/next-pwa"
 import type { NextConfig } from "next"
 
-const nextConfig: NextConfig = {
-    /* config options here */
+const securityHeaders = [
+    {
+        key: "Content-Security-Policy",
+        value: `
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https:;
+      style-src 'self' 'unsafe-inline' https:;
+      img-src 'self' data: https: blob:;
+      font-src 'self' https:;
+      connect-src 'self' https: wss:;
+      manifest-src 'self';
+      worker-src 'self' blob:;
+      frame-ancestors 'none';
+      object-src 'none';
+      base-uri 'self';
+    `
+            .replace(/\s{2,}/g, " ")
+            .trim(),
+    },
+    {
+        key: "Referrer-Policy",
+        value: "strict-origin-when-cross-origin",
+    },
+    {
+        key: "X-Frame-Options",
+        value: "DENY",
+    },
+    {
+        key: "X-Content-Type-Options",
+        value: "nosniff",
+    },
+    {
+        key: "X-DNS-Prefetch-Control",
+        value: "on",
+    },
+    {
+        key: "Strict-Transport-Security",
+        value: "max-age=63072000; includeSubDomains; preload",
+    },
+    {
+        key: "Permissions-Policy",
+        value: "camera=(), microphone=(), geolocation=(), payment=()",
+    },
+]
+
+const withPWAFunc = withPWAInit({
+    dest: "public",
+    cacheOnFrontEndNav: true,
+    cacheStartUrl: true,
+})
+
+const nextConfig = {
+    reactStrictMode: true,
+    async headers() {
+        return [
+            {
+                source: "/(.*)",
+                headers: securityHeaders,
+            },
+        ]
+    },
     images: {
         remotePatterns: [
             {
@@ -28,6 +87,6 @@ const nextConfig: NextConfig = {
         ],
         qualities: [20, 25, 50, 75],
     },
-}
+} satisfies NextConfig
 
-export default nextConfig
+export default withPWAFunc(nextConfig)
