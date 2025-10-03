@@ -27,3 +27,11 @@ Next doesnt play nice with nested objects, especially when passing them down fro
 server rendered pages ie initial page, to go around this, I just *delete* the `campaignMeta`
 field until I find a better of handling it, I though about stringifying it, passing it then
 parsing it back to JSON, but that was annoying and there has to be a better way
+
+
+TODO(3467633a0185) :: Get policies dynamically/correct ones
+---
+Retrieve these policies from somewhere dynamic or remind Md. Elizabeth to share the
+document and basically summarize all of them into the different scenarios, explanations
+aren't needed.
+

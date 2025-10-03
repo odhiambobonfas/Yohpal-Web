@@ -32,6 +32,7 @@ const swrConfig = {
     errorRetryCount: 2,
 }
 
+// TODO(c33d72afe614) :: Factor out all handlers
 export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
     const [allVideos, setAllVideos] = useState(videos)
     const [activeId, setActiveId] = useState<string | null>(videos[0]?.id ?? null)

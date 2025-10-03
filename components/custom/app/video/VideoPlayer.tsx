@@ -1,27 +1,11 @@
 "use client"
 import { VideoPlayerProps } from "#/videos"
+import VideoPlayerSettings from "@/components/custom/app/video/VideoPlayerSettings"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import { DEFAULT_THUMBNAIL } from "@/constants"
 import { useAutoPauseVideo } from "@/hooks/videos/auto-pause-video"
-import {
-    LucideArrowBigUpDash,
-    LucideFlag,
-    LucidePlay,
-    LucideVolume2,
-    LucideVolumeOff,
-    MoreVertical,
-} from "lucide-react"
+import { LucidePlay, LucideVolume2, LucideVolumeOff } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 
@@ -114,7 +98,7 @@ export default function VideoPlayer({
     }
 
     return (
-        <div className="h-full w-full flex m-0 py-3 px-1">
+        <div className="h-full w-full flex m-0 pb-3 px-1">
             <Card className="h-full p-0 m-0 w-full border-none overflow-hidden rounded-lg md:rounded-lg">
                 <CardContent className="h-full p-0 relative flex items-center justify-center">
                     <Button
@@ -127,42 +111,11 @@ export default function VideoPlayer({
                             <LucideVolume2 className="size-5 fill-current" />
                         )}
                     </Button>
-                    <DropdownMenu modal={false}>
-                        <DropdownMenuTrigger asChild className="absolute top-2 right-2 z-10">
-                            <Button className="bg-transparent hover:bg-transparent" size="icon">
-                                <MoreVertical className="fill-current" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            className="min-w-56 relative"
-                            align="end"
-                            avoidCollisions
-                        >
-                            <DropdownMenuLabel className="text-muted-foreground">
-                                Settings
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                                className="w-full inline-flex items-center"
-                                onSelect={(e) => e.preventDefault()}
-                            >
-                                <LucideArrowBigUpDash />
-                                <div className="flex flex-1 flex-row justify-between p-0">
-                                    <Label htmlFor="enableAutoScroll">Autoscroll</Label>
-
-                                    <Switch
-                                        id="enableAutoScroll"
-                                        checked={autoScrollEnabled}
-                                        onCheckedChange={(checked) => setAutoScrollEnabled(checked)}
-                                    />
-                                </div>
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem className="">
-                                <LucideFlag /> Report
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <VideoPlayerSettings
+                        videoId={activeVideoId}
+                        autoScrollEnabled={autoScrollEnabled}
+                        updateAutoScroll={setAutoScrollEnabled}
+                    />
 
                     {!isPlaying && (
                         <Button
@@ -178,7 +131,7 @@ export default function VideoPlayer({
                         className="w-full h-full object-cover"
                         loop={!autoScrollEnabled}
                         playsInline
-                        muted
+                        muted={isMuted}
                         onClick={togglePlayPause}
                         onLoadedData={() => setIsLoaded(true)}
                         onEnded={autoScrollEnabled ? onEnded : undefined}
