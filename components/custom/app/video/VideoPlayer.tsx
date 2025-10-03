@@ -14,7 +14,14 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { DEFAULT_THUMBNAIL } from "@/constants"
 import { useAutoPauseVideo } from "@/hooks/videos/auto-pause-video"
-import { LucidePlay, LucideVolume2, LucideVolumeOff, MoreVertical } from "lucide-react"
+import {
+    LucideArrowBigUpDash,
+    LucideFlag,
+    LucidePlay,
+    LucideVolume2,
+    LucideVolumeOff,
+    MoreVertical,
+} from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 
@@ -135,21 +142,25 @@ export default function VideoPlayer({
                                 Settings
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <div className="flex flex-col space-x-2 p-2">
-                                <DropdownMenuItem className="flex flex-col" />
-                                <div className="flex flex-row">
+                            <DropdownMenuItem
+                                className="w-full inline-flex items-center"
+                                onSelect={(e) => e.preventDefault()}
+                            >
+                                <LucideArrowBigUpDash />
+                                <div className="flex flex-1 flex-row justify-between p-0">
+                                    <Label htmlFor="enableAutoScroll">Autoscroll</Label>
+
                                     <Switch
                                         id="enableAutoScroll"
                                         checked={autoScrollEnabled}
                                         onCheckedChange={(checked) => setAutoScrollEnabled(checked)}
                                     />
-                                    <Label className="ms-3" htmlFor="enableAutoScroll">
-                                        Autoscroll
-                                    </Label>
                                 </div>
-                                <DropdownMenuItem />
-                                <DropdownMenuItem className="">Report</DropdownMenuItem>
-                            </div>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem className="">
+                                <LucideFlag /> Report
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
 

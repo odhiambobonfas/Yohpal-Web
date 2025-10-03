@@ -95,7 +95,7 @@ export interface InteractionMutationProps {
     }
 
     userFollowed: boolean
-    ownerProfilePicture: string
+    ownerProfilePicture: string | undefined
 
     video: Video
 
