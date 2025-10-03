@@ -16,7 +16,8 @@ export async function getUserProfile(userId: string) {
     return { id: userDoc.id, ...data } as unknown as YPUser
 }
 
-export async function getUserfollowers(userId: string) {
+export async function getUserfollowers(userId: string, limit: number | undefined) {
+    // use query limit
     const userFollowersRef = collection(db, "users", userId, "followers", "organic", "userIds")
     const userFollowersDocs = await getDocs(userFollowersRef)
     if (userFollowersDocs.empty) return []
@@ -24,7 +25,7 @@ export async function getUserfollowers(userId: string) {
     return userFollowersDocs.docs.map((f) => f.id)
 }
 
-export async function getUserfollowing(userId: string) {
+export async function getUserfollowing(userId: string, limit: number | undefined) {
     const userFollowersRef = collection(db, "users", userId, "following", "organic", "userIds")
     const userFollowersDocs = await getDocs(userFollowersRef)
     if (userFollowersDocs.empty) return []

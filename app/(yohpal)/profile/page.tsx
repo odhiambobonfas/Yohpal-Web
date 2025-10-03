@@ -1,11 +1,11 @@
 "use client"
 import useSWR from "swr"
 
-import { useAuth } from "@/providers/Auth"
-import { useUser } from "@/hooks/user/use-user"
 import ProfileHeader from "@/components/custom/app/profile/ProfileHeader"
-import ProfileVideosSection from "@/components/custom/app/profile/ProfileVideoSection"
 import ProfileHeaderLoading from "@/components/custom/app/profile/ProfileHeaderLoading"
+import ProfileVideosSection from "@/components/custom/app/profile/ProfileVideoSection"
+import { useUser } from "@/hooks/user/use-user"
+import { useAuth } from "@/providers/Auth"
 
 export default function Page() {
     const { profile } = useAuth()

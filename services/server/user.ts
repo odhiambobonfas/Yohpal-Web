@@ -1,5 +1,5 @@
-import { db } from "@/lib/firebase/firebase.admin"
 import { YPUser } from "#/users"
+import { db } from "@/lib/firebase/firebase.admin"
 import { DOC } from "@/services"
 
 import { getUserVideoUploads } from "./videos"
@@ -11,6 +11,7 @@ export async function getUserProfile(userId: string) {
     const user = userDoc.data() as unknown as YPUser
 
     return {
+        uid: user.uid,
         userName: user.userName,
         email: user.email,
         bio: user.bio,

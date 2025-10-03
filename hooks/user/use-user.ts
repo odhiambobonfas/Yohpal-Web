@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 
+import { FOLLOWER_FOLLOWING_LIMIT } from "@/constants"
 import { getError } from "@/lib/utils"
 import {
     getBookmarkedVideos,
@@ -38,8 +39,8 @@ export function useUser() {
 
             const [uploaded, followers, following, liked, viewed] = await Promise.all([
                 getUserUploadedVideos(userId),
-                getUserfollowers(userId),
-                getUserfollowing(userId),
+                getUserfollowers(userId, undefined),
+                getUserfollowing(userId, undefined),
                 getLikedVideos(userId),
                 getVideoViews(userId),
             ])
@@ -85,7 +86,7 @@ export function useUser() {
         try {
             setLoading(true)
             setError(null)
-            return await getUserfollowers(userId)
+            return await getUserfollowers(userId, undefined)
         } catch (e) {
             const errorMsg = getError(e) || "Failed to get user followers"
             setError(errorMsg)
@@ -99,7 +100,7 @@ export function useUser() {
         try {
             setLoading(true)
             setError(null)
-            return await getUserfollowing(userId)
+            return await getUserfollowing(userId, undefined)
         } catch (e) {
             const errorMsg = getError(e) || "Failed to get user following"
             setError(errorMsg)
@@ -109,6 +110,39 @@ export function useUser() {
         }
     }
 
+    const getFollowersProfile = async (userId: string) => {
+        try {
+            setLoading(true)
+            setError(null)
+            return (
+                await Promise.all(
+                    (await getUserfollowers(userId, FOLLOWER_FOLLOWING_LIMIT)).map(
+                        async (u) => await getUserProfile(u),
+                    ),
+                )
+            ).filter((u) => u != null)
+        } catch (e) {
+            const errorMsg = getError(e) || "Failed to get user followers profiles"
+            setError(errorMsg)
+        }
+    }
+
+    const getFollowingProfile = async (userId: string) => {
+        try {
+            setLoading(true)
+            setError(null)
+            return (
+                await Promise.all(
+                    (await getUserfollowing(userId, FOLLOWER_FOLLOWING_LIMIT)).map(
+                        async (u) => await getUserProfile(u),
+                    ),
+                )
+            ).filter((u) => u != null)
+        } catch (e) {
+            const errorMsg = getError(e) || "Failed to get user following profiles"
+            setError(errorMsg)
+        }
+    }
     return {
         loading,
         error,
@@ -117,5 +151,7 @@ export function useUser() {
         getProfileStats,
         getFollowers,
         getFollowing,
+        getFollowersProfile,
+        getFollowingProfile,
     }
 }

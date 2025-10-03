@@ -3,10 +3,12 @@ import { useEffect, useState } from "react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { useUserMutation } from "@/hooks/user/use-user-mutation"
 import { useAuth } from "@/providers/Auth"
 import { YPUser } from "@/types/users"
 import { LucideUserMinus2, LucideUserPlus2 } from "lucide-react"
+import ProfileDetails from "./ProfileDetils"
 interface ProfileHeaderProps {
     user: YPUser | null
     stats:
@@ -50,7 +52,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
 
         await toggleFollow(targetUserId, isFollowing)
     }
-
+    console.log(user, profileType)
     return (
         <div className="min-h-[30%] flex flex-col p-2 items-center md:flex-row  md:justify-center">
             <div className="flex-shrink-0">
@@ -121,16 +123,42 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                         <span className="text-muted-foreground">{stats?.uploadedStat}</span>
                         <span className="text-xs">Posts</span>
                     </div>
-                    <div className="bg-accent py-2 px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                        <span className="text-muted-foreground">
-                            {stats?.followersStat?.length}
-                        </span>
-                        <span className="text-xs ">Followers</span>
-                    </div>
-                    <div className="bg-accent py-2 px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                        <span className="text-muted-foreground">{stats?.followingStat}</span>
-                        <span className="text-xs">Following</span>
-                    </div>
+                    <Dialog>
+                        <DialogTrigger>
+                            <div className="bg-accent py-2 px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                                <span className="text-muted-foreground">
+                                    {stats?.followersStat?.length}
+                                </span>
+                                <span className="text-xs ">Followers</span>
+                            </div>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <ProfileDetails
+                                view="followers"
+                                profileType={profileType}
+                                userId={user?.uid}
+                            />
+                        </DialogContent>
+                    </Dialog>
+
+                    <Dialog>
+                        <DialogTrigger>
+                            <div className="bg-accent py-2 px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                                <span className="text-muted-foreground">
+                                    {stats?.followingStat}
+                                </span>
+                                <span className="text-xs">Following</span>
+                            </div>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <ProfileDetails
+                                view="following"
+                                profileType={profileType}
+                                userId={user?.uid}
+                            />
+                        </DialogContent>
+                    </Dialog>
+
                     <div className="bg-accent py-2 px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
                         <span className="text-muted-foreground">{stats?.likedStat}</span>
                         <span className="text-xs">Liked</span>
