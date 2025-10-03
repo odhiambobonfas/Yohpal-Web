@@ -24,7 +24,7 @@ export async function getUserProfileStats(userId: string) {
     const [followers, following, uploadedVideos, views, likes] = await Promise.all([
         getFollowersCount(userId),
         getFollowingCount(userId),
-        getUserVideoUploads(userId),
+        getUserVideoUploads(userId, undefined),
         getViewsCount(userId),
         getLikedCount(userId),
     ])

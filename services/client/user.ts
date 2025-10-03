@@ -4,6 +4,8 @@ import { YPUser } from "#/users"
 import { db } from "@/lib/firebase/firebase.browser"
 import { DOC } from "@/services"
 
+import { DEFAULT_THUMBNAIL } from "@/constants"
+import { replaceWithCDN } from "@/lib/utils"
 import { getMultiVideosData } from "./video"
 
 export async function getUserProfile(userId: string) {
@@ -13,7 +15,11 @@ export async function getUserProfile(userId: string) {
     if (!userDoc.exists()) return null
 
     const data = userDoc.data()
-    return { id: userDoc.id, ...data } as unknown as YPUser
+    return {
+        id: userDoc.id,
+        ...data,
+        profile_picture: replaceWithCDN(data.profile_picture ?? DEFAULT_THUMBNAIL),
+    } as unknown as YPUser
 }
 
 export async function getUserfollowers(userId: string, limit: number | undefined) {

@@ -8,7 +8,6 @@ import { VideoComment, VideoWithStats } from "#/videos"
 import ClientOnly from "@/components/custom/ClientOnly"
 import DebugWindow from "@/components/custom/DebugWindow"
 import MobileInteractions from "@/components/custom/app/video/MobileInteractions"
-import { DEFAULT_THUMBNAIL } from "@/constants"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useUser } from "@/hooks/user/use-user"
 import { useUserMutation } from "@/hooks/user/use-user-mutation"
@@ -21,6 +20,7 @@ import { getWatchedVideos } from "@/services/client/user"
 import { Button } from "@/components/ui/button"
 import { LucideChevronDown, LucideChevronUp } from "lucide-react"
 import DesktopPlayerInteractions from "./DesktopPlayerInteractions"
+import InteractionsLoginPrompt from "./InteractionsLoginPrompt"
 import VideoPlayer from "./VideoPlayer"
 
 const FETCH_TRIGGER_OFFSET = 10
@@ -76,6 +76,8 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         shareVideo,
         downloadVideo,
         addView,
+        deleteComment,
+        toggleCommentLike,
     } = useVideoMutation()
     const {
         loading: userMutationLoading,
@@ -106,6 +108,8 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         updateOptimisticFollow,
         updateOptimisticComment,
         removeOptimisticComment,
+        updateOptimisticCommentLike,
+        resetOptimisticStore,
         getCurrentStats,
     } = useOptimisticVideo(activeVideo, profile?.uid, userExtra?.[0], userExtra?.[1])
 
@@ -126,15 +130,24 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         setIsFetchingNext(true)
         setLastFetchedVideoId(lastVideo.id)
 
-        const newVideos = await getClientPaginatedVideos(lastVideo.id)
+        const newVideos = await getClientPaginatedVideos(lastVideo.id, profile?.uid)
         if (newVideos?.length) {
             const existingIds = new Set(allVideos.map((v) => v.id))
             const uniqueNewVideos = newVideos.filter((v) => !existingIds.has(v.id))
             setAllVideos((prev) => [...prev, ...uniqueNewVideos])
+            resetOptimisticStore()
         }
 
         setIsFetchingNext(false)
-    }, [allVideos, lastFetchedVideoId, isFetchingNext, loading, getClientPaginatedVideos])
+    }, [
+        allVideos,
+        lastFetchedVideoId,
+        profile?.uid,
+        isFetchingNext,
+        loading,
+        resetOptimisticStore,
+        getClientPaginatedVideos,
+    ])
 
     useEffect(() => {
         if (loading || isFetchingNext) return
@@ -184,8 +197,12 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         localStorage.setItem("autoscrollEnabled", String(autoScrollEnabled))
     }, [autoScrollEnabled])
 
+    // Handlers
     const handleFollowToggle = async (videoId: string) => {
-        if (!isAuthenticated) return
+        if (!isAuthenticated) {
+            openAuthDialog()
+            return
+        }
 
         const currentStats = getCurrentStats()
         updateOptimisticFollow(videoId)
@@ -194,7 +211,10 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
     }
 
     const handleLikeToggle = async (videoId: string) => {
-        if (!isAuthenticated) return
+        if (!isAuthenticated) {
+            openAuthDialog()
+            return
+        }
 
         const currentStats = getCurrentStats()
         updateOptimisticLike(videoId)
@@ -203,7 +223,10 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
     }
 
     const handleBookmark = async (videoId: string) => {
-        if (!isAuthenticated) return
+        if (!isAuthenticated) {
+            openAuthDialog()
+            return
+        }
 
         const currentStats = getCurrentStats()
         updateOptimisticBookmark(videoId)
@@ -212,7 +235,10 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
     }
 
     const handleShare = async (videoId: string) => {
-        if (!isAuthenticated) return
+        if (!isAuthenticated) {
+            openAuthDialog()
+            return
+        }
 
         updateOptimisticShare(videoId)
         await shareVideo(videoId)
@@ -233,8 +259,10 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
 
     const handleComment = async (videoId: string, e: React.FormEvent) => {
         e.preventDefault()
-        if (!isAuthenticated) return
-
+        if (!isAuthenticated) {
+            openAuthDialog()
+            return
+        }
         const text = commentTexts.get(videoId)?.trim()
         if (!text) return
 
@@ -245,23 +273,29 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
             return newMap
         })
 
+        const tempId = `temp-${Date.now()}`
         const tempComment = {
-            id: `temp-${Date.now()}`,
+            id: tempId,
             msg: text,
             username: profile?.userName,
             profile_picture: profile?.profile_picture,
             isReply: false,
             likes: 0,
             replies: 0,
+            userHasLiked: false,
+            videoId: activeVideo.id,
+            deleted: false,
         } as unknown as VideoComment
 
         updateOptimisticComment(videoId, tempComment)
 
         const res = await addComment(videoId, text)
 
-        if (!res?.commentId) {
+        if (res?.commentId) {
+            // TODO(fc8017f17e82):: replace temp comment Id with the one from db
+        } else {
             console.error("Failed to add comment:", mutationError)
-            removeOptimisticComment(videoId, tempComment.id)
+            removeOptimisticComment(videoId, tempId)
             // Restore text on error
             setCommentTexts((prev) => {
                 const newMap = new Map(prev)
@@ -279,6 +313,26 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         })
     }
 
+    const handleCommentLikeToggle = (commentId: string, videoId: string, wasLiked: boolean) => {
+        if (!isAuthenticated) {
+            openAuthDialog()
+            return
+        }
+
+        updateOptimisticCommentLike(commentId, videoId)
+        toggleCommentLike(commentId, videoId, wasLiked)
+    }
+
+    const handleCommentDelete = (commentId: string, videoId: string) => {
+        if (!isAuthenticated) {
+            openAuthDialog()
+            return
+        }
+
+        removeOptimisticComment(videoId, commentId)
+        deleteComment(commentId, videoId)
+    }
+
     // fixes the different screen sizing issues
     // tells virtualizer to re-measure when the layout is loaded to the dom
     const stableRemeasure = useCallback(() => rowVirtualizer.measure(), [rowVirtualizer])
@@ -288,6 +342,9 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
 
     const isLoading = userMutationLoading || followingsLoading || mutationLoading
     const currentStats = getCurrentStats()
+
+    const [showAuthDialog, setShowAuthDialog] = useState(false)
+    const openAuthDialog = () => setShowAuthDialog(true)
 
     return (
         <>
@@ -300,6 +357,12 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                 <div>Fetching: {isFetchingNext ? "Yes" : "No"}</div>
                 <div>parentSize: {parentRef.current?.clientHeight}</div>
             </DebugWindow>
+
+            <InteractionsLoginPrompt
+                open={showAuthDialog}
+                closePrompt={() => setShowAuthDialog(false)}
+            />
+
             <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
                 <ClientOnly>
                     {!isMobile && (
@@ -371,6 +434,8 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                     {isMobile ? (
                         <MobileInteractions
                             handleComment={(e: React.FormEvent) => handleComment(activeVideo.id, e)}
+                            handleCommentDelete={handleCommentDelete}
+                            handleCommentLikeToggle={handleCommentLikeToggle}
                             handleDownload={() => handleDownload(activeVideo.id)}
                             handleShare={() => handleShare(activeVideo.id)}
                             handleBookmark={() => handleBookmark(activeVideo.id)}
@@ -380,8 +445,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                             error={mutationError || userMutationError}
                             currentStats={currentStats}
                             userFollowed={currentStats.isFollowing}
-                            userAuthed={isAuthenticated}
-                            ownerProfilePicture={ownerProfile?.profile_picture || DEFAULT_THUMBNAIL}
+                            ownerProfilePicture={ownerProfile?.profile_picture}
                             video={activeVideo}
                             commentMutation={{
                                 text: commentTexts.get(activeVideo.id) ?? "",
@@ -396,6 +460,8 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                                 handleComment={(e: React.FormEvent) =>
                                     handleComment(activeVideo.id, e)
                                 }
+                                handleCommentDelete={handleCommentDelete}
+                                handleCommentLikeToggle={handleCommentLikeToggle}
                                 handleDownload={() => handleDownload(activeVideo.id)}
                                 handleShare={() => handleShare(activeVideo.id)}
                                 handleBookmark={() => handleBookmark(activeVideo.id)}
@@ -405,10 +471,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                                 error={mutationError || userMutationError}
                                 currentStats={currentStats}
                                 userFollowed={currentStats.isFollowing}
-                                userAuthed={isAuthenticated}
-                                ownerProfilePicture={
-                                    ownerProfile?.profile_picture || DEFAULT_THUMBNAIL
-                                }
+                                ownerProfilePicture={ownerProfile?.profile_picture}
                                 video={activeVideo}
                                 commentMutation={{
                                     text: commentTexts.get(activeVideo.id) ?? "",

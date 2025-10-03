@@ -3,14 +3,18 @@ import { useState } from "react"
 import { getError } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
 import {
-    bookmarkVideo,
-    commentVideo,
+    addCommentAction,
     deleteCommentAction,
+    likeCommentAction,
+    unlikeCommentAction,
+} from "@/services/client/video-comments-mutations"
+import {
+    bookmarkVideoAction,
     downloadVideoAction,
-    likeVideo,
+    likeVideoAction,
     shareVideoAction,
-    unbookmarkVideo,
-    unlikeVideo,
+    unbookmarkVideoAction,
+    unlikeVideoAction,
     updateViewAction,
 } from "@/services/client/video-mutations"
 import { VideoCommentInteraction, VideoInteraction } from "@/types/videos"
@@ -50,10 +54,10 @@ export default function useVideoMutation() {
             }
 
             if (isCurrentlyLiked) {
-                await unlikeVideo(interaction)
+                await unlikeVideoAction(interaction)
                 return { liked: false }
             } else {
-                await likeVideo(interaction)
+                await likeVideoAction(interaction)
                 return { liked: true }
             }
         })
@@ -66,10 +70,10 @@ export default function useVideoMutation() {
             }
 
             if (isCurrentlyBookmarked) {
-                await unbookmarkVideo(interaction)
+                await unbookmarkVideoAction(interaction)
                 return { bookmarked: false }
             } else {
-                await bookmarkVideo(interaction)
+                await bookmarkVideoAction(interaction)
                 return { bookmarked: true }
             }
         })
@@ -77,22 +81,14 @@ export default function useVideoMutation() {
 
     const shareVideo = async (videoId: string) => {
         return mutateWithAuth(async () => {
-            const interaction: VideoInteraction = {
-                videoId,
-                userId: profile!.uid,
-            }
-            await shareVideoAction(interaction)
+            await shareVideoAction({ videoId, userId: profile!.uid })
             return { shared: true }
         })
     }
 
     const downloadVideo = async (videoId: string) => {
         return mutateWithAuth(async () => {
-            const interaction: VideoInteraction = {
-                videoId,
-                userId: profile!.uid,
-            }
-            await downloadVideoAction(interaction)
+            await downloadVideoAction({ videoId, userId: profile!.uid })
             return { downloaded: true }
         })
     }
@@ -112,7 +108,7 @@ export default function useVideoMutation() {
                 isReply: false,
             }
 
-            const commentId = await commentVideo(comment)
+            const commentId = await addCommentAction(comment)
             return { commentId, comment }
         })
     }
@@ -123,14 +119,29 @@ export default function useVideoMutation() {
         })
     }
 
+    const toggleCommentLike = async (
+        commentId: string,
+        videoId: string,
+        currentlyLiked: boolean,
+    ) => {
+        return mutateWithAuth(async () => {
+            if (!currentlyLiked) {
+                likeCommentAction({ commentId, userId: profile!.uid, videoId })
+            } else {
+                unlikeCommentAction({ commentId, userId: profile!.uid, videoId })
+            }
+        })
+    }
+
     return {
         loading,
         error,
         toggleLike,
         toggleBookmark,
-        deleteComment,
         shareVideo,
         addComment,
+        deleteComment,
+        toggleCommentLike,
         downloadVideo,
         addView,
     }
