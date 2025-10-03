@@ -8,10 +8,12 @@ export const metadata: Metadata = {
     and the guidelines that govern our platform. Review our terms to stay
     informed and protected while using Yohpal.`,
 }
+
 export default async function Page() {
     const settings = await getCompanyGeneralSettings()
+
     return (
-        <div className="flex flex-col justify-center w-full items-center p-6 mt-5">
+        <div className="flex flex-col justify-center w-full items-center p-6 mt-10">
             <h1 className="text-3xl font-semibold mb-2">Terms and Conditions</h1>
             <h1 className="text-2xl font-semibold mb-8 text-center">
                 YOHPAL GENERAL TERMS AND CONDITIONS
@@ -194,10 +196,10 @@ export default async function Page() {
                         access, or deletion of your personal data at any time by contacting our Data
                         Protection Officer via{" "}
                         <a
-                            href="mailto:support@yohpal.com"
+                            href={`mailto:${settings?.companyEmail}`}
                             className="text-primary hover:underline"
                         >
-                            {settings?.companyEmail}
+                            <b>{settings?.companyEmail}</b>
                         </a>
                         .
                     </p>
@@ -301,17 +303,20 @@ export default async function Page() {
                     <div className="space-y-2">
                         <p className="text-muted-foreground">
                             <strong>Phone:</strong>{" "}
-                            <a href="tel:+254758873938" className="text-primary hover:underline">
-                                {settings?.companyPhone}
+                            <a
+                                href={`tel:${settings?.companyPhone}`}
+                                className="text-primary hover:underline"
+                            >
+                                <b>{settings?.companyPhone}</b>
                             </a>
                         </p>
                         <p className="text-muted-foreground">
                             <strong>Email:</strong>{" "}
                             <a
-                                href="mailto:support@yohpal.com"
+                                href={`mailto:${settings?.companyEmail}`}
                                 className="text-primary hover:underline"
                             >
-                                {settings?.companyEmail}
+                                <b>{settings?.companyEmail}</b>
                             </a>
                         </p>
                         <p className="text-muted-foreground">
