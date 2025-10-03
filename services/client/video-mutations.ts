@@ -1,34 +1,10 @@
-import { addDoc, collection, deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore"
+import { deleteDoc, doc, serverTimestamp, setDoc } from "firebase/firestore"
 
+import { VideoInteraction } from "#/videos"
 import { db } from "@/lib/firebase/firebase.browser"
-import { VideoCommentInteraction, VideoInteraction } from "#/videos"
 import { DOC } from "@/services"
 
-export async function commentVideo(interaction: VideoCommentInteraction) {
-    const commentsRef = collection(db, "comments", interaction.videoId, "messages")
-
-    const docRef = await addDoc(commentsRef, {
-        username: interaction.username,
-        profile_picture: interaction.profilePicture,
-        userId: interaction.userId,
-        msg: interaction.comment,
-        isReply: interaction.isReply,
-        replies: 0,
-        likes: 0,
-        hasReply: false,
-        timestamp: serverTimestamp(),
-    })
-
-    return docRef.id
-}
-
-export async function deleteCommentAction(commentId: string, videoId: string) {
-    const commentRef = doc(db, "comments", videoId, "messages", commentId)
-
-    await deleteDoc(commentRef)
-}
-
-export async function likeVideo(interaction: VideoInteraction) {
+export async function likeVideoAction(interaction: VideoInteraction) {
     const userLikeRef = doc(
         db,
         "users",
@@ -54,7 +30,7 @@ export async function likeVideo(interaction: VideoInteraction) {
     ])
 }
 
-export async function unlikeVideo(interaction: VideoInteraction) {
+export async function unlikeVideoAction(interaction: VideoInteraction) {
     const userLikeRef = doc(
         db,
         "users",
@@ -77,7 +53,7 @@ export async function unlikeVideo(interaction: VideoInteraction) {
     await Promise.all([deleteDoc(userLikeRef), deleteDoc(videoLikeRef)])
 }
 
-export async function bookmarkVideo(interaction: VideoInteraction) {
+export async function bookmarkVideoAction(interaction: VideoInteraction) {
     const userBookmarkRef = doc(
         db,
         "users",
@@ -102,7 +78,7 @@ export async function bookmarkVideo(interaction: VideoInteraction) {
         setDoc(videoBookmarkRef, { userId: interaction.userId, timestamp: serverTimestamp() }),
     ])
 }
-export async function unbookmarkVideo(interaction: VideoInteraction) {
+export async function unbookmarkVideoAction(interaction: VideoInteraction) {
     const userBookmarkRef = doc(
         db,
         "users",

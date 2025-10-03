@@ -1,7 +1,5 @@
+import withPWAInit from "@ducanh2912/next-pwa"
 import type { NextConfig } from "next"
-import pwa from "next-pwa"
-
-    //   default-src 'self';
 
 const securityHeaders = [
     {
@@ -47,11 +45,10 @@ const securityHeaders = [
     },
 ]
 
-const withPWA = pwa({
+const withPWAFunc = withPWAInit({
     dest: "public",
-    register: true,
-    skipWaiting: true,
-    disable: process.env.NODE_ENV === "development",
+    cacheOnFrontEndNav: true,
+    cacheStartUrl: true,
 })
 
 const nextConfig = {
@@ -59,7 +56,6 @@ const nextConfig = {
     async headers() {
         return [
             {
-                // Apply to all routes, including service worker and PWA assets
                 source: "/(.*)",
                 headers: securityHeaders,
             },
@@ -93,4 +89,4 @@ const nextConfig = {
     },
 } satisfies NextConfig
 
-export default withPWA(nextConfig)
+export default withPWAFunc(nextConfig)

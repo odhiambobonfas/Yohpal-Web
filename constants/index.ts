@@ -6,6 +6,7 @@ export const OLD_URL = "https://firebasestorage.googleapis.com/v0/b/yohlab.fireb
 export const COOKIES = {
     Session: "__auth",
     EmailNotVerified: "__emailVerified",
+    User: "__u",
 }
 
 export const INTERESTS = [

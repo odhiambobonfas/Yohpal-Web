@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link"
 
 import { VideoComment } from "#/videos"
@@ -5,9 +6,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatTime, serializeTimestamp } from "@/lib/utils"
+import { useAuth } from "@/providers/Auth"
 import { LucideHeart, LucideTrash2 } from "lucide-react"
 
-export default function CommentCard({ comment }: { comment: VideoComment }) {
+interface CommentMutationProps {
+    comment: VideoComment
+    handleCommentLikeToggle: (commentId: string, videoId: string, wasLiked: boolean) => void
+    handleCommentDelete: (commentId: string, videoId: string) => void
+}
+
+export default function CommentCard({
+    comment,
+    handleCommentDelete,
+    handleCommentLikeToggle,
+}: CommentMutationProps) {
+    const { profile } = useAuth()
+
+    // TODO(80186fb26301)
+    if (comment.deleted) return null
+
     return (
         <Card className="shadow-none my-2 p-3">
             <CardContent className="m-0 p-0">
@@ -35,16 +52,24 @@ export default function CommentCard({ comment }: { comment: VideoComment }) {
                         <Button
                             className="flex flex-row"
                             variant={"ghost"}
-                            // onClick={handleCommentLikeToggle}
+                            onClick={() =>
+                                handleCommentLikeToggle(comment.id, comment.videoId, false)
+                            }
                         >
                             <LucideHeart
-                            // className={comment.userHasLiked ? "text-red-500 fill-current" : ""}
+                                className={comment.userHasLiked ? "text-red-500 fill-current" : ""}
                             />
                             <span>{comment.likes}</span>
                         </Button>
-                        <Button className="" variant={"ghost"}>
-                            <LucideTrash2 className="size-4" />
-                        </Button>
+                        {profile?.uid === comment.userId && (
+                            <Button
+                                onClick={() => handleCommentDelete(comment.id, comment.videoId)}
+                                className=""
+                                variant={"ghost"}
+                            >
+                                <LucideTrash2 />
+                            </Button>
+                        )}
                     </div>
                 </div>
             </CardContent>

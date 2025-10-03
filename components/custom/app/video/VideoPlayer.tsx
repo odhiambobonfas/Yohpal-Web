@@ -1,4 +1,5 @@
 "use client"
+import { VideoPlayerProps } from "#/videos"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -17,8 +18,6 @@ import { LucidePlay, LucideVolume2, LucideVolumeOff, MoreVertical } from "lucide
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 
-const STORAGE_KEY = "canPlayWithSound"
-
 export default function VideoPlayer({
     videoSrc,
     videoId,
@@ -29,33 +28,15 @@ export default function VideoPlayer({
     onEnded,
     autoScrollEnabled,
     setAutoScrollEnabled,
-}: {
-    videoId: string
-    videoSrc: string
-    activeVideoId: string
-    thumbnail: string
-    index: number
-    activeIndex: number
-    onEnded?: () => void
-    autoScrollEnabled: boolean
-    setAutoScrollEnabled: (val: boolean) => void
-}) {
+}: VideoPlayerProps) {
     const videoRef = useRef<HTMLVideoElement | null>(null)
     const [isLoaded, setIsLoaded] = useState(false)
     const [isMuted, setMuteStatus] = useState(true)
     const [isPlaying, setPlaying] = useState(true)
 
     useEffect(() => {
-        const saved = localStorage.getItem(STORAGE_KEY)
-        if (saved === "allowed") {
-            setMuteStatus(false)
-        }
-    }, [])
-
-    useEffect(() => {
         function unlock() {
             setMuteStatus(false)
-            localStorage.setItem(STORAGE_KEY, "allowed")
             window.removeEventListener("click", unlock)
             window.removeEventListener("touchstart", unlock)
         }

@@ -1,10 +1,16 @@
 import { type NextRequest, NextResponse } from "next/server"
-
 import { COOKIES } from "./constants"
 
 export async function middleware(request: NextRequest) {
     const cookieStore = request.cookies
     const isAuthed = cookieStore.has(COOKIES.Session)
+    const hasUid = cookieStore.has(COOKIES.User)
+
+    // we need to get their ID and we can't go around
+    // telling users to "clear your cookies"
+    if (!hasUid && isAuthed && !request.nextUrl.pathname.startsWith("/auth")) {
+        return NextResponse.redirect(new URL("/auth/login", request.url))
+    }
 
     // redirects old php routes to the `/`
     if (
@@ -22,7 +28,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // if authed and already inside /auth/*, send them back to /
-    if (isAuthed && request.nextUrl.pathname.startsWith("/auth")) {
+    if (isAuthed && hasUid && request.nextUrl.pathname.startsWith("/auth")) {
         return NextResponse.redirect(new URL("/", request.url))
     }
 
@@ -36,6 +42,7 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.next()
 }
+
 export const config = {
     matcher: ["/profile", "/auth/:path*", "/", "/onboarding", "/main:path*", "/pages:path*"],
 }

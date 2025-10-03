@@ -10,7 +10,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
     const [user, stats, uploadedVideos] = await Promise.all([
         getUserProfile(userId),
         getUserProfileStats(userId),
-        getUserVideoUploads(userId),
+        getUserVideoUploads(userId, undefined), // we don't care about the intricacies of who liked what
     ])
 
     if (!user) return <ProfileNotFound />
