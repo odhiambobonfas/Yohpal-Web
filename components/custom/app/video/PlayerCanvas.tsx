@@ -445,7 +445,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                             error={mutationError || userMutationError}
                             currentStats={currentStats}
                             userFollowed={currentStats.isFollowing}
-                            ownerProfilePicture={ownerProfile!.profile_picture}
+                            ownerProfilePicture={ownerProfile?.profile_picture}
                             video={activeVideo}
                             commentMutation={{
                                 text: commentTexts.get(activeVideo.id) ?? "",
@@ -471,8 +471,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                                 error={mutationError || userMutationError}
                                 currentStats={currentStats}
                                 userFollowed={currentStats.isFollowing}
-                                // we are sure we always have a profile picture
-                                ownerProfilePicture={ownerProfile!.profile_picture}
+                                ownerProfilePicture={ownerProfile?.profile_picture}
                                 video={activeVideo}
                                 commentMutation={{
                                     text: commentTexts.get(activeVideo.id) ?? "",

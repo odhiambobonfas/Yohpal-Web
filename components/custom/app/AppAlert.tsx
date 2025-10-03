@@ -24,29 +24,6 @@ interface AlertProps {
     showCancel?: boolean
 }
 
-const alertConfig = {
-    warn: {
-        icon: TriangleAlert,
-        iconColor: "text-amber-600",
-        bgColor: "bg-amber-50",
-    },
-    error: {
-        icon: AlertCircle,
-        iconColor: "text-red-600",
-        bgColor: "bg-red-50",
-    },
-    info: {
-        icon: Info,
-        iconColor: "text-blue-600",
-        bgColor: "bg-blue-50",
-    },
-    confirm: {
-        icon: AlertCircle,
-        iconColor: "text-gray-600",
-        bgColor: "bg-gray-50",
-    },
-}
-
 export default function AppAlert({
     type,
     isOpen,
@@ -92,4 +69,27 @@ export default function AppAlert({
             </AlertDialogContent>
         </AlertDialog>
     )
+}
+
+const alertConfig = {
+    warn: {
+        icon: TriangleAlert,
+        iconColor: "text-amber-600",
+        bgColor: "bg-amber-50",
+    },
+    error: {
+        icon: AlertCircle,
+        iconColor: "text-red-600",
+        bgColor: "bg-red-50",
+    },
+    info: {
+        icon: Info,
+        iconColor: "text-blue-600",
+        bgColor: "bg-blue-50",
+    },
+    confirm: {
+        icon: AlertCircle,
+        iconColor: "text-gray-600",
+        bgColor: "bg-gray-50",
+    },
 }

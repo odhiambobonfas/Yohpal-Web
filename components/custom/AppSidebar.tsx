@@ -26,7 +26,7 @@ import {
 const navItems = [
     { icon: LucideHome, title: "Suggested", link: "/" },
     { icon: LucideCompass, title: "Explore", link: "" },
-    { icon: LucideUserCheck, title: "following", link: "" },
+    { icon: LucideUserCheck, title: "following", link: "/following" },
     { icon: LucideAlbum, title: "About Us", position: "bottom", link: "/about" },
     { icon: LucideGlobeLock, title: "Privacy Policy", position: "bottom", link: "/privacy" },
     { icon: LucideScrollText, title: "Terms & Conditions", position: "bottom", link: "/terms" },
