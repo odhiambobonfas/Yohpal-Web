@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import {
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
@@ -149,15 +150,24 @@ export default function VideoPlayer({
                             align="end"
                             avoidCollisions
                         >
-                            <DropdownMenuLabel className="text-muted-foreground">Settings</DropdownMenuLabel>
+                            <DropdownMenuLabel className="text-muted-foreground">
+                                Settings
+                            </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <div className="flex items-center space-x-2 p-2">
-                                <Switch
-                                    id="enableAutoScroll"
-                                    checked={autoScrollEnabled}
-                                    onCheckedChange={(checked) => setAutoScrollEnabled(checked)}
-                                />
-                                <Label htmlFor="enableAutoScroll">Autoscroll</Label>
+                            <div className="flex flex-col space-x-2 p-2">
+                                <DropdownMenuItem className="flex flex-col" />
+                                <div className="flex flex-row">
+                                    <Switch
+                                        id="enableAutoScroll"
+                                        checked={autoScrollEnabled}
+                                        onCheckedChange={(checked) => setAutoScrollEnabled(checked)}
+                                    />
+                                    <Label className="ms-3" htmlFor="enableAutoScroll">
+                                        Autoscroll
+                                    </Label>
+                                </div>
+                                <DropdownMenuItem />
+                                <DropdownMenuItem className="">Report</DropdownMenuItem>
                             </div>
                         </DropdownMenuContent>
                     </DropdownMenu>

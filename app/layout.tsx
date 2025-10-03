@@ -23,6 +23,12 @@ export const metadata: Metadata = {
     designed to simplify your online experience and empower your digital
     journey. Join Yohpal today and be part of the future of digital
     connection`,
+    manifest: "/manifest.json",
+    themeColor: "#1E3A8A", // Tailwind blue-800, adjust to your theme
+    icons: {
+        icon: "/favicon.ico", // fallback favicon
+        apple: "/icons/logo-circular.png", // recommended PWA apple touch
+    },
 }
 
 export default function RootLayout({
@@ -37,6 +43,12 @@ export default function RootLayout({
             className="scroll-smooth"
             data-scroll-behavior="smooth"
         >
+            <head>
+                {/* Ensures manifest + theme color is picked up in browsers */}
+                <link rel="manifest" href="/manifest.json" />
+                <meta name="theme-color" content="#1E3A8A" />
+                <link rel="apple-touch-icon" href="/icons/logo_circular.png" />
+            </head>
             <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
                 <ThemeProvider
                     attribute="class"

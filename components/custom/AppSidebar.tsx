@@ -1,4 +1,13 @@
-import { LucideAlbum, LucideGlobeLock, LucideHome, LucideScrollText } from "lucide-react"
+import {
+    LucideAlbum,
+    LucideBriefcase,
+    LucideCompass,
+    LucideGlobeLock,
+    LucideHome,
+    LucideScrollText,
+    LucideUserCheck,
+    LucideWallet,
+} from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import React from "react"
@@ -15,10 +24,14 @@ import {
 } from "@/components/ui/sidebar"
 
 const navItems = [
-    { icon: LucideHome, title: "Home", link: "/" },
-    { icon: LucideAlbum, title: "About Us", link: "/about" },
+    { icon: LucideHome, title: "Suggested", link: "/" },
+    { icon: LucideCompass, title: "Explore", link: "" },
+    { icon: LucideUserCheck, title: "following", link: "" },
+    { icon: LucideAlbum, title: "About Us", position: "bottom", link: "/about" },
     { icon: LucideGlobeLock, title: "Privacy Policy", position: "bottom", link: "/privacy" },
     { icon: LucideScrollText, title: "Terms & Conditions", position: "bottom", link: "/terms" },
+    { icon: LucideBriefcase, title: "Yohpal Hustle", link: "https://hustle.yohpal.com" },
+    { icon: LucideWallet, title: "Account Manager", link: "https://accountmanager.yohpal.com" },
 ]
 
 export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
