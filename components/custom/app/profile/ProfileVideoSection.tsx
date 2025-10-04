@@ -72,8 +72,9 @@ export default function ProfileVideosSection({
                 </TabsList>
 
                 <TabsContent value="uploads">
-                    {loading && <ProfileVideoLoading />}
-                    {videos.uploads ? (
+                    {loading ? (
+                        <ProfileVideoLoading />
+                    ) : videos.uploads && videos.uploads.length > 0 ? (
                         <ScrollableVideoPreview videos={videos.uploads} />
                     ) : (
                         <ProfileNoVideos />
