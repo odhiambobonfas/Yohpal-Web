@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
 import { getCompanyGeneralSettings } from "@/services/server/org/settings"
+import type { Metadata } from "next"
 
 export const metadata: Metadata = {
     title: "Yohpal | Privacy Policy",
@@ -8,8 +8,10 @@ export const metadata: Metadata = {
     transparency and trust. Read our Privacy Policy to understand your
     rights and how we safeguard your data.`,
 }
+
 export default async function Page() {
     const settings = await getCompanyGeneralSettings()
+
     return (
         <div className="flex flex-col justify-center w-full items-center p-6">
             <div className="flex flex-col justify-center text-center mt-8">
@@ -362,8 +364,10 @@ export default async function Page() {
                     </li>
                     <li>
                         <strong className="text-foreground">Direct Requests:</strong> Email{" "}
-                        <span className="text-primary">{settings?.companyEmail}</span>, use the in-app
-                        Help Desk, or call +254 758 873 938.
+                        <span className="text-primary">
+                            <b>{settings?.companyEmail}</b>
+                        </span>
+                        , use the in-app Help Desk, or call <b>{settings?.companyPhone}</b>
                     </li>
                     <li>
                         <strong className="text-foreground">Response Timelines:</strong> We
@@ -649,14 +653,13 @@ export default async function Page() {
                 <ul className="list-disc pl-6 text-muted-foreground leading-loose mt-4 bg-muted p-4 rounded-lg">
                     <li>
                         Email:{" "}
-                        <a
-                            className="text-primary hover:underline"
-                            href={settings?.companyEmail}
-                        >
-                            {settings?.companyEmail}
+                        <a className="text-primary hover:underline" href={settings?.companyEmail}>
+                            <b>{settings?.companyEmail}</b>
                         </a>
                     </li>
-                    <li>Phone: +254 758 873 938</li>
+                    <li>
+                        Phone: <b>{settings?.companyPhone}</b>
+                    </li>
                     <li>In-App Help Desk: Submit a privacy-related request</li>
                 </ul>
                 <p className="text-muted-foreground leading-loose mt-4">
@@ -698,8 +701,11 @@ export default async function Page() {
                     empowering you to fully benefit from our services. This Privacy Policy is
                     designed to give you clarity, transparency, and control over how your data is
                     handled. If you have any questions, please contact us at{" "}
-                    <a className="text-primary hover:underline" href="mailto:info@yohpal.com">
-                        {settings?.companyEmail}
+                    <a
+                        className="text-primary hover:underline"
+                        href={`mailto:${settings?.companyEmail}`}
+                    >
+                        <b>{settings?.companyEmail}</b>
                     </a>
                     .
                 </p>

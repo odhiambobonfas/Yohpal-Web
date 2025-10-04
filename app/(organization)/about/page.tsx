@@ -1,4 +1,13 @@
-import { LucideBell, LucidePhone,LucideMail, LucideClock, LucideCheck, LucideCheckCircle2, LucideCopyright, LucideMapPin } from "lucide-react"
+import {
+    LucideBell,
+    LucideCheck,
+    LucideCheckCircle2,
+    LucideClock,
+    LucideCopyright,
+    LucideMail,
+    LucideMapPin,
+    LucidePhone,
+} from "lucide-react"
 import Image from "next/image"
 
 import { getCompanyGeneralSettings } from "@/services/server/org/settings"
