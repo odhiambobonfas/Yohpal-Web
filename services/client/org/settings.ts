@@ -1,5 +1,4 @@
 import { db } from "@/lib/firebase/firebase.browser"
-// import { COMPANY_GENERAL_SETTINGS_DOC } from "@/services"
 import { GeneralSetting } from "@/types/org/settings"
 import { collection, getDocs } from "firebase/firestore"
 
