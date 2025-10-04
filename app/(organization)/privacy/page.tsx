@@ -1,5 +1,6 @@
 import { getCompanyGeneralSettings } from "@/services/server/org/settings"
 import type { Metadata } from "next"
+import Link from "next/link"
 
 export const metadata: Metadata = {
     title: "Yohpal | Privacy Policy",
@@ -653,9 +654,12 @@ export default async function Page() {
                 <ul className="list-disc pl-6 text-muted-foreground leading-loose mt-4 bg-muted p-4 rounded-lg">
                     <li>
                         Email:{" "}
-                        <a className="text-primary hover:underline" href={settings?.companyEmail}>
+                        <Link
+                            className="text-primary hover:underline"
+                            href={`mailto:${settings?.companyEmail}`}
+                        >
                             <b>{settings?.companyEmail}</b>
-                        </a>
+                        </Link>
                     </li>
                     <li>
                         Phone: <b>{settings?.companyPhone}</b>
@@ -701,12 +705,12 @@ export default async function Page() {
                     empowering you to fully benefit from our services. This Privacy Policy is
                     designed to give you clarity, transparency, and control over how your data is
                     handled. If you have any questions, please contact us at{" "}
-                    <a
+                    <Link
                         className="text-primary hover:underline"
                         href={`mailto:${settings?.companyEmail}`}
                     >
                         <b>{settings?.companyEmail}</b>
-                    </a>
+                    </Link>
                     .
                 </p>
 

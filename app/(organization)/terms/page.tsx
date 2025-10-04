@@ -1,5 +1,6 @@
 import { getCompanyGeneralSettings } from "@/services/server/org/settings"
 import type { Metadata } from "next"
+import Link from "next/link"
 
 export const metadata: Metadata = {
     title: "Yohpal | Terms and Conditions",
@@ -312,12 +313,12 @@ export default async function Page() {
                         </p>
                         <p className="text-muted-foreground">
                             <strong>Email:</strong>{" "}
-                            <a
+                            <Link
                                 href={`mailto:${settings?.companyEmail}`}
                                 className="text-primary hover:underline"
                             >
                                 <b>{settings?.companyEmail}</b>
-                            </a>
+                            </Link>
                         </p>
                         <p className="text-muted-foreground">
                             <strong>In-App Support:</strong> Settings → Help Desk
