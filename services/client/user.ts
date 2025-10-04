@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs } from "firebase/firestore"
+import { collection, doc, getDoc, getDocs, limit as limitQuery, query } from "firebase/firestore"
 
 import { YPUser } from "#/users"
 import { db } from "@/lib/firebase/firebase.browser"
@@ -22,20 +22,25 @@ export async function getUserProfile(userId: string) {
     } as unknown as YPUser
 }
 
-export async function getUserfollowers(userId: string) {
+export async function getUserfollowers(userId: string, limit?: number) {
     const userFollowersRef = collection(db, "users", userId, "followers", "organic", "userIds")
-    const userFollowersDocs = await getDocs(userFollowersRef)
+    const q = limit ? query(userFollowersRef, limitQuery(limit)) : query(userFollowersRef)
+
+    const userFollowersDocs = await getDocs(q)
     if (userFollowersDocs.empty) return []
 
     return userFollowersDocs.docs.map((f) => f.id)
 }
 
-export async function getUserfollowing(userId: string) {
-    const userFollowersRef = collection(db, "users", userId, "following", "organic", "userIds")
-    const userFollowersDocs = await getDocs(userFollowersRef)
-    if (userFollowersDocs.empty) return []
+export async function getUserfollowing(userId: string, limit?: number) {
+    const userFollowingRef = collection(db, "users", userId, "following", "organic", "userIds")
 
-    return userFollowersDocs.docs.map((f) => f.id)
+    const q = limit ? query(userFollowingRef, limitQuery(limit)) : query(userFollowingRef)
+
+    const userFollowingDocs = await getDocs(q)
+    if (userFollowingDocs.empty) return []
+
+    return userFollowingDocs.docs.map((f) => f.id)
 }
 
 export async function getWatchedVideos(userId: string) {

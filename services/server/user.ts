@@ -11,6 +11,7 @@ export async function getUserProfile(userId: string) {
     const user = userDoc.data() as unknown as YPUser
 
     return {
+        uid: user.uid,
         userName: user.userName,
         email: user.email,
         bio: user.bio,

@@ -4,6 +4,8 @@ export const DEFAULT_PROFILE = "/logo_circular.png"
 export const CDN_URL = "https://cdn.stream.yohpal.com/"
 export const OLD_URL = "https://firebasestorage.googleapis.com/v0/b/yohlab.firebasestorage.app/o/"
 
+export const FOLLOWER_FOLLOWING_LIMIT = 30
+
 export const COOKIES = {
     Session: "__auth",
     EmailNotVerified: "__emailVerified",
