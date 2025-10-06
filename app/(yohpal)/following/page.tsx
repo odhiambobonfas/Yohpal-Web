@@ -37,7 +37,11 @@ export default async function Page() {
 
 function VideoPreview({ video, userId }: { video: VideoWithStats; userId: string }) {
     return (
-        <div className="h-70 relative w-full bg-secondary/40 shadow-md rounded-lg flex flex-col overflow-hidden">
+        <Link
+            href={viewProfileVideos(video.userId, video.id)}
+            key={video.id}
+            className="h-70 relative w-full bg-secondary/40 shadow-md rounded-lg flex flex-col overflow-hidden"
+        >
             <div className="h-full w-full bg-slate-100/10">
                 <Image
                     src={video.thumbnail}
@@ -58,6 +62,14 @@ function VideoPreview({ video, userId }: { video: VideoWithStats; userId: string
                     {video.likes.length}
                 </div>
             </div>
-        </div>
+        </Link>
     )
+}
+
+function viewProfileVideos(userId: string, videoId: string) {
+    const params = new URLSearchParams({
+        u: userId,
+        v: videoId,
+    })
+    return `/?${params.toString()}`
 }
