@@ -1,19 +1,11 @@
 "use client"
-import {
-    User,
-    Settings,
-    LogOut,
-    CircleUser,
-    LucideMoon,
-    LucideSun,
-    LucideLaptopMinimal,
-} from "lucide-react"
+import { CircleUser, LogOut, LucideLaptopMinimal, LucideMoon, LucideSun, User } from "lucide-react"
+import { useTheme } from "next-themes"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useTheme } from "next-themes"
 
-import { useAuth } from "@/providers/Auth"
-import { useEmailAuth } from "@/hooks/auth/use-email-auth"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -26,8 +18,8 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useEmailAuth } from "@/hooks/auth/use-email-auth"
+import { useAuth } from "@/providers/Auth"
 
 export default function UserDropDown({ className }: { className: string | undefined }) {
     const { isAuthenticated, user, profile, loading } = useAuth()
@@ -95,12 +87,6 @@ export default function UserDropDown({ className }: { className: string | undefi
                     <Link href="/profile" className="cursor-pointer">
                         <User className="mr-2 size-4" />
                         <span>Profile</span>
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                    <Link href="/settings" className="cursor-pointer">
-                        <Settings className="size-4 mr-2" />
-                        <span>Settings</span>
                     </Link>
                 </DropdownMenuItem>
 

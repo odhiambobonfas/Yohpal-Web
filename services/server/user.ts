@@ -6,46 +6,38 @@ import { DOC } from "@/services"
 import { getUserVideoUploads } from "./videos"
 
 export const getUserProfile = async (userId: string) => {
-    return withCache(
-        async () => {
-            const userDoc = await db.collection("users").doc(userId).get()
-            if (!userDoc.exists) return null
-            const user = userDoc.data() as unknown as YPUser
-            return {
-                uid: user.uid,
-                userName: user.userName,
-                email: user.email,
-                bio: user.bio,
-                phoneNumber: user.phoneNumber,
-                profile_picture: user.profile_picture,
-            } as unknown as YPUser
-        },
-        `user-profile-${userId}`,
-        [`user-profile-${userId}`],
-    )
+    return withCache(async () => {
+        const userDoc = await db.collection("users").doc(userId).get()
+        if (!userDoc.exists) return null
+        const user = userDoc.data() as unknown as YPUser
+        return {
+            uid: user.uid,
+            userName: user.userName,
+            email: user.email,
+            bio: user.bio,
+            phoneNumber: user.phoneNumber,
+            profile_picture: user.profile_picture,
+        } as unknown as YPUser
+    }, `user-profile-${userId}`)
 }
 
 export const getUserProfileStats = async (userId: string) => {
-    return withCache(
-        async () => {
-            const [followers, following, uploadedVideos, views, likes] = await Promise.all([
-                getFollowersCount(userId),
-                getFollowingCount(userId, undefined),
-                getUserVideoUploads(userId, undefined, undefined),
-                onlyProd(() => getViewsCount(userId), []),
-                onlyProd(() => getLikedCount(userId), []),
-            ])
-            return {
-                followers: followers,
-                following: following.length,
-                uploadedVideos: uploadedVideos.length,
-                views: views.length,
-                likes: likes.length,
-            }
-        },
-        `user-profile-stats-${userId}`,
-        [`user-profile-stats-${userId}`],
-    )
+    return withCache(async () => {
+        const [followers, following, uploadedVideos, views, likes] = await Promise.all([
+            getFollowersCount(userId),
+            getFollowingCount(userId, undefined),
+            getUserVideoUploads(userId, undefined, undefined),
+            onlyProd(() => getViewsCount(userId), []),
+            onlyProd(() => getLikedCount(userId), []),
+        ])
+        return {
+            followers: followers,
+            following: following.length,
+            uploadedVideos: uploadedVideos.length,
+            views: views.length,
+            likes: likes.length,
+        }
+    }, `user-profile-stats-${userId}`)
 }
 
 export const getFollowingCount = async (userId: string, limit: number | undefined) => {
@@ -66,60 +58,47 @@ export const getFollowingCount = async (userId: string, limit: number | undefine
             return followingDocs.docs.map((f) => f.id)
         },
         `user-following-${userId}-${limit || "all"}`,
-        [`user-following-${userId}`],
     )
 }
 
 const getFollowersCount = async (userId: string) => {
-    return withCache(
-        async () => {
-            const followerDocs = await db
-                .collection("users")
-                .doc(userId)
-                .collection("followers")
-                .doc("organic")
-                .collection("userIds")
-                .get()
-            if (followerDocs.empty) return []
-            return followerDocs.docs.map((f) => f.id)
-        },
-        `user-followers-${userId}`,
-        [`user-followers-${userId}`],
-    )
+    return withCache(async () => {
+        const followerDocs = await db
+            .collection("users")
+            .doc(userId)
+            .collection("followers")
+            .doc("organic")
+            .collection("userIds")
+            .get()
+        if (followerDocs.empty) return []
+        return followerDocs.docs.map((f) => f.id)
+    }, `user-followers-${userId}`)
 }
 
 const getViewsCount = async (userId: string) => {
-    return withCache(
-        async () => {
-            const viewsDocs = await db
-                .collection("users")
-                .doc(userId)
-                .collection("views")
-                .doc(DOC)
-                .collection("videoIds")
-                .get()
-            if (viewsDocs.empty) return []
-            return viewsDocs.docs.map((v) => v.id)
-        },
-        `user-views-${userId}`,
-        [`user-views-${userId}`],
-    )
+    return withCache(async () => {
+        const viewsDocs = await db
+            .collection("users")
+            .doc(userId)
+            .collection("views")
+            .doc(DOC)
+            .collection("videoIds")
+            .get()
+        if (viewsDocs.empty) return []
+        return viewsDocs.docs.map((v) => v.id)
+    }, `user-views-${userId}`)
 }
 
 const getLikedCount = async (userId: string) => {
-    return withCache(
-        async () => {
-            const likesDocs = await db
-                .collection("users")
-                .doc(userId)
-                .collection("likes")
-                .doc(DOC)
-                .collection("videoIds")
-                .get()
-            if (likesDocs.empty) return []
-            return likesDocs.docs.map((l) => l.id)
-        },
-        `user-likes-${userId}`,
-        [`user-likes-${userId}`],
-    )
+    return withCache(async () => {
+        const likesDocs = await db
+            .collection("users")
+            .doc(userId)
+            .collection("likes")
+            .doc(DOC)
+            .collection("videoIds")
+            .get()
+        if (likesDocs.empty) return []
+        return likesDocs.docs.map((l) => l.id)
+    }, `user-likes-${userId}`)
 }
