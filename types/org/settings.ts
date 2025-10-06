@@ -1,6 +1,6 @@
 import { FirebaseTimestamp } from "../base"
 
-export interface GeneralSetting {
+export interface GeneralSettings {
     companyAddress: string
     companyEmail: string
     companyIndustry: string
