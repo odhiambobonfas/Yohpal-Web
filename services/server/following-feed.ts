@@ -4,6 +4,7 @@ import { getFollowingCount } from "./user"
 import { getUserVideoUploads } from "./videos"
 
 const FF_VIDEO_LIMIT = 5
+
 export const getFollowingFeed = async (userId: string) => {
     const followingIds = await getFollowingCount(userId, FOLLOWER_FOLLOWING_LIMIT)
     const videos: VideoWithStats[] = []

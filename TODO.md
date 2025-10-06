@@ -48,7 +48,7 @@ document and basically summarize all of them into the different scenarios, expla
 aren't needed.
 
 
-TODO(db9c9e8f0254) :: Cache implementation
+~TODO(db9c9e8f0254) :: Cache implementation~ *[Resolved]*: Setup redis instance
 ---
 Current implementation provides a simple api that takes in the fetcher, key and tags.
 tags are used because we relyon Next's [`unstable_cache`](https://nextjs.org/docs/app/api-reference/functions/unstable_cache)

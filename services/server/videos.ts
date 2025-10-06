@@ -86,8 +86,7 @@ export const getLandingVideos = async (videoId: string | undefined, userId: stri
 
             return videos
         },
-        `landing-videos-${videoId || "none"}-${userId || "none"}`,
-        ["landing-videos"],
+        `landing-videos-${userId || "anon"}`,
     )
 }
 
@@ -132,45 +131,34 @@ async function getVideosFromProfile(
 }
 
 export const getUploadedVideoStats = async (videoId: string) => {
-    return withCache(
-        async () => {
-            const [likes, views] = await Promise.all([
-                getVideoLikes(videoId),
-                getVideoViews(videoId),
-            ])
+    return withCache(async () => {
+        const [likes, views] = await Promise.all([getVideoLikes(videoId), getVideoViews(videoId)])
 
-            return {
-                likes,
-                views,
-            }
-        },
-        `uploaded-video-stats-${videoId}`,
-        [`uploaded-video-stats-${videoId}`],
-    )
+        return {
+            likes,
+            views,
+        }
+    }, `uploaded-video-stats-${videoId}`)
 }
 
 export const getVideoStats = async (videoId: string, loggedInUserId: string | undefined) => {
-    return withCache(
-        async () => {
-            const [likes, bookmarks, shares, views, comments] = await Promise.all([
-                getVideoLikes(videoId),
-                getVideoBookmarks(videoId),
-                getVideoShares(videoId),
-                getVideoViews(videoId),
-                getVideoComments(videoId, loggedInUserId),
-            ])
+    return withCache(async () => {
+        const [likes, bookmarks, shares, views, comments] = await Promise.all([
+            getVideoLikes(videoId),
+            getVideoBookmarks(videoId),
+            getVideoShares(videoId),
+            getVideoViews(videoId),
+            getVideoComments(videoId, loggedInUserId),
+        ])
 
-            return {
-                likes,
-                bookmarks,
-                shares,
-                views,
-                comments,
-            }
-        },
-        `video-stats-${videoId}-${loggedInUserId || "anon"}`,
-        [`video-stats-${videoId}`],
-    )
+        return {
+            likes,
+            bookmarks,
+            shares,
+            views,
+            comments,
+        }
+    }, `video-stats-${videoId}`)
 }
 
 export const getUserVideoUploads = async (
@@ -216,120 +204,99 @@ export const getUserVideoUploads = async (
 
             return videos as unknown as VideoWithStats[]
         },
-        `user-video-uploads-${userId}-${loggedInUserId || "anon"}-${limit || "all"}`,
-        [`user-video-uploads-${userId}`],
+        `user-video-uploads-${userId}-${limit || "all"}`,
     )
 }
 
 const getVideoLikes = async (videoId: string) => {
-    return withCache(
-        async () => {
-            const videoRef = await db
-                .collection("videos")
-                .doc(videoId)
-                .collection("likes")
-                .doc(DOC)
-                .collection("userIds")
-                .get()
+    return withCache(async () => {
+        const videoRef = await db
+            .collection("videos")
+            .doc(videoId)
+            .collection("likes")
+            .doc(DOC)
+            .collection("userIds")
+            .get()
 
-            if (videoRef.empty) return []
+        if (videoRef.empty) return []
 
-            return videoRef.docs.map((v) => v.id)
-        },
-        `video-likes-${videoId}`,
-        [`video-likes-${videoId}`],
-    )
+        return videoRef.docs.map((v) => v.id)
+    }, `video-likes-${videoId}`)
 }
 
 const getVideoBookmarks = async (videoId: string) => {
-    return withCache(
-        async () => {
-            const videoRef = await db
-                .collection("videos")
-                .doc(videoId)
-                .collection("bookmarks")
-                .doc(DOC)
-                .collection("userIds")
-                .get()
+    return withCache(async () => {
+        const videoRef = await db
+            .collection("videos")
+            .doc(videoId)
+            .collection("bookmarks")
+            .doc(DOC)
+            .collection("userIds")
+            .get()
 
-            if (videoRef.empty) return []
+        if (videoRef.empty) return []
 
-            return videoRef.docs.map((v) => v.id)
-        },
-        `video-bookmarks-${videoId}`,
-        [`video-bookmarks-${videoId}`],
-    )
+        return videoRef.docs.map((v) => v.id)
+    }, `video-bookmarks-${videoId}`)
 }
 
 const getVideoShares = async (videoId: string) => {
-    return withCache(
-        async () => {
-            const videoRef = await db
-                .collection("videos")
-                .doc(videoId)
-                .collection("shares")
-                .doc(DOC)
-                .collection("userIds")
-                .count()
-                .get()
+    return withCache(async () => {
+        const videoRef = await db
+            .collection("videos")
+            .doc(videoId)
+            .collection("shares")
+            .doc(DOC)
+            .collection("userIds")
+            .count()
+            .get()
 
-            return videoRef.data().count ?? 0
-        },
-        `video-shares-${videoId}`,
-        [`video-shares-${videoId}`],
-    )
+        return videoRef.data().count ?? 0
+    }, `video-shares-${videoId}`)
 }
 
 const getVideoViews = async (videoId: string) => {
-    return withCache(
-        async () => {
-            const videoRef = await db
-                .collection("videos")
-                .doc(videoId)
-                .collection("views")
-                .doc(DOC)
-                .collection("userIds")
-                .count()
-                .get()
+    return withCache(async () => {
+        const videoRef = await db
+            .collection("videos")
+            .doc(videoId)
+            .collection("views")
+            .doc(DOC)
+            .collection("userIds")
+            .count()
+            .get()
 
-            return videoRef.data().count ?? 0
-        },
-        `video-views-${videoId}`,
-        [`video-views-${videoId}`],
-    )
+        return videoRef.data().count ?? 0
+    }, `video-views-${videoId}`)
 }
 
 const getVideoComments = async (videoId: string, userId: string | undefined) => {
-    return withCache(
-        async () => {
-            const commentsRef = db.collection("comments").doc(videoId).collection("messages")
+    return withCache(async () => {
+        const commentsRef = db.collection("comments").doc(videoId).collection("messages")
 
-            const commentsRefDoc = await commentsRef.get()
+        const commentsRefDoc = await commentsRef.get()
 
-            if (commentsRefDoc.empty) return []
-            const comments = await Promise.all(
-                commentsRefDoc.docs.map(async (c) => {
-                    let userLiked = false
-                    if (userId) {
-                        userLiked = (
-                            await commentsRef.doc(c.id).collection("userIds").doc(userId).get()
-                        ).exists
-                    }
-                    const data = c.data()
-                    return {
-                        id: c.id,
-                        ...data,
-                        profile_picture: replaceWithCDN(data.profile_picture),
-                        timestamp: serializeTimestamp(data.timestamp),
-                        userHasLiked: userLiked,
-                        videoId: videoId,
-                    }
-                }),
-            )
+        if (commentsRefDoc.empty) return []
+        const comments = await Promise.all(
+            commentsRefDoc.docs.map(async (c) => {
+                let userLiked = false
+                if (userId) {
+                    userLiked = (
+                        await commentsRef.doc(c.id).collection("userIds").doc(userId).get()
+                    ).exists
+                }
+                const data = c.data()
+                return {
+                    id: c.id,
+                    ...data,
+                    profile_picture: replaceWithCDN(data.profile_picture),
+                    timestamp: serializeTimestamp(data.timestamp),
+                    userHasLiked: userLiked,
+                    videoId: videoId,
+                }
+            }),
+        )
 
-            return comments as unknown as VideoComment[]
-        },
-        `video-comments-${videoId}-${userId || "anon"}`,
-        [`video-comments-${videoId}`],
-    )
+        return comments as unknown as VideoComment[]
+    }, `video-comments-${videoId}`)
 }
