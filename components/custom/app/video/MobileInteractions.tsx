@@ -138,10 +138,10 @@ export default function MobileInteractions({
                 <span className="text-secondary-foreground text-xs bg-secondary items-center justify-center px-2 py-1 w-fit rounded-full">
                     {formatTime(video.timestamp)}
                 </span>
-                <p className="text-background font-semibold">
+                <p className="text-secondary-background font-semibold">
                     {video.title || "Yohpal Monetizing Creativity"}
                 </p>
-                <p className="text-background">
+                <p className="text-secondary-background">
                     {video.caption?.split(" ").slice(0, 6).join(" ") +
                         (video.caption?.split(" ").length > 6 ? "…" : "")}
                 </p>
