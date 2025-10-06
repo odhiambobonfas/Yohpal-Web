@@ -6,10 +6,10 @@ import { getUserVideoUploads } from "./videos"
 const FF_VIDEO_LIMIT = 5
 export const getFollowingFeed = async (userId: string) => {
     const followingIds = await getFollowingCount(userId, FOLLOWER_FOLLOWING_LIMIT)
-    let videos: VideoWithStats[] = []
+    const videos: VideoWithStats[] = []
     // We'll use this to know the actual last docId we got for the user
     // and randomizing can be done client side
-    let followingMeta: Map<string, { contentEnded: boolean; lastDoc: string }> = new Map()
+    const followingMeta: Map<string, { contentEnded: boolean; lastDoc: string }> = new Map()
 
     await Promise.all(
         followingIds.map(async (f) => {
