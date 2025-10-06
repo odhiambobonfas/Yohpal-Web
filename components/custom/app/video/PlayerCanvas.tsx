@@ -357,6 +357,13 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                 <div>Loading: {loading ? "Yes" : "No"}</div>
                 <div>Fetching: {isFetchingNext ? "Yes" : "No"}</div>
                 <div>parentSize: {parentRef.current?.clientHeight}</div>
+                <br />
+
+                <h1 className="text-orange-300">
+                    first batch stats wil not change
+                    <br />
+                    Check fn <strong>onlyProd</strong>
+                </h1>
             </DebugWindow>
 
             <InteractionsLoginPrompt

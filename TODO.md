@@ -1,5 +1,17 @@
 > TODOs expl
 
+
+NOTE(0f80476cffa0) :: Prod only functionality
+---
+The reason this exists is I noticed that number of reads had gone up,
+tried caching but realised its well covered by *TODO(db9c9e8f0254)*
+wraps the expensive functions that in dev mode arent really needed
+to have the accurate data, pass in the function and its default data to be used
+in dev mode.
+This is only available to server side stuff cause during dev Ill rarely get past the 30,
+client side has `useSWR` which handles the caching.
+
+
 TODO(253894320916) :: Handle infinite scroll for both directions
 ---
 Currently infinite scroll only works oneway, forwards, what if they want to go backwards
@@ -35,3 +47,12 @@ Retrieve these policies from somewhere dynamic or remind Md. Elizabeth to share 
 document and basically summarize all of them into the different scenarios, explanations
 aren't needed.
 
+
+TODO(db9c9e8f0254) :: Cache implementation
+---
+Current implementation provides a simple api that takes in the fetcher, key and tags.
+tags are used because we relyon Next's [`unstable_cache`](https://nextjs.org/docs/app/api-reference/functions/unstable_cache)
+when cache becomes stable, we can use that, but this impl has a drawback in that
+it gets reset on app re/build (this includes redeplyoment) and is turned off by default in
+dev mode, still haven;t found a way to force it on in dev, but it should be replaced with an
+externally managed cache instance, redis,memcached,vulkan,dragonfly take your pick.
