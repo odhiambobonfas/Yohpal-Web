@@ -199,14 +199,14 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
     }, [autoScrollEnabled])
 
     // Handlers
-    const handleFollowToggle = async (videoId: string) => {
+    const handleFollowToggle = async (userId: string) => {
         if (!isAuthenticated) {
             openAuthDialog()
             return
         }
 
         const currentStats = getCurrentStats()
-        updateOptimisticFollow(videoId)
+        updateOptimisticFollow(userId)
 
         await toggleFollow(activeVideo.userId, currentStats.isFollowing)
     }
@@ -474,7 +474,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                                 handleShare={() => handleShare(activeVideo.id)}
                                 handleBookmark={() => handleBookmark(activeVideo.id)}
                                 handleLikeToggle={() => handleLikeToggle(activeVideo.id)}
-                                handleFollowToggle={() => handleFollowToggle(activeVideo.id)}
+                                handleFollowToggle={() => handleFollowToggle(activeVideo.userId)}
                                 isLoading={isLoading}
                                 error={mutationError || userMutationError}
                                 currentStats={currentStats}

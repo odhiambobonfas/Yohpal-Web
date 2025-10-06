@@ -26,7 +26,12 @@ export default function useOptimisticVideo(
 
     const getCurrentStats = useCallback(() => {
         const optimist = optimisticStates.get(activeVideo.id)
-        const isFollowing = optimist?.following ?? followings?.includes(activeVideo.userId) ?? false
+        const userOptimistic = optimisticStates.get(activeVideo.userId)
+        const isFollowing =
+            optimist?.following ??
+            userOptimistic?.following ??
+            followings?.includes(activeVideo.userId) ??
+            false
         const userLiked =
             optimist?.likes?.liked ?? activeVideo.likes.includes(userId || "") ?? false
         const userBookmarked =
@@ -125,10 +130,11 @@ export default function useOptimisticVideo(
     )
 
     const updateOptimisticFollow = useCallback(
-        (videoId: string) => {
+        (userId: string) => {
+            // const isFollowing = optimist?.following ?? followings?.includes(activeVideo.userId) ?? false
             const currentStats = getCurrentStats()
             const newFollowing = !currentStats.isFollowing
-            updateOptimisticState(videoId, { following: newFollowing })
+            updateOptimisticState(userId, { following: newFollowing })
         },
         [getCurrentStats, updateOptimisticState],
     )
