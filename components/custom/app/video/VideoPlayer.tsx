@@ -24,6 +24,7 @@ export default function VideoPlayer({
     const [isLoaded, setIsLoaded] = useState(false)
     const [isMuted, setMuteStatus] = useState(true)
     const [isPlaying, setPlaying] = useState(true)
+    const [isLandscape, setIsLandscape] = useState(false)
 
     useEffect(() => {
         function unlock() {
@@ -66,6 +67,16 @@ export default function VideoPlayer({
         }
     }, [isActive])
 
+    // Detect aspect ratio
+    useEffect(() => {
+        const video = videoRef.current
+        if (!video) return
+        const handleLoadedMetadata = () => {
+            setIsLandscape(video.videoWidth > video.videoHeight)
+        }
+        video.addEventListener("loadedmetadata", handleLoadedMetadata)
+        return () => video.removeEventListener("loadedmetadata", handleLoadedMetadata)
+    }, [])
     const togglePlayPause = async () => {
         const video = videoRef.current
         if (!video) return
@@ -100,7 +111,20 @@ export default function VideoPlayer({
     return (
         <div className="h-full w-full flex m-0 pb-3 px-1">
             <Card className="h-full p-0 m-0 w-full border-none overflow-hidden rounded-lg md:rounded-lg">
-                <CardContent className="h-full p-0 relative flex items-center justify-center">
+                <CardContent
+                    style={
+                        isLandscape
+                            ? {
+                                  backgroundImage: `url(${thumbnail})`,
+                                  backgroundSize: "cover",
+                                  backgroundPosition: "center",
+                              }
+                            : {}
+                    }
+                    className={`px-0 relative flex items-center justify-center h-full w-full overflow-hidden transition-all duration-300 ${
+                        isLandscape ? "backdrop-blur-xl bg-black/10" : "bg-black"
+                    }`}
+                >
                     <Button
                         className="size-10 z-20 absolute top-2 left-2 hover:bg-transparent bg-transparent opacity-80"
                         onClick={() => setMuteStatus(!isMuted)}
@@ -111,6 +135,7 @@ export default function VideoPlayer({
                             <LucideVolume2 className="size-5 fill-current" />
                         )}
                     </Button>
+
                     <VideoPlayerSettings
                         videoId={activeVideoId}
                         autoScrollEnabled={autoScrollEnabled}
@@ -125,10 +150,15 @@ export default function VideoPlayer({
                             <LucidePlay className="fill-white stroke-white size-8" />
                         </Button>
                     )}
+
                     <video
                         ref={videoRef}
                         src={videoSrc}
-                        className="w-full h-full object-cover"
+                        className={`transition-all duration-300 ${
+                            isLandscape
+                                ? "w-full max-h-full object-contain"
+                                : "w-full h-full object-cover"
+                        }`}
                         loop={!autoScrollEnabled}
                         playsInline
                         muted={isMuted}
@@ -136,6 +166,7 @@ export default function VideoPlayer({
                         onLoadedData={() => setIsLoaded(true)}
                         onEnded={autoScrollEnabled ? onEnded : undefined}
                     />
+
                     {!isLoaded && (
                         <div className="h-full w-full absolute inset-0">
                             <Image
@@ -145,6 +176,19 @@ export default function VideoPlayer({
                                 src={thumbnail || DEFAULT_THUMBNAIL}
                                 alt="video thumbnail"
                                 className="h-full w-full object-cover"
+                            />
+                        </div>
+                    )}
+
+                    {isLandscape && (
+                        <div className="absolute -z-10 h-full w-full">
+                            <Image
+                                quality={20}
+                                width={100}
+                                height={100}
+                                src={thumbnail || DEFAULT_THUMBNAIL}
+                                alt="video thumbnail"
+                                className="h-full w-full object-cover blur-2xl"
                             />
                         </div>
                     )}
