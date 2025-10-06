@@ -15,6 +15,7 @@ import {
 
 import { VideoComment, VideoWithStats } from "#/videos"
 import { VIDEO_LIMIT } from "@/constants"
+import { onlyProd } from "@/lib/dev"
 import { db } from "@/lib/firebase/firebase.browser"
 import { recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 import { DOC } from "@/services"
@@ -46,7 +47,14 @@ export async function getVideos(
     const videos = await Promise.all(
         videoDocs.docs.map(async (v) => {
             const videoData = v.data()
-            const videoStats = await getVideoStats(v.id, userId)
+            const videoStats = await onlyProd(() => getVideoStats(v.id, userId), {
+                views: 24,
+                shares: 1,
+                downloads: 1,
+                likes: [],
+                comments: [],
+                bookmarks: [],
+            })
             return {
                 id: v.id,
                 ...videoData,

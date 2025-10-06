@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase/firebase.admin"
-import { GeneralSetting } from "@/types/org/settings"
+import { GeneralSettings } from "@/types/org/settings"
 
 export async function getCompanyGeneralSettings() {
     const settingsDocs = await db
@@ -9,8 +9,9 @@ export async function getCompanyGeneralSettings() {
         .get()
 
     if (settingsDocs.empty) return null
-    const settingDoc = settingsDocs.docs.at(0)
-    if (!settingDoc?.exists) return null
+    const settings = settingsDocs.docs.reduce((acc, doc) => {
+        return { ...acc, ...doc.data() }
+    }, {})
 
-    return settingDoc.data() as unknown as GeneralSetting
+    return settings as unknown as GeneralSettings
 }

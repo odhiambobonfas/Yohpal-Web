@@ -52,7 +52,6 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
 
         await toggleFollow(targetUserId, isFollowing)
     }
-    console.log(user, profileType)
     return (
         <div className="min-h-[30%] flex flex-col p-2 items-center md:flex-row  md:justify-center">
             <div className="flex-shrink-0">

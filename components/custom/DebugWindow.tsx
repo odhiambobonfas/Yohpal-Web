@@ -1,4 +1,6 @@
+"use client"
 import React, { useCallback, useRef, useState } from "react"
+import ClientOnly from "./ClientOnly"
 
 const DEBUG = process.env.NODE_ENV === "development"
 
@@ -61,18 +63,20 @@ export default function DebugWindow({ children }: { children: React.ReactNode })
     if (!DEBUG) return
 
     return (
-        <div
-            ref={windowRef}
-            className={`fixed z-50 bg-black/80 text-white text-xs p-2 rounded font-mono transition-shadow ${
-                isDragging ? "shadow-lg cursor-grabbing" : "cursor-grab hover:shadow-md"
-            }`}
-            style={{
-                left: `${position.x}px`,
-                top: `${position.y}px`,
-            }}
-            onMouseDown={handleMouseDown}
-        >
-            {children}
-        </div>
+        <ClientOnly>
+            <div
+                ref={windowRef}
+                className={`fixed z-50 bg-black/80 text-white text-xs p-2 rounded font-mono transition-shadow ${
+                    isDragging ? "shadow-lg cursor-grabbing" : "cursor-grab hover:shadow-md"
+                }`}
+                style={{
+                    left: `${position.x}px`,
+                    top: `${position.y}px`,
+                }}
+                onMouseDown={handleMouseDown}
+            >
+                {children}
+            </div>
+        </ClientOnly>
     )
 }
