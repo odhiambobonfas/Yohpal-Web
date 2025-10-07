@@ -185,7 +185,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         return () => observer.disconnect()
     }, [virtualItems, activeId, user?.uid, updateOptimisticView, addView])
 
-    const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
+    const [autoScrollEnabled, setAutoScrollEnabled] = useState(false)
 
     useEffect(() => {
         const saved = localStorage.getItem("autoscrollEnabled")
