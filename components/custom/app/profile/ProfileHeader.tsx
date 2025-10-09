@@ -55,7 +55,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
     return (
         <div className="min-h-[30%] flex flex-col p-2 items-center md:flex-row  md:justify-center">
             <div className="flex-shrink-0">
-                <Avatar className="size-50">
+                <Avatar className="size-[90px] md:size-50">
                     <AvatarImage
                         loading="lazy"
                         width={10}
