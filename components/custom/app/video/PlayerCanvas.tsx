@@ -57,7 +57,6 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         const currentIndex = allVideos.findIndex((v) => v.id === activeId)
         const nextId = currentIndex + 1
         if (nextId > allVideos.length - 1) return
-        // setActiveId(allVideos[nextId].id)
         rowVirtualizer.scrollToIndex(nextId, {
             behavior: "smooth",
         })
@@ -67,7 +66,6 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         const currentIndex = allVideos.findIndex((v) => v.id === activeId)
         const nextId = currentIndex - 1
         if (nextId < 0) return
-        // setActiveId(allVideos[nextId].id)
         rowVirtualizer.scrollToIndex(nextId, {
             behavior: "smooth",
         })
