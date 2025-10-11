@@ -204,6 +204,8 @@ export default function PlayerCanvas({
         if (saved !== null) {
             setAutoScrollEnabled(saved === "true")
         }
+    }, [])
+    useEffect(() => {
         localStorage.setItem("autoscrollEnabled", String(autoScrollEnabled))
     }, [autoScrollEnabled])
 
