@@ -51,7 +51,8 @@ export default function useVideoHandlers({
         toggleFollow,
     } = useUserMutation()
 
-    const openAuthDialog = () => setShowAuthDialog(!showAuthDialog)
+    const openAuthDialog = () => setShowAuthDialog(true)
+    const closeAuthDialog = () => setShowAuthDialog(false)
 
     const handleView = async () => {
         if (isAuthenticated) {
@@ -219,6 +220,10 @@ export default function useVideoHandlers({
 
         // State
         commentTexts,
+
+        showAuthDialog,
+        openAuthDialog,
+        closeAuthDialog,
 
         // Loading/error states
         isLoading: userMutationLoading || mutationLoading,
