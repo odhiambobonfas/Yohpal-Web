@@ -217,8 +217,6 @@ export default function PlayerCanvas({
     const isLoading = followingsLoading || videoHandlers.isLoading
     const currentStats = videoHandlers.handleGetCurrentStats()
 
-    const [showAuthDialog, setShowAuthDialog] = useState(false)
-
     return (
         <>
             <DebugWindow>
@@ -240,8 +238,8 @@ export default function PlayerCanvas({
             </DebugWindow>
 
             <InteractionsLoginPrompt
-                open={showAuthDialog}
-                closePrompt={() => setShowAuthDialog(false)}
+                open={videoHandlers.showAuthDialog}
+                closePrompt={videoHandlers.closeAuthDialog}
             />
 
             <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
