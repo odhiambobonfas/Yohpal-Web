@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
+import { useReportVideoMutation } from "@/hooks/report/use-report-video"
 import { AlertCircle } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -33,11 +34,13 @@ export default function ReportVideoDialog({
 }) {
     const [scenario, setScenario] = useState<string>("")
     const [details, setDetails] = useState<string>("")
+    const { submitReport, loading } = useReportVideoMutation()
 
-    const handleSubmit = () => {
-        toast.success("Video report sent")
+    const handleSubmit = async () => {
+        await submitReport(videoId, scenario, details)
         setScenario("")
         setDetails("")
+        toast.success("Video report sent")
     }
 
     console.debug(videoId)
@@ -128,7 +131,7 @@ export default function ReportVideoDialog({
                             disabled={!scenario}
                             className="gap-2"
                         >
-                            Submit Report
+                            {loading ? "Submitting..." : "Submit Report"}
                         </Button>
                     </DialogClose>
                 </DialogFooter>
