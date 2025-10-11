@@ -68,38 +68,15 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                 </Avatar>
             </div>
 
-            <div className="ml-4 flex-1 flex-col flex items-center md:items-start">
-                <div className="flex flex-row gap-7">
+            <div className="md:ml-5 flex-1 flex-col flex items-center md:items-start">
+                <div className="flex flex-col gap-1 justify-center">
                     <h1 className="mb-2 text-3xl font-bold">{user?.userName}</h1>
-                    {profileType === "public" && isAuthenticated && (
-                        <Button
-                            onClick={() => {
-                                handleFollowToggle({
-                                    targetUserId: user!.uid,
-                                    isFollowing: userFollowed,
-                                })
-                            }}
-                            className={`rounded-full text-lg px-5 py-2 ${
-                                userFollowed ? "border-primary bg-none" : ""
-                            }`}
-                        >
-                            {userFollowed ? (
-                                <>
-                                    <LucideUserMinus2 /> Unfollow
-                                </>
-                            ) : (
-                                <>
-                                    <LucideUserPlus2 /> Follow
-                                </>
-                            )}
-                        </Button>
-                    )}
                 </div>
                 {profileType === "personal" && (
                     <span className="text-muted-foreground mb-2">{user?.email}</span>
                 )}
 
-                <span className="text-muted-foreground mb-2 w-full md:w-[600px]">
+                <span className="text-muted-foreground mb-2 w-full text-center md:text-start md:w-[600px]">
                     {visibleText}
                     {isLong && !expanded && "..."}
                     {isLong && (
@@ -116,19 +93,44 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                     <span className="text-muted-foreground">{user?.phoneNumber}</span>
                 )}
 
+                {profileType === "public" && isAuthenticated && (
+                    <Button
+                        onClick={() => {
+                            handleFollowToggle({
+                                targetUserId: user!.uid,
+                                isFollowing: userFollowed,
+                            })
+                        }}
+                        className={`rounded-lg my-2 text-sm md:text-lg px-3 py-1 md:px-5 md:py-2 ${
+                            userFollowed ? "border-primary bg-none" : ""
+                        }`}
+                    >
+                        {userFollowed ? (
+                            <>
+                                <LucideUserMinus2 className="size-4 md:size-5" />
+                                <span>Unfollow</span>
+                            </>
+                        ) : (
+                            <>
+                                <LucideUserPlus2 className="size-4 md:size-5" />
+                                <span>Follow</span>
+                            </>
+                        )}
+                    </Button>
+                )}
                 {/* Stats */}
-                <div className="flex flex-row mt-2 gap-4">
-                    <div className="bg-accent py-2 px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                        <span className="text-muted-foreground">{stats?.uploadedStat}</span>
-                        <span className="text-xs">Posts</span>
+                <div className="flex flex-row mt-2 gap-2 md:gap-4">
+                    <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                        <span className="text-sm md:text-base">{stats?.uploadedStat}</span>
+                        <span className="text-[10px] md:text-xs">Posts</span>
                     </div>
                     <Dialog>
                         <DialogTrigger>
-                            <div className="bg-accent py-2 px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                                <span className="text-muted-foreground">
+                            <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                                <span className="text-sm md:text-base">
                                     {stats?.followersStat?.length}
                                 </span>
-                                <span className="text-xs ">Followers</span>
+                                <span className="text-[10px] md:text-xs">Followers</span>
                             </div>
                         </DialogTrigger>
                         <DialogContent>
@@ -142,11 +144,9 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
 
                     <Dialog>
                         <DialogTrigger>
-                            <div className="bg-accent py-2 px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                                <span className="text-muted-foreground">
-                                    {stats?.followingStat}
-                                </span>
-                                <span className="text-xs">Following</span>
+                            <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                                <span className="text-sm md:text-base">{stats?.followingStat}</span>
+                                <span className="text-[10px] md:text-xs">Following</span>
                             </div>
                         </DialogTrigger>
                         <DialogContent>
@@ -158,13 +158,13 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                         </DialogContent>
                     </Dialog>
 
-                    <div className="bg-accent py-2 px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                        <span className="text-muted-foreground">{stats?.likedStat}</span>
-                        <span className="text-xs">Liked</span>
+                    <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                        <span className="text-sm md:text-base">{stats?.likedStat}</span>
+                        <span className="text-[10px] md:text-xs">Liked</span>
                     </div>
-                    <div className="bg-accent py-2 px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                        <span className="text-muted-foreground">{stats?.viewedStat}</span>
-                        <span className="text-xs">Views</span>
+                    <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                        <span className="text-sm md:text-base">{stats?.viewedStat}</span>
+                        <span className="text-[10px] md:text-xs">Views</span>
                     </div>
                 </div>
             </div>

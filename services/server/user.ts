@@ -2,6 +2,7 @@ import { YPUser } from "#/users"
 import { withCache } from "@/lib/cache"
 import { onlyProd } from "@/lib/dev"
 import { db } from "@/lib/firebase/firebase.admin"
+import { replaceWithCDN } from "@/lib/utils"
 import { DOC } from "@/services"
 import { getUserVideoUploads } from "./videos"
 
@@ -16,7 +17,7 @@ export const getUserProfile = async (userId: string) => {
             email: user.email,
             bio: user.bio,
             phoneNumber: user.phoneNumber,
-            profile_picture: user.profile_picture,
+            profile_picture: replaceWithCDN(user.profile_picture),
         } as unknown as YPUser
     }, `user:profile:${userId}`)
 }
