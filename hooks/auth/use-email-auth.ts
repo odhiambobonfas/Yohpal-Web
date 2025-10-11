@@ -11,6 +11,7 @@ import {
     signUpWithEmailAndPassword,
     verifyEmailAction,
 } from "@/services/client/auth"
+import { createUser } from "@/services/client/user-mutations"
 
 function getUserFriendlyError(error: string, context: "login" | "signup" | "verify"): string {
     const errorMsg = error.toLowerCase() || ""
@@ -82,7 +83,10 @@ export function useEmailAuth() {
         setError(null)
         try {
             const userCreds = await signUpWithEmailAndPassword(user)
-            await createSession({ token: await userCreds.getIdToken(), uid: userCreds.uid })
+            await Promise.all([
+                createUser(userCreds.uid),
+                createSession({ token: await userCreds.getIdToken(), uid: userCreds.uid }),
+            ])
             return { success: true }
         } catch (e) {
             const errorMsg = getError(e)
