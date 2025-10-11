@@ -30,8 +30,18 @@ const navItems = [
     { icon: LucideAlbum, title: "About Us", position: "bottom", link: "/about" },
     { icon: LucideGlobeLock, title: "Privacy Policy", position: "bottom", link: "/privacy" },
     { icon: LucideScrollText, title: "Terms & Conditions", position: "bottom", link: "/terms" },
-    { icon: LucideBriefcase, title: "Yohpal Hustle", link: "https://hustle.yohpal.com" },
-    { icon: LucideWallet, title: "Account Manager", link: "https://accountmanager.yohpal.com" },
+    {
+        icon: LucideBriefcase,
+        title: "Yohpal Hustle",
+        target: "_blank",
+        link: "https://hustle.yohpal.com",
+    },
+    {
+        icon: LucideWallet,
+        title: "Account Manager",
+        target: "_blank",
+        link: "https://accountmanager.yohpal.com",
+    },
 ]
 
 export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -62,6 +72,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
                         item.position !== "bottom" ? (
                             <Link
                                 href={item.link}
+                                target={item.target}
                                 className="w-full inline-flex  items-center p-1"
                                 key={idx}
                             >
@@ -83,7 +94,6 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
             </SidebarContent>
             <SidebarRail />
             <SidebarFooter>
-                {" "}
                 <SidebarMenu>
                     {navItems.map((item, idx) =>
                         item.position === "bottom" ? (

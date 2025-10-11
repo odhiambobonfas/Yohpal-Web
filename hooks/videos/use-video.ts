@@ -1,7 +1,8 @@
+"use client"
 import { useState } from "react"
 
 import { Video } from "#/videos"
-import { getError } from "@/lib/utils"
+import getLast, { getError } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
 import {
     getBookmarks,
@@ -81,13 +82,16 @@ export default function useVideo(userId: string | undefined) {
         lastVideoId: string,
         loggedInUserId: string | undefined,
     ) => {
-        return await getVideos(lastVideoId, loggedInUserId, userId)
+        const vods = await getVideos(lastVideoId, loggedInUserId, userId)
+        return { videos: vods, lastVideoDocId: getLast(vods)?.id || null }
     }
+
     return {
         loading,
         error,
         singleVideo,
         getClientVideoStats,
         getClientPaginatedVideos,
+        // randomizeVideos,
     }
 }

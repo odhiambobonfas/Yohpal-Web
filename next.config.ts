@@ -85,7 +85,7 @@ const nextConfig = {
                 pathname: "/intl/en_us/badges/static/images/badges/en_badge_web_generic.png",
             },
         ],
-        qualities: [20, 25, 50, 75],
+        qualities: [5, 20, 25, 50, 75],
     },
 } satisfies NextConfig
 

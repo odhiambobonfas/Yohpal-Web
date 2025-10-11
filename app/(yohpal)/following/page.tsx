@@ -1,6 +1,7 @@
 import NotLoggedIn from "@/components/custom/app/video/following/NotLoggedIn"
 import DebugWindow from "@/components/custom/DebugWindow"
 import { COOKIES } from "@/constants"
+import { randomizeVideos } from "@/lib/randomize-videos"
 import { getFollowingFeed } from "@/services/server/following-feed"
 import { VideoWithStats } from "@/types/videos"
 import { LucideHeart } from "lucide-react"
@@ -14,11 +15,15 @@ export default async function Page() {
 
     if (!userId) return <NotLoggedIn />
     const feed = await getFollowingFeed(userId)
+    const videos = randomizeVideos(feed.videos)
 
     return (
         <>
             <DebugWindow>
-                <pre>{JSON.stringify(feed.followingMeta, null, 2)}</pre>
+                <span>Count: {feed.videos.length}</span>
+                <div className="whitespace-pre-wrap">
+                    Meta: {JSON.stringify(Object.fromEntries(feed.followingMeta))}
+                </div>
             </DebugWindow>
             <div
                 className="grid gap-4 p-2"
@@ -27,7 +32,7 @@ export default async function Page() {
                         "repeat(auto-fit, minmax(max(calc(100% / 6 - 1rem), 200px), 1fr))",
                 }}
             >
-                {feed.videos.map((video) => (
+                {videos.map((video) => (
                     <VideoPreview key={video.id} video={video} userId={userId} />
                 ))}
             </div>
@@ -38,7 +43,7 @@ export default async function Page() {
 function VideoPreview({ video, userId }: { video: VideoWithStats; userId: string }) {
     return (
         <Link
-            href={viewProfileVideos(video.userId, video.id)}
+            href={`/?u=${video.userId}&v=${video.id}`}
             key={video.id}
             className="h-70 relative w-full bg-secondary/40 shadow-md rounded-lg flex flex-col overflow-hidden"
         >
@@ -52,9 +57,7 @@ function VideoPreview({ video, userId }: { video: VideoWithStats; userId: string
                 />
             </div>
             <div className="absolute text-white bottom-0 w-full h-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex justify-center items-end gap-2 px-4 py-3">
-                <Link href={`/user/${video.userId}`} className="h-5 flex-1">
-                    {video.userName}
-                </Link>
+                {video.userName}
                 <div className=" inline-flex gap-1 text-sm items-center">
                     <LucideHeart
                         className={`size-4 ${video.likes.includes(userId) ? "text-red-500 fill-current" : ""}`}
@@ -64,12 +67,4 @@ function VideoPreview({ video, userId }: { video: VideoWithStats; userId: string
             </div>
         </Link>
     )
-}
-
-function viewProfileVideos(userId: string, videoId: string) {
-    const params = new URLSearchParams({
-        u: userId,
-        v: videoId,
-    })
-    return `/?${params.toString()}`
 }

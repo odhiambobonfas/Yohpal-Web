@@ -2,6 +2,7 @@ import { YPUser } from "#/users"
 import { withCache } from "@/lib/cache"
 import { onlyProd } from "@/lib/dev"
 import { db } from "@/lib/firebase/firebase.admin"
+import { replaceWithCDN } from "@/lib/utils"
 import { DOC } from "@/services"
 import { getUserVideoUploads } from "./videos"
 
@@ -16,9 +17,9 @@ export const getUserProfile = async (userId: string) => {
             email: user.email,
             bio: user.bio,
             phoneNumber: user.phoneNumber,
-            profile_picture: user.profile_picture,
+            profile_picture: replaceWithCDN(user.profile_picture),
         } as unknown as YPUser
-    }, `user-profile-${userId}`)
+    }, `user:profile:${userId}`)
 }
 
 export const getUserProfileStats = async (userId: string) => {
@@ -37,7 +38,7 @@ export const getUserProfileStats = async (userId: string) => {
             views: views.length,
             likes: likes.length,
         }
-    }, `user-profile-stats-${userId}`)
+    }, `user:profile:stats:${userId}`)
 }
 
 export const getFollowingCount = async (userId: string, limit: number | undefined) => {
@@ -57,7 +58,7 @@ export const getFollowingCount = async (userId: string, limit: number | undefine
             if (followingDocs.empty) return []
             return followingDocs.docs.map((f) => f.id)
         },
-        `user-following-${userId}-${limit || "all"}`,
+        `user:following:${userId}:${limit || "all"}`,
     )
 }
 
@@ -72,7 +73,7 @@ const getFollowersCount = async (userId: string) => {
             .get()
         if (followerDocs.empty) return []
         return followerDocs.docs.map((f) => f.id)
-    }, `user-followers-${userId}`)
+    }, `user:followers:${userId}`)
 }
 
 const getViewsCount = async (userId: string) => {
@@ -86,7 +87,7 @@ const getViewsCount = async (userId: string) => {
             .get()
         if (viewsDocs.empty) return []
         return viewsDocs.docs.map((v) => v.id)
-    }, `user-views-${userId}`)
+    }, `user:views:${userId}`)
 }
 
 const getLikedCount = async (userId: string) => {
@@ -100,5 +101,5 @@ const getLikedCount = async (userId: string) => {
             .get()
         if (likesDocs.empty) return []
         return likesDocs.docs.map((l) => l.id)
-    }, `user-likes-${userId}`)
+    }, `user:likes:${userId}`)
 }

@@ -1,7 +1,7 @@
 import { VideoComment, VideoWithStats } from "#/videos"
 import { COOKIES, DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
 import { db } from "@/lib/firebase/firebase.admin"
-import { recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
+import getLast, { recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 
 import { withCache } from "@/lib/cache"
 import { onlyProd } from "@/lib/dev"
@@ -16,11 +16,11 @@ export const getLandingVideos = async (videoId: string | undefined, userId: stri
 
     return withCache(
         async () => {
-            const videos: VideoWithStats[] = []
-            let fetchedId: string | undefined
+            let firstVideo: VideoWithStats | null = null
 
             if (userId) {
-                return await getVideosFromProfile(userId, videoId, loggedInUserId)
+                const vods = await getVideosFromProfile(userId, videoId, loggedInUserId)
+                return { videos: vods, lastVideoDoc: getLast(vods)!.id, firstVideo: null }
             }
 
             if (videoId) {
@@ -36,7 +36,7 @@ export const getLandingVideos = async (videoId: string | undefined, userId: stri
                         { shares: 1, views: 10, bookmarks: [], comments: [], likes: [] },
                     )
 
-                    const cleanVideoData = {
+                    firstVideo = {
                         id: videoDoc.id,
                         ...videoData,
                         videoUrl: replaceWithCDN(videoData.videoUrl),
@@ -44,9 +44,6 @@ export const getLandingVideos = async (videoId: string | undefined, userId: stri
                         timestamp: serializeTimestamp(videoData.timestamp),
                         ...videoStats,
                     } as VideoWithStats
-                    fetchedId = cleanVideoData.id
-
-                    videos.push(cleanVideoData)
                 }
             }
 
@@ -59,7 +56,7 @@ export const getLandingVideos = async (videoId: string | undefined, userId: stri
 
             const moreVids = (await Promise.all(
                 videosDocs.docs.map(async (v) => {
-                    if (v.id === fetchedId) return null
+                    if (v.id === firstVideo?.id) return null
 
                     const videoData = v.data()
                     delete videoData["campaignMeta"]
@@ -82,11 +79,16 @@ export const getLandingVideos = async (videoId: string | undefined, userId: stri
                 }),
             )) as (VideoWithStats | null)[]
 
-            videos.push(...(moreVids.filter(Boolean) as VideoWithStats[]))
+            const finalVideos = [firstVideo, ...moreVids].filter((v) => v !== null)
+            const lastDoc = getLast(finalVideos)!.id
 
-            return videos
+            return {
+                videos: finalVideos,
+                lastVideoDoc: lastDoc,
+                firstVideo: firstVideo?.id || null,
+            }
         },
-        `landing-videos-${userId || "anon"}`,
+        `landing:videos:${userId || "anon"}:${videoId || ""}`,
     )
 }
 
@@ -138,7 +140,7 @@ export const getUploadedVideoStats = async (videoId: string) => {
             likes,
             views,
         }
-    }, `uploaded-video-stats-${videoId}`)
+    }, `uploaded:video:stats:${videoId}`)
 }
 
 export const getVideoStats = async (videoId: string, loggedInUserId: string | undefined) => {
@@ -158,7 +160,7 @@ export const getVideoStats = async (videoId: string, loggedInUserId: string | un
             views,
             comments,
         }
-    }, `video-stats-${videoId}`)
+    }, `video:stats:${videoId}`)
 }
 
 export const getUserVideoUploads = async (
@@ -204,7 +206,7 @@ export const getUserVideoUploads = async (
 
             return videos as unknown as VideoWithStats[]
         },
-        `user-video-uploads-${userId}-${limit || "all"}`,
+        `user:video:uploads:${userId}:${limit || "all"}`,
     )
 }
 
@@ -221,7 +223,7 @@ const getVideoLikes = async (videoId: string) => {
         if (videoRef.empty) return []
 
         return videoRef.docs.map((v) => v.id)
-    }, `video-likes-${videoId}`)
+    }, `video:likes:${videoId}`)
 }
 
 const getVideoBookmarks = async (videoId: string) => {
@@ -237,7 +239,7 @@ const getVideoBookmarks = async (videoId: string) => {
         if (videoRef.empty) return []
 
         return videoRef.docs.map((v) => v.id)
-    }, `video-bookmarks-${videoId}`)
+    }, `video:bookmarks:${videoId}`)
 }
 
 const getVideoShares = async (videoId: string) => {
@@ -252,7 +254,7 @@ const getVideoShares = async (videoId: string) => {
             .get()
 
         return videoRef.data().count ?? 0
-    }, `video-shares-${videoId}`)
+    }, `video:shares:${videoId}`)
 }
 
 const getVideoViews = async (videoId: string) => {
@@ -267,7 +269,7 @@ const getVideoViews = async (videoId: string) => {
             .get()
 
         return videoRef.data().count ?? 0
-    }, `video-views-${videoId}`)
+    }, `video:views:${videoId}`)
 }
 
 const getVideoComments = async (videoId: string, userId: string | undefined) => {
@@ -298,5 +300,5 @@ const getVideoComments = async (videoId: string, userId: string | undefined) => 
         )
 
         return comments as unknown as VideoComment[]
-    }, `video-comments-${videoId}`)
+    }, `video:comments:${videoId}`)
 }

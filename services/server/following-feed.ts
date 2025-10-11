@@ -18,8 +18,7 @@ export const getFollowingFeed = async (userId: string) => {
             if (vids.length > 0) {
                 followingMeta.set(f, { lastDoc: vids[vids.length - 1].id, contentEnded: false })
             }
-            // returns an array
-            videos.push(...vids) //we spread em into
+            videos.push(...vids)
         }),
     )
     return {
