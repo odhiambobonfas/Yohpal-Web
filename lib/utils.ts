@@ -53,3 +53,7 @@ export function formatTime(timestamp: string) {
         return date.fromNow()
     }
 }
+
+export default function getLast<T>(items: T[] | undefined) {
+    return items ? items[items.length - 1] : null
+}

@@ -4,7 +4,7 @@ import VideoPlayerSettings from "@/components/custom/app/video/VideoPlayerSettin
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { DEFAULT_THUMBNAIL } from "@/constants"
-import { useAutoPauseVideo } from "@/hooks/videos/auto-pause-video"
+import { useAutoPauseVideo } from "@/hooks/videos/use-auto-pause-video"
 import { LucidePlay, LucideVolume2, LucideVolumeOff } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
@@ -112,15 +112,6 @@ export default function VideoPlayer({
         <div className="h-full w-full flex m-0 pb-3 px-1">
             <Card className="h-full p-0 m-0 w-full border-none overflow-hidden rounded-lg md:rounded-lg">
                 <CardContent
-                    style={
-                        isLandscape
-                            ? {
-                                  backgroundImage: `url(${thumbnail})`,
-                                  backgroundSize: "cover",
-                                  backgroundPosition: "center",
-                              }
-                            : {}
-                    }
                     className={`px-0 relative flex items-center justify-center h-full w-full overflow-hidden transition-all duration-300 ${
                         isLandscape ? "backdrop-blur-xl bg-black/10" : "bg-black"
                     }`}
@@ -183,9 +174,9 @@ export default function VideoPlayer({
                     {isLandscape && (
                         <div className="absolute -z-10 h-full w-full">
                             <Image
-                                quality={20}
-                                width={100}
-                                height={100}
+                                quality={5}
+                                width={10}
+                                height={10}
                                 src={thumbnail || DEFAULT_THUMBNAIL}
                                 alt="video thumbnail"
                                 className="h-full w-full object-cover blur-2xl"
