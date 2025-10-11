@@ -172,8 +172,10 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
                         const id = entry.target.getAttribute("data-id")
                         if (id && id !== activeId) {
                             setActiveId(id)
-                            updateOptimisticView(id)
-                            addView(id, user?.uid)
+                            if (isAuthenticated) {
+                                updateOptimisticView(id)
+                                addView(id, user?.uid)
+                            }
                         }
                     }
                 })
@@ -185,7 +187,7 @@ export default function PlayerCanvas({ videos }: { videos: VideoWithStats[] }) {
         videoElements.forEach((el) => observer.observe(el))
 
         return () => observer.disconnect()
-    }, [virtualItems, activeId, user?.uid, updateOptimisticView, addView])
+    }, [virtualItems, activeId, user?.uid, updateOptimisticView, addView, isAuthenticated])
 
     const [autoScrollEnabled, setAutoScrollEnabled] = useState(false)
 
