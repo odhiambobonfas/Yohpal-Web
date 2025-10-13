@@ -1,13 +1,5 @@
 import { useState } from "react"
 
-import { getError } from "@/lib/utils"
-import { useAuth } from "@/providers/Auth"
-import {
-    addCommentAction,
-    deleteCommentAction,
-    likeCommentAction,
-    unlikeCommentAction,
-} from "@/services/client/video-comments-mutations"
 import {
     bookmarkVideoAction,
     downloadVideoAction,
@@ -16,7 +8,16 @@ import {
     unbookmarkVideoAction,
     unlikeVideoAction,
     updateViewAction,
-} from "@/services/client/video-mutations"
+} from "@/actions/videos/video-interactions"
+import { getError } from "@/lib/utils"
+import { useAuth } from "@/providers/Auth"
+
+import {
+    addCommentAction,
+    deleteCommentAction,
+    likeCommentAction,
+    unlikeCommentAction,
+} from "@/actions/videos/comments"
 import { VideoCommentInteraction, VideoInteraction } from "@/types/videos"
 
 export default function useVideoMutation() {
