@@ -22,9 +22,9 @@ export interface Video {
 }
 
 export interface VideoWithStats extends Video {
-    downloads: number
-    shares: number
-    views: number
+    downloads: string[]
+    shares: string[]
+    views: string[]
     likes: string[]
     bookmarks: string[]
     comments: VideoComment[]
@@ -56,12 +56,19 @@ export interface VideoComment {
 }
 
 export interface VideoCommentInteraction {
+    tempId: string
     userId: string
     profilePicture: string
     username: string
     videoId: string
     comment: string
     isReply: boolean
+}
+
+export interface CommentActionProps {
+    videoId: string
+    userId: string
+    commentId: string
 }
 
 export interface VideoInteraction {

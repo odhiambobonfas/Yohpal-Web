@@ -27,6 +27,8 @@ export default function useOptimisticVideo(
     const getCurrentStats = useCallback(() => {
         const optimist = optimisticStates.get(activeVideo.id)
         const userOptimistic = optimisticStates.get(activeVideo.userId)
+
+        // TODO(5d4b721bf00d)
         const isFollowing =
             optimist?.following ??
             userOptimistic?.following ??
@@ -64,9 +66,9 @@ export default function useOptimisticVideo(
         return {
             likes: optimist?.likes?.count ?? activeVideo.likes.length ?? 0,
             bookmarks: optimist?.bookmarks?.count ?? activeVideo.bookmarks.length ?? 0,
-            shares: optimist?.shares ?? activeVideo.shares ?? 0,
-            views: optimist?.views ?? activeVideo.views ?? 0,
-            downloads: optimist?.downloads ?? activeVideo.downloads ?? 0,
+            shares: optimist?.shares ?? activeVideo.shares.length ?? 0,
+            views: optimist?.views ?? activeVideo.views.length ?? 0,
+            downloads: optimist?.downloads ?? activeVideo.downloads.length ?? 0,
             comments: finalComments,
             userBookmarked,
             userLiked,
@@ -80,7 +82,7 @@ export default function useOptimisticVideo(
 
     const updateOptimisticView = useCallback(
         (videoId: string) => {
-            const currentViews = optimisticStates.get(videoId)?.views ?? activeVideo.views
+            const currentViews = optimisticStates.get(videoId)?.views ?? activeVideo.views.length
 
             if (!watchedVideos?.some((v) => v.id === videoId)) {
                 updateOptimisticState(videoId, { views: currentViews + 1 })
@@ -147,19 +149,21 @@ export default function useOptimisticVideo(
         [optimisticStates, updateOptimisticState],
     )
 
+    // TODO(55d45572bb3d)
     const replaceOptimisticComment = useCallback(
         (videoId: string, tempId: string, realComment: VideoComment) => {
-            const optimist = optimisticStates.get(videoId)
-            const currentOptimistic = optimist?.comments ?? []
+            const currentStats = getCurrentStats()
+            const currentOptimistic = currentStats.comments ?? []
 
             const tempIdx = currentOptimistic.findIndex((c) => c.id === tempId)
+
             if (tempIdx !== -1) {
                 const updatedComments = [...currentOptimistic]
                 updatedComments[tempIdx] = realComment
                 updateOptimisticState(videoId, { comments: updatedComments })
             }
         },
-        [optimisticStates, updateOptimisticState],
+        [updateOptimisticState, getCurrentStats],
     )
 
     const removeOptimisticComment = useCallback(
@@ -234,11 +238,13 @@ export default function useOptimisticVideo(
         updateOptimisticShare,
         updateOptimisticDownload,
         updateOptimisticFollow,
+
         updateOptimisticComment,
         removeOptimisticComment,
         updateOptimisticCommentLike,
         replaceOptimisticComment,
-        getCurrentStats,
+
         resetOptimisticStore,
+        getCurrentStats,
     }
 }

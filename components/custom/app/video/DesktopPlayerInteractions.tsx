@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { formatTime } from "@/lib/utils"
+import { formatStat, formatTime } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
 
 export default function DesktopPlayerInteractions({
@@ -114,7 +114,7 @@ export default function DesktopPlayerInteractions({
                 <div className="inline-flex gap-1 w-full">
                     <Button variant={"ghost"} disabled className="text-foreground">
                         <LucideEye />
-                        {currentStats.views}
+                        {formatStat(currentStats.views)}
                     </Button>
                     <Button
                         variant={"ghost"}
@@ -125,7 +125,7 @@ export default function DesktopPlayerInteractions({
                         <LucideHeart
                             className={currentStats.userLiked ? "text-red-500 fill-current" : ""}
                         />
-                        {currentStats.likes}
+                        {formatStat(currentStats.likes)}
                     </Button>
                     <Button variant={"ghost"} className="text-muted-foreground">
                         <LucideMessageCircleMore /> {currentStats.comments.length}
