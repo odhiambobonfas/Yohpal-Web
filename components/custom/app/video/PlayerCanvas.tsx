@@ -95,7 +95,7 @@ export default function PlayerCanvas({
         })
     }, [activeIndex, allVideos, getProfile])
 
-    const { data: userExtra, isLoading: followingsLoading } = useSWR(
+    const { data: userExtra } = useSWR(
         ["user-extra", profile?.uid],
         async () => {
             return await Promise.all([getFollowing(profile!.uid), getWatchedVideos(profile!.uid)])
@@ -103,7 +103,7 @@ export default function PlayerCanvas({
         swrConfig,
     )
 
-    const { data: ownerProfile, isLoading: profileLoading } = useSWR(
+    const { data: ownerProfile } = useSWR(
         [`user-profile`, activeVideo.userId],
         ([, userId]) => getProfile(userId),
         swrConfig,
@@ -216,7 +216,7 @@ export default function PlayerCanvas({
         stableRemeasure()
     }, [stableRemeasure])
 
-    const isLoading = followingsLoading || videoHandlers.isLoading
+    const isLoading = videoHandlers.isLoading
     const currentStats = videoHandlers.handleGetCurrentStats()
 
     return (
@@ -334,7 +334,7 @@ export default function PlayerCanvas({
                                 text: videoHandlers.commentTexts.get(activeVideo.id) ?? "",
                                 setText: (text: string) =>
                                     videoHandlers.handleCommentTextChange(activeVideo.id, text),
-                                disabled: isLoading || profileLoading,
+                                disabled: isLoading,
                             }}
                         />
                     ) : (
@@ -362,7 +362,7 @@ export default function PlayerCanvas({
                                     text: videoHandlers.commentTexts.get(activeVideo.id) ?? "",
                                     setText: (text: string) =>
                                         videoHandlers.handleCommentTextChange(activeVideo.id, text),
-                                    disabled: isLoading || profileLoading,
+                                    disabled: isLoading,
                                 }}
                             />
                         </ClientOnly>

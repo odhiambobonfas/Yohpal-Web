@@ -3,11 +3,10 @@ import { useState } from "react"
 import { getError } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
 import {
-    followUser,
-    unfollowUser,
     updatePreferences,
     updateProfile,
 } from "@/services/client/user-mutations"
+import { followUserAction, unfollowUserAction } from "@/actions/users/user-interaction"
 
 export function useUserMutation() {
     const [loading, setLoading] = useState(false)
@@ -39,10 +38,10 @@ export function useUserMutation() {
     const toggleFollow = async (otherUserId: string, isFollowing: boolean) => {
         return mutateWithAuth(async () => {
             if (isFollowing) {
-                await unfollowUser(user!.uid, otherUserId)
+                await unfollowUserAction(user!.uid, otherUserId)
                 return { followed: false }
             } else {
-                await followUser(user!.uid, otherUserId)
+                await followUserAction(user!.uid, otherUserId)
                 return { followed: true }
             }
         })

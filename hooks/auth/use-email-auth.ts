@@ -4,6 +4,7 @@ import { AuthUser } from "#/users"
 import { createCookie } from "@/actions/cookies"
 import { createSession, destroySession } from "@/actions/session"
 import { COOKIES } from "@/constants"
+import { logger } from "@/lib/logger"
 import { getError } from "@/lib/utils"
 import {
     loginWithEmailAndPassword,
@@ -69,8 +70,7 @@ export function useEmailAuth() {
             return { success: true }
         } catch (e) {
             const errorMsg = getError(e)
-            // can be hooked up to log services or sth
-            console.error(`[LOGIN ERR]: ${errorMsg}`)
+            logger.error(`[LOGIN ERR]: ${errorMsg}`)
             setError(getUserFriendlyError(errorMsg, "login"))
             return { success: false }
         } finally {
@@ -90,7 +90,7 @@ export function useEmailAuth() {
             return { success: true }
         } catch (e) {
             const errorMsg = getError(e)
-            console.error(`[SIGN UP ERR]: ${errorMsg}`)
+            logger.error(`[SIGN UP ERR]: ${errorMsg}`)
             setError(getUserFriendlyError(errorMsg, "signup"))
             return { success: false }
         } finally {
@@ -108,7 +108,7 @@ export function useEmailAuth() {
             return { success: true }
         } catch (e) {
             const errorMsg = getError(e)
-            console.error(`[LOG OUT ERR]: ${errorMsg}`)
+            logger.error(`[LOG OUT ERR]: ${errorMsg}`)
             setError("Failed to logout")
             return { success: false }
         } finally {
@@ -123,7 +123,7 @@ export function useEmailAuth() {
             await verifyEmailAction()
         } catch (e) {
             const errorMsg = getError(e)
-            console.error(`[VERIFY EMAIL ERR]: ${errorMsg}`)
+            logger.error(`[VERIFY EMAIL ERR]: ${errorMsg}`)
             setError(getUserFriendlyError(errorMsg, "verify"))
         } finally {
             setLoading(false)

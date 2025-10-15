@@ -1,13 +1,5 @@
 import { useState } from "react"
 
-import { getError } from "@/lib/utils"
-import { useAuth } from "@/providers/Auth"
-import {
-    addCommentAction,
-    deleteCommentAction,
-    likeCommentAction,
-    unlikeCommentAction,
-} from "@/services/client/video-comments-mutations"
 import {
     bookmarkVideoAction,
     downloadVideoAction,
@@ -16,7 +8,16 @@ import {
     unbookmarkVideoAction,
     unlikeVideoAction,
     updateViewAction,
-} from "@/services/client/video-mutations"
+} from "@/actions/videos/video-interactions"
+import { getError } from "@/lib/utils"
+import { useAuth } from "@/providers/Auth"
+
+import {
+    addCommentAction,
+    deleteCommentAction,
+    likeCommentAction,
+    unlikeCommentAction,
+} from "@/actions/videos/comments"
 import { VideoCommentInteraction, VideoInteraction } from "@/types/videos"
 
 export default function useVideoMutation() {
@@ -97,9 +98,10 @@ export default function useVideoMutation() {
         if (userId) await updateViewAction({ videoId, userId })
     }
 
-    const addComment = async (videoId: string, text: string) => {
+    const addComment = async (tempId: string, videoId: string, text: string) => {
         return mutateWithAuth(async () => {
             const comment: VideoCommentInteraction = {
+                tempId,
                 videoId,
                 userId: profile!.uid,
                 username: profile!.userName,
@@ -108,8 +110,7 @@ export default function useVideoMutation() {
                 isReply: false,
             }
 
-            const commentId = await addCommentAction(comment)
-            return { commentId, comment }
+            return await addCommentAction(comment)
         })
     }
 

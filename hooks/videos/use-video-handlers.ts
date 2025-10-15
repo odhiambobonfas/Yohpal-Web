@@ -1,6 +1,7 @@
 import { VideoComment, VideoWithStats } from "#/videos"
 import { useUserMutation } from "@/hooks/user/use-user-mutation"
 import useVideoMutation from "@/hooks/videos/use-video-mutations"
+import { logger } from "@/lib/logger"
 import { useAuth } from "@/providers/Auth"
 import { useState } from "react"
 import useOptimisticVideo from "./use-optimistic-video"
@@ -142,6 +143,7 @@ export default function useVideoHandlers({
             id: tempId,
             msg: text,
             username: profile?.userName,
+            userId: profile?.uid,
             profile_picture: profile?.profile_picture,
             isReply: false,
             likes: 0,
@@ -151,21 +153,19 @@ export default function useVideoHandlers({
             deleted: false,
         } as unknown as VideoComment
 
-        updateOptimisticComment(videoId, tempComment)
+        // TODO(55d45572bb3d)
+        updateOptimisticComment(videoId, tempComment) // update ui first
+        const res = await addComment(tempId, videoId, text)
 
-        const res = await addComment(videoId, text)
-
-        if (res?.commentId) {
-            // TODO(fc8017f17e82):: replace temp comment Id with the one from db
-        } else {
-            console.error("Failed to add comment:", mutationError)
-            removeOptimisticComment(videoId, tempId)
+        if (!res) {
+            logger.error("Failed to add comment:", mutationError)
             // Restore text on error
             setCommentTexts((prev) => {
                 const newMap = new Map(prev)
                 newMap.set(videoId, text)
                 return newMap
             })
+            return
         }
     }
 

@@ -2,18 +2,9 @@
 import { useState } from "react"
 
 import { Video } from "#/videos"
-import getLast, { getError } from "@/lib/utils"
+import { getError, getLast } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
-import {
-    getBookmarks,
-    getComments,
-    getDownloads,
-    getLikes,
-    getShares,
-    getVideo,
-    getVideos,
-    getViews,
-} from "@/services/client/video"
+import { getCVideoStats, getVideo, getVideos } from "@/services/client/video"
 
 export default function useVideo(userId: string | undefined) {
     const [loading, setLoading] = useState(false)
@@ -25,24 +16,17 @@ export default function useVideo(userId: string | undefined) {
         try {
             setLoading(true)
             setError(null)
-            const [views, likes, shares, downloads, bookmarks, comments] = await Promise.all([
-                getViews(videoId),
-                getLikes(videoId),
-                getShares(videoId),
-                getDownloads(videoId),
-                getBookmarks(videoId),
-                getComments(videoId, profile?.uid),
-            ])
+            const stats = await getCVideoStats(videoId, profile?.uid)
 
             return {
-                views: views.length,
-                shares: shares.length,
-                downloads: downloads.length,
-                likes: likes,
-                bookmarks: bookmarks,
-                comments: comments,
-                userLiked: userId ? likes.includes(userId) : false,
-                userBookmarked: userId ? bookmarks.includes(userId) : false,
+                views: stats.views.length,
+                shares: stats.shares.length,
+                downloads: stats.downloads.length,
+                likes: stats.likes,
+                bookmarks: stats.bookmarks,
+                comments: stats.comments,
+                userLiked: userId ? stats.likes.includes(userId) : false,
+                userBookmarked: userId ? stats.bookmarks.includes(userId) : false,
             }
         } catch (e) {
             const errorMsg = getError(e)

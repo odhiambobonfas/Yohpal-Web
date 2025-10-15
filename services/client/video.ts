@@ -13,12 +13,13 @@ import {
     where,
 } from "firebase/firestore"
 
-import { VideoComment, VideoWithStats } from "#/videos"
+import { VideoWithStats } from "#/videos"
 import { VIDEO_LIMIT } from "@/constants"
 import { onlyProd } from "@/lib/dev"
 import { db } from "@/lib/firebase/firebase.browser"
 import { recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 import { DOC } from "@/services"
+import { getVideoStats } from "../server/videos"
 
 const videosRef = collection(db, "videos")
 
@@ -48,9 +49,9 @@ export async function getVideos(
         videoDocs.docs.map(async (v) => {
             const videoData = v.data()
             const videoStats = await onlyProd(() => getVideoStats(v.id, userId), {
-                views: 24,
-                shares: 1,
-                downloads: 1,
+                views: [],
+                shares: [],
+                downloads: [],
                 likes: [],
                 comments: [],
                 bookmarks: [],
@@ -119,26 +120,6 @@ async function getVideosFromProfile(
     )
 }
 
-async function getVideoStats(videoId: string, userId: string | undefined) {
-    const [views, likes, bookmarks, shares, downloads, comments] = await Promise.all([
-        getViews(videoId),
-        getLikes(videoId),
-        getBookmarks(videoId),
-        getShares(videoId),
-        getDownloads(videoId),
-        getComments(videoId, userId),
-    ])
-
-    return {
-        views: views.length,
-        shares: shares.length,
-        downloads: downloads.length,
-        likes,
-        bookmarks,
-        comments,
-    }
-}
-
 export async function getViews(videoId: string) {
     const videoDocRef = collection(db, "videos", videoId, "views", DOC, "userIds")
     const videoStatsDocs = await getDocs(videoDocRef)
@@ -154,27 +135,6 @@ export async function getLikes(videoId: string) {
     return videoLikesDocs.docs.map((d) => d.id)
 }
 
-export async function getShares(videoId: string) {
-    const videoDocRef = collection(db, "videos", videoId, "shares", DOC, "userIds")
-    const videoStatsDocs = await getDocs(videoDocRef)
-    if (videoStatsDocs.empty) return []
-    return videoStatsDocs.docs.map((d) => d.id)
-}
-
-export async function getBookmarks(videoId: string) {
-    const videoDocRef = collection(db, "videos", videoId, "bookmarks", DOC, "userIds")
-    const videoStatsDocs = await getDocs(videoDocRef)
-    if (videoStatsDocs.empty) return []
-    return videoStatsDocs.docs.map((d) => d.id)
-}
-
-export async function getDownloads(videoId: string) {
-    const videoDocRef = collection(db, "videos", videoId, "downloads", DOC, "userIds")
-    const videoStatsDocs = await getDocs(videoDocRef)
-    if (videoStatsDocs.empty) return []
-    return videoStatsDocs.docs.map((d) => d.id)
-}
-
 export async function getVideo(videoId: string, userId: string | undefined) {
     const videoDocRef = doc(db, "videos", videoId)
     const videoDoc = await getDoc(videoDocRef)
@@ -188,31 +148,6 @@ export async function getVideo(videoId: string, userId: string | undefined) {
         ...videoDoc.data(),
         ...videoStats,
     } as unknown as VideoWithStats
-}
-
-export async function getComments(videoId: string, userId: string | undefined) {
-    const videoCommentsRef = collection(db, "comments", videoId, "messages")
-    const videoCommentsQuery = query(videoCommentsRef, orderBy("timestamp", "desc"))
-
-    const videoCommentsDocs = await getDocs(videoCommentsQuery)
-    if (videoCommentsDocs.empty) return []
-    let userLiked = false
-
-    return (await Promise.all(
-        videoCommentsDocs.docs.map(async (c) => {
-            if (userId) {
-                const likedDoc = await getDoc(doc(videoCommentsRef, c.id, "userIds", userId))
-                userLiked = likedDoc.exists()
-            }
-            return {
-                id: c.id,
-                ...c.data(),
-                profile_picture: replaceWithCDN(c.data().profile_picture),
-                videoId: videoId,
-                userHasLiked: userLiked,
-            }
-        }),
-    )) as unknown as VideoComment[]
 }
 
 export async function getUserUploadedVideos(userId: string) {
@@ -240,3 +175,6 @@ export async function getMultiVideosData(videoIds: string[]) {
     )
     return videos.filter((v) => v !== null)
 }
+
+export const getCVideoStats = async (videoId: string, loggedInUserId: string | undefined) =>
+    await getVideoStats(videoId, loggedInUserId)
