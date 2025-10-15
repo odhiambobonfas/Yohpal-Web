@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger"
 import { getError } from "@/lib/utils"
 import { useEffect, useRef } from "react"
 
@@ -29,7 +30,7 @@ export function useAutoPauseVideo(
                     navigator.mediaSession.playbackState = "none"
                 }
             } catch (e) {
-                console.error(`[PAUSE ERR]: ${getError(e)}`)
+                logger.error(`[PAUSE ERR]: ${getError(e)}`)
             }
             if (unloadOnPause && v.src) {
                 savedSrcRef.current = v.src
@@ -57,7 +58,7 @@ export function useAutoPauseVideo(
                 updatePlayState(true)
             } catch (e) {
                 updatePlayState(false)
-                console.error(`[PLAY ERR]: ${getError(e)}`)
+                logger.error(`[PLAY ERR]: ${getError(e)}`)
             }
         }
 

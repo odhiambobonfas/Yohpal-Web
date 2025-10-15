@@ -8,16 +8,16 @@ import { FirebaseTimestamp } from "@/types/base"
 
 dayjs.extend(relativeTime)
 
-export function cn(...inputs: ClassValue[]) {
+function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
 
-export function getError(error: unknown): string {
+function getError(error: unknown): string {
     if (error instanceof Error) return error.message
     return String(error)
 }
 
-export function serializeTimestamp(timestamp: string | FirebaseTimestamp): string {
+function serializeTimestamp(timestamp: string | FirebaseTimestamp): string {
     if (typeof timestamp === "string") return timestamp
 
     if (typeof timestamp === "object" && "seconds" in timestamp) {
@@ -27,7 +27,7 @@ export function serializeTimestamp(timestamp: string | FirebaseTimestamp): strin
     return new Date().toISOString()
 }
 
-export function replaceWithCDN(link: string): string {
+function replaceWithCDN(link: string): string {
     if (!link) return DEFAULT_THUMBNAIL
     if (link === DEFAULT_THUMBNAIL) return link
 
@@ -36,13 +36,13 @@ export function replaceWithCDN(link: string): string {
     return newLink
 }
 
-export function recoverThumbnail(thumbnailUrl: string | undefined) {
+function recoverThumbnail(thumbnailUrl: string | undefined) {
     if (!thumbnailUrl) return DEFAULT_THUMBNAIL
 
     return replaceWithCDN(thumbnailUrl)
 }
 
-export function formatTime(timestamp: string) {
+function formatTime(timestamp: string) {
     const date = dayjs(timestamp)
     const now = dayjs()
 
@@ -54,6 +54,25 @@ export function formatTime(timestamp: string) {
     }
 }
 
-export default function getLast<T>(items: T[] | undefined) {
+function getLast<T>(items: T[] | undefined) {
     return items ? items[items.length - 1] : null
+}
+
+function formatStat(num: number) {
+    if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(1).replace(/\.0$/, "") + "B"
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M"
+    if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "K"
+
+    return num.toString()
+}
+
+export {
+    cn,
+    formatStat,
+    formatTime,
+    getError,
+    getLast,
+    recoverThumbnail,
+    replaceWithCDN,
+    serializeTimestamp,
 }

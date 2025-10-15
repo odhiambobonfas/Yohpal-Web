@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Toaster } from "sonner"
 import "./globals.css"
 
+import { DEBUG_BUILD } from "@/constants"
+import { logger } from "@/lib/logger"
 import { YPAuthProvider } from "@/providers/Auth"
 import { ThemeProvider } from "@/providers/ThemeProvider"
 
@@ -30,6 +32,7 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode
 }>) {
+    logger.info(`BUILD: ${DEBUG_BUILD ? "DEV" : "PROD"}`)
     return (
         <html
             lang="en"

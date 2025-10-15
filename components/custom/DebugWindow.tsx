@@ -1,8 +1,7 @@
 "use client"
+import { DEBUG_BUILD } from "@/constants"
 import React, { useCallback, useRef, useState } from "react"
 import ClientOnly from "./ClientOnly"
-
-const DEBUG = process.env.NODE_ENV === "development"
 
 export default function DebugWindow({ children }: { children: React.ReactNode }) {
     const [isDragging, setIsDragging] = useState(false)
@@ -60,7 +59,7 @@ export default function DebugWindow({ children }: { children: React.ReactNode })
         }
     }, [isDragging, handleMouseMove, handleMouseUp])
 
-    if (!DEBUG) return
+    if (!DEBUG_BUILD) return
 
     return (
         <ClientOnly>

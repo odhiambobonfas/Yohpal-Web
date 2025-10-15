@@ -43,8 +43,6 @@ export default function ReportVideoDialog({
         toast.success("Video report sent")
     }
 
-    console.debug(videoId)
-
     const selectedPolicy = POLICIES.find((p) => p.scenario === scenario)
 
     return (
