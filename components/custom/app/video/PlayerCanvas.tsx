@@ -14,16 +14,19 @@ import useVideo from "@/hooks/videos/use-video"
 import { useAuth } from "@/providers/Auth"
 import { getWatchedVideos } from "@/services/client/user"
 
+import { getPromotedVideosAction } from "@/actions/videos/promoted-videos"
 import { Button } from "@/components/ui/button"
 import { DEFAULT_PROFILE } from "@/constants"
 import useVideoHandlers from "@/hooks/videos/use-video-handlers"
 import { randomizeVideos } from "@/lib/randomize-videos"
+import { videoMix } from "@/services/server/mixed-feed"
 import { LucideChevronDown, LucideChevronUp } from "lucide-react"
 import DesktopPlayerInteractions from "./DesktopPlayerInteractions"
 import InteractionsLoginPrompt from "./InteractionsLoginPrompt"
 import VideoPlayer from "./VideoPlayer"
 
 const FETCH_TRIGGER_OFFSET = 10
+const PROMOTED_VIDEO_BIAS = 3
 
 const swrConfig = {
     revalidateOnFocus: false,
@@ -35,10 +38,12 @@ const swrConfig = {
 
 export default function PlayerCanvas({
     videos,
+    promotedVideos,
     lastVideoDoc,
     firstVideo,
 }: {
     videos: VideoWithStats[]
+    promotedVideos: VideoWithStats[] | undefined
     lastVideoDoc: string
     firstVideo: string | null
 }) {
@@ -46,6 +51,7 @@ export default function PlayerCanvas({
     const [activeId, setActiveId] = useState<string | null>(videos[0]?.id ?? null)
     const [isFetchingNext, setIsFetchingNext] = useState(false)
     const [lastFetchedVideoId, setLastFetchedVideoId] = useState<string | null>(lastVideoDoc)
+    const [lastPromotedDocId, setLastPromotedDocId] = useState<string | null>(null)
     const isMobile = useIsMobile()
 
     const { user, profile } = useAuth()
@@ -130,15 +136,30 @@ export default function PlayerCanvas({
 
         setIsFetchingNext(true)
 
-        const newContent = await getClientPaginatedVideos(lastFetchedVideoId, profile?.uid)
+        const [newContent, promotedContent] = await Promise.all([
+            getClientPaginatedVideos(lastFetchedVideoId, profile?.uid),
+            getPromotedVideosAction(profile?.uid, lastPromotedDocId ?? undefined),
+        ])
+
         if (newContent.videos?.length) {
             const existingIds = new Set(allVideos.map((v) => v.id))
+
             let uniqueNewVideos = newContent.videos.filter((v) => !existingIds.has(v.id))
-            // userId is used to see if we are viewing a user's profile videos
             if (!userId) uniqueNewVideos = randomizeVideos(uniqueNewVideos)
 
-            setAllVideos((prev) => [...prev, ...uniqueNewVideos])
+            const uniquePromotedVideos = promotedContent.videos.filter(
+                (v) => !existingIds.has(v.id),
+            )
+
+            const overallOffset = allVideos.length
+
+            const mixed = videoMix(uniqueNewVideos, uniquePromotedVideos, 4, overallOffset)
+
+            setAllVideos((prev) => [...prev, ...mixed])
             setLastFetchedVideoId(newContent.lastVideoDocId)
+
+            setLastPromotedDocId(promotedContent.lastPromotedDoc)
+
             videoHandlers.handleStoreReset()
         }
 
@@ -146,6 +167,7 @@ export default function PlayerCanvas({
     }, [
         allVideos,
         lastFetchedVideoId,
+        lastPromotedDocId,
         profile?.uid,
         isFetchingNext,
         loading,
@@ -159,9 +181,16 @@ export default function PlayerCanvas({
             const targetVideo = firstVideo ? videos.find((v) => v.id === firstVideo) : null
             const otherVideos = firstVideo ? videos.filter((v) => v.id !== firstVideo) : videos
             const randomized = randomizeVideos(otherVideos)
-            setAllVideos(targetVideo ? [targetVideo, ...randomized] : randomized)
+            const randomizedPromoted = randomizeVideos(promotedVideos ?? [])
+            const v = targetVideo ? [targetVideo, ...randomized] : randomized
+
+            setAllVideos(videoMix(v, randomizedPromoted, PROMOTED_VIDEO_BIAS))
+
+            if (promotedVideos && promotedVideos.length > 0) {
+                setLastPromotedDocId(promotedVideos[promotedVideos.length - 1].id)
+            }
         }
-    }, [firstVideo, videos])
+    }, [firstVideo, videos, promotedVideos])
 
     useEffect(() => {
         if (loading || isFetchingNext) return
@@ -225,6 +254,7 @@ export default function PlayerCanvas({
                 <div>
                     Active: {activeIndex + 1}/{allVideos.length}
                 </div>
+                <div>promoted: {activeVideo.promoted ? "p" : ""}</div>
                 <div>ID: {activeVideo?.id}</div>
                 <div>Loading: {loading ? "Yes" : "No"}</div>
                 <div>Fetching: {isFetchingNext ? "Yes" : "No"}</div>
