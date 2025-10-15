@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 
+import { withCache } from "@/lib/cache"
 import { getCompanyGeneralSettings } from "@/services/server/org/settings"
 import Link from "next/link"
 import {
@@ -23,7 +24,7 @@ import {
 } from "./_lib/data"
 
 export default async function Page() {
-    const settings = await getCompanyGeneralSettings()
+    const settings = await withCache(getCompanyGeneralSettings, "general-settings")
 
     const contactInfo = [
         { icon: LucideMapPin, title: "Our Address", details: settings?.companyAddress },
