@@ -16,17 +16,18 @@ import { getWatchedVideos } from "@/services/client/user"
 
 import { getPromotedVideosAction } from "@/actions/videos/promoted-videos"
 import { Button } from "@/components/ui/button"
-import { DEFAULT_PROFILE } from "@/constants"
+import { DEFAULT_PROFILE, VIDEO_LIMIT } from "@/constants"
 import useVideoHandlers from "@/hooks/videos/use-video-handlers"
 import { randomizeVideos } from "@/lib/randomize-videos"
+import { getLast } from "@/lib/utils"
 import { videoMix } from "@/services/server/mixed-feed"
 import { LucideChevronDown, LucideChevronUp } from "lucide-react"
 import DesktopPlayerInteractions from "./DesktopPlayerInteractions"
 import InteractionsLoginPrompt from "./InteractionsLoginPrompt"
 import VideoPlayer from "./VideoPlayer"
 
-const FETCH_TRIGGER_OFFSET = 10
-const PROMOTED_VIDEO_BIAS = 3
+const FETCH_TRIGGER_OFFSET = Math.floor(VIDEO_LIMIT * 0.75)
+const PROMOTED_VIDEO_BIAS = 4
 
 const swrConfig = {
     revalidateOnFocus: false,
@@ -51,7 +52,9 @@ export default function PlayerCanvas({
     const [activeId, setActiveId] = useState<string | null>(videos[0]?.id ?? null)
     const [isFetchingNext, setIsFetchingNext] = useState(false)
     const [lastFetchedVideoId, setLastFetchedVideoId] = useState<string | null>(lastVideoDoc)
-    const [lastPromotedDocId, setLastPromotedDocId] = useState<string | null>(null)
+    const [lastPromotedDocId, setLastPromotedDocId] = useState<string | null>(
+        getLast(promotedVideos)?.id || null,
+    )
     const isMobile = useIsMobile()
 
     const { user, profile } = useAuth()
@@ -185,10 +188,6 @@ export default function PlayerCanvas({
             const v = targetVideo ? [targetVideo, ...randomized] : randomized
 
             setAllVideos(videoMix(v, randomizedPromoted, PROMOTED_VIDEO_BIAS))
-
-            if (promotedVideos && promotedVideos.length > 0) {
-                setLastPromotedDocId(promotedVideos[promotedVideos.length - 1].id)
-            }
         }
     }, [firstVideo, videos, promotedVideos])
 
@@ -260,6 +259,8 @@ export default function PlayerCanvas({
                 <div>Fetching: {isFetchingNext ? "Yes" : "No"}</div>
                 <div>parentSize: {parentRef.current?.clientHeight}</div>
                 <span>LastFetchedDoc: {lastFetchedVideoId}</span>
+
+                <div>Limit: {FETCH_TRIGGER_OFFSET}</div>
                 <br />
 
                 <h1 className="text-orange-300">

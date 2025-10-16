@@ -1,6 +1,6 @@
 "use server"
 
-import { DEFAULT_THUMBNAIL } from "@/constants"
+import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
 import { onlyProd } from "@/lib/dev"
 import { db } from "@/lib/firebase/firebase.admin"
 import { replaceWithCDN, serializeTimestamp } from "@/lib/utils"
@@ -8,7 +8,7 @@ import { getVideoStats } from "@/services/server/videos"
 import { VideoWithStats } from "@/types/videos"
 
 const videoRef = db.collection("videos")
-const LIMIT = 7 // fetch 7 promoted videos per batch
+const LIMIT = Math.ceil(VIDEO_LIMIT / 4) // fetch 7 promoted videos per batch
 
 async function getPromotedVideosAction(
     loggedInUserId: string | undefined,
@@ -34,11 +34,12 @@ async function getPromotedVideosAction(
                 delete data["campaignMeta"]
 
                 const stats = await onlyProd(() => getVideoStats(doc.id, loggedInUserId), {
-                    shares: 0,
-                    views: 10,
+                    shares: [],
+                    views: [],
                     likes: [],
                     comments: [],
                     bookmarks: [],
+                    downloads: [],
                 })
 
                 return {

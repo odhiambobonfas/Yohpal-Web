@@ -10,7 +10,7 @@ import { DOC } from ".."
 
 const videoRef = db.collection("videos")
 
-export const getLandingVideos = async (
+const getLandingVideos = async (
     videoId: string | undefined,
     userId: string | undefined,
     loggedInUserId: string | undefined,
@@ -97,7 +97,7 @@ export const getLandingVideos = async (
                 firstVideo: firstVideo?.id || null,
             }
         },
-        `landing:videos:${userId || "anon"}:${videoId || ""}`,
+        `landing:videos-:${userId || "anon"}:${videoId || ""}`,
     )
 }
 
