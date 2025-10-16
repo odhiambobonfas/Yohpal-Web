@@ -124,6 +124,7 @@ export interface OptimisticVideoState {
 }
 
 export interface VideoPlayerProps {
+    promoted: boolean
     videoId: string
     videoSrc: string
     activeVideoId: string

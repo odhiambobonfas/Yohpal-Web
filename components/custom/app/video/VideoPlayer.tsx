@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { DEFAULT_THUMBNAIL } from "@/constants"
 import { useAutoPauseVideo } from "@/hooks/videos/use-auto-pause-video"
-import { LucidePlay, LucideVolume2, LucideVolumeOff } from "lucide-react"
+import { LucideMegaphone, LucidePlay, LucideVolume2, LucideVolumeOff } from "lucide-react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 
 export default function VideoPlayer({
+    promoted,
     videoSrc,
     videoId,
     activeVideoId,
@@ -132,6 +133,11 @@ export default function VideoPlayer({
                         autoScrollEnabled={autoScrollEnabled}
                         updateAutoScroll={setAutoScrollEnabled}
                     />
+                    {promoted && (
+                        <div className="flex absolute z-20 left-3 md:bottom-2 bottom-24">
+                            <LucideMegaphone className=" fill-red-500" />
+                        </div>
+                    )}
 
                     {!isPlaying && (
                         <Button

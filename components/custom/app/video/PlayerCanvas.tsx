@@ -333,10 +333,9 @@ export default function PlayerCanvas({
                                             activeIndex={activeIndex}
                                             onEnded={() => {
                                                 if (autoScrollEnabled) moveNext()
-                                            }}
+                                            } }
                                             autoScrollEnabled={autoScrollEnabled}
-                                            setAutoScrollEnabled={setAutoScrollEnabled}
-                                        />
+                                            setAutoScrollEnabled={setAutoScrollEnabled} promoted={video.promoted}                                        />
                                     </div>
                                 )
                             })}
