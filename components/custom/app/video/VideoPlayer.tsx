@@ -135,7 +135,7 @@ export default function VideoPlayer({
                     />
                     {promoted && (
                         <div className="flex absolute z-20 left-3 md:bottom-2 bottom-24">
-                            <LucideMegaphone className=" fill-red-500" />
+                            <LucideMegaphone className="stroke-primary  fill-red-500" />
                         </div>
                     )}
 
