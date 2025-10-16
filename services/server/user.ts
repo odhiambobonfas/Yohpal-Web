@@ -103,3 +103,17 @@ const getLikedCount = async (userId: string) => {
         return likesDocs.docs.map((l) => l.id)
     }, `user:likes:${userId}`)
 }
+
+export const getBlocked = async (userId: string) => {
+    return withCache(async () => {
+        const blockedDocs = await db
+            .collection("users")
+            .doc(userId)
+            .collection("blocked")
+            .doc(DOC)
+            .collection("userIds")
+            .get()
+        if (blockedDocs.empty) return []
+        return blockedDocs.docs.map((b) => b.id)
+    }, `user:blocked:${userId}`)
+}

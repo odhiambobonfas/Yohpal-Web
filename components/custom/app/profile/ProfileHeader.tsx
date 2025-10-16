@@ -8,6 +8,7 @@ import { useUserMutation } from "@/hooks/user/use-user-mutation"
 import { useAuth } from "@/providers/Auth"
 import { YPUser } from "@/types/users"
 import { LucideUserMinus2, LucideUserPlus2 } from "lucide-react"
+import AppAlert from "../AppAlert"
 import ProfileDetails from "./ProfileDetils"
 interface ProfileHeaderProps {
     user: YPUser | null
@@ -32,7 +33,10 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
     const visibleText = expanded ? words.join(" ") : words.slice(0, wordsToShow).join(" ")
     const { profile, isAuthenticated } = useAuth()
     const [userFollowed, setUserFollowed] = useState(false)
+    const [confirmBlock, setConfirmBlock] = useState(false)
     const { toggleFollow } = useUserMutation()
+
+    const isPersonal = profileType === "personal"
 
     useEffect(() => {
         if (profile?.uid && stats?.followersStat) {
@@ -52,122 +56,151 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
 
         await toggleFollow(targetUserId, isFollowing)
     }
+
+    const { blockUser } = useUserMutation()
+    const handleBlockUser = async () => await blockUser(user!.uid)
+
     return (
-        <div className="min-h-[30%] flex flex-col p-2 items-center md:flex-row  md:justify-center">
-            <div className="flex-shrink-0">
-                <Avatar className="size-[90px] md:size-50">
-                    <AvatarImage
-                        loading="lazy"
-                        width={10}
-                        height={10}
-                        className="rounded-full object-cover"
-                        src={user?.profile_picture || "/logo_circular.png"}
-                        alt={user?.userName || "User profile image"}
-                    />
-                    <AvatarFallback>{user?.userName[0] || user?.email[0]}</AvatarFallback>
-                </Avatar>
-            </div>
+        <>
+            <AppAlert
+                isOpen={confirmBlock}
+                type="confirm"
+                title="This action is none reversible"
+                description={`You are about to block ${user?.userName || "this user"}`}
+                cancelText="Never mind"
+                actionText="Block"
+                onAction={handleBlockUser}
+                onClose={() => setConfirmBlock(false)}
+            />
 
-            <div className="md:ml-5 flex-1 flex-col flex items-center md:items-start">
-                <div className="flex flex-col gap-1 justify-center">
-                    <h1 className="mb-2 text-3xl font-bold">{user?.userName}</h1>
+            <div className="min-h-[30%] flex flex-col p-2 items-center md:flex-row  md:justify-center">
+                <div className="flex-shrink-0">
+                    <Avatar className="size-[90px] md:size-50">
+                        <AvatarImage
+                            loading="lazy"
+                            width={10}
+                            height={10}
+                            className="rounded-full object-cover"
+                            src={user?.profile_picture || "/logo_circular.png"}
+                            alt={user?.userName || "User profile image"}
+                        />
+                        <AvatarFallback>{user?.userName[0] || user?.email[0]}</AvatarFallback>
+                    </Avatar>
                 </div>
-                {profileType === "personal" && (
-                    <span className="text-muted-foreground mb-2">{user?.email}</span>
-                )}
 
-                <span className="text-muted-foreground mb-2 w-full text-center md:text-start md:w-[600px]">
-                    {visibleText}
-                    {isLong && !expanded && "..."}
-                    {isLong && (
-                        <button
-                            onClick={() => setExpanded(!expanded)}
-                            className="text-muted-foreground text-xs hover:underline ml-1"
-                        >
-                            {expanded ? "Show less" : "Read more"}
-                        </button>
+                <div className="md:ml-5 flex-1 flex-col flex items-center md:items-start">
+                    <div className="flex flex-col gap-1 justify-center">
+                        <h1 className="mb-2 text-3xl font-bold">{user?.userName}</h1>
+                    </div>
+                    {isPersonal && (
+                        <span className="text-muted-foreground mb-2">{user?.email}</span>
                     )}
-                </span>
 
-                {profileType === "personal" && (
-                    <span className="text-muted-foreground">{user?.phoneNumber}</span>
-                )}
-
-                {profileType === "public" && isAuthenticated && (
-                    <Button
-                        onClick={() => {
-                            handleFollowToggle({
-                                targetUserId: user!.uid,
-                                isFollowing: userFollowed,
-                            })
-                        }}
-                        className={`rounded-lg my-2 text-sm md:text-lg px-3 py-1 md:px-5 md:py-2 ${
-                            userFollowed ? "border-primary bg-none" : ""
-                        }`}
-                    >
-                        {userFollowed ? (
-                            <>
-                                <LucideUserMinus2 className="size-4 md:size-5" />
-                                <span>Unfollow</span>
-                            </>
-                        ) : (
-                            <>
-                                <LucideUserPlus2 className="size-4 md:size-5" />
-                                <span>Follow</span>
-                            </>
+                    <span className="text-muted-foreground mb-2 w-full text-center md:text-start md:w-[600px]">
+                        {visibleText}
+                        {isLong && !expanded && "..."}
+                        {isLong && (
+                            <button
+                                onClick={() => setExpanded(!expanded)}
+                                className="text-muted-foreground text-xs hover:underline ml-1"
+                            >
+                                {expanded ? "Show less" : "Read more"}
+                            </button>
                         )}
-                    </Button>
-                )}
-                {/* Stats */}
-                <div className="flex flex-row mt-2 gap-2 md:gap-4">
-                    <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                        <span className="text-sm md:text-base">{stats?.uploadedStat}</span>
-                        <span className="text-[10px] md:text-xs">Posts</span>
-                    </div>
-                    <Dialog>
-                        <DialogTrigger>
-                            <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                                <span className="text-sm md:text-base">
-                                    {stats?.followersStat?.length}
-                                </span>
-                                <span className="text-[10px] md:text-xs">Followers</span>
-                            </div>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <ProfileDetails
-                                view="followers"
-                                profileType={profileType}
-                                userId={user?.uid}
-                            />
-                        </DialogContent>
-                    </Dialog>
+                    </span>
 
-                    <Dialog>
-                        <DialogTrigger>
-                            <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                                <span className="text-sm md:text-base">{stats?.followingStat}</span>
-                                <span className="text-[10px] md:text-xs">Following</span>
-                            </div>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <ProfileDetails
-                                view="following"
-                                profileType={profileType}
-                                userId={user?.uid}
-                            />
-                        </DialogContent>
-                    </Dialog>
+                    {isPersonal && (
+                        <span className="text-muted-foreground">{user?.phoneNumber}</span>
+                    )}
 
-                    <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                        <span className="text-sm md:text-base">{stats?.likedStat}</span>
-                        <span className="text-[10px] md:text-xs">Liked</span>
-                    </div>
-                    <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                        <span className="text-sm md:text-base">{stats?.viewedStat}</span>
-                        <span className="text-[10px] md:text-xs">Views</span>
+                    {!isPersonal && isAuthenticated && (
+                        <div className="flex my-2 text-sm md:text-lg px-3 py-1 md:px-5 md:py-2 gap-2">
+                            <Button
+                                onClick={() => {
+                                    handleFollowToggle({
+                                        targetUserId: user!.uid,
+                                        isFollowing: userFollowed,
+                                    })
+                                }}
+                                className={`rounded-lg  ${
+                                    userFollowed ? "border-primary bg-none" : ""
+                                }`}
+                            >
+                                {userFollowed ? (
+                                    <>
+                                        <LucideUserMinus2 className="size-4 md:size-5" />
+                                        <span>Unfollow</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <LucideUserPlus2 className="size-4 md:size-5" />
+                                        <span>Follow</span>
+                                    </>
+                                )}
+                            </Button>
+                            <Button
+                                variant={"outline"}
+                                onClick={() => setConfirmBlock(true)}
+                                className="border-primary/20"
+                            >
+                                Block
+                            </Button>
+                        </div>
+                    )}
+
+                    {/* Stats */}
+                    <div className="flex flex-row mt-2 gap-2 md:gap-4">
+                        <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                            <span className="text-sm md:text-base">{stats?.uploadedStat}</span>
+                            <span className="text-[10px] md:text-xs">Posts</span>
+                        </div>
+                        <Dialog>
+                            <DialogTrigger>
+                                <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                                    <span className="text-sm md:text-base">
+                                        {stats?.followersStat?.length}
+                                    </span>
+                                    <span className="text-[10px] md:text-xs">Followers</span>
+                                </div>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <ProfileDetails
+                                    view="followers"
+                                    profileType={profileType}
+                                    userId={user?.uid}
+                                />
+                            </DialogContent>
+                        </Dialog>
+
+                        <Dialog>
+                            <DialogTrigger>
+                                <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                                    <span className="text-sm md:text-base">
+                                        {stats?.followingStat}
+                                    </span>
+                                    <span className="text-[10px] md:text-xs">Following</span>
+                                </div>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <ProfileDetails
+                                    view="following"
+                                    profileType={profileType}
+                                    userId={user?.uid}
+                                />
+                            </DialogContent>
+                        </Dialog>
+
+                        <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                            <span className="text-sm md:text-base">{stats?.likedStat}</span>
+                            <span className="text-[10px] md:text-xs">Liked</span>
+                        </div>
+                        <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                            <span className="text-sm md:text-base">{stats?.viewedStat}</span>
+                            <span className="text-[10px] md:text-xs">Views</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
