@@ -98,9 +98,10 @@ export default function useVideoMutation() {
         if (userId) await updateViewAction({ videoId, userId })
     }
 
-    const addComment = async (videoId: string, text: string) => {
+    const addComment = async (tempId: string, videoId: string, text: string) => {
         return mutateWithAuth(async () => {
             const comment: VideoCommentInteraction = {
+                tempId,
                 videoId,
                 userId: profile!.uid,
                 username: profile!.userName,
@@ -109,8 +110,7 @@ export default function useVideoMutation() {
                 isReply: false,
             }
 
-            const commentId = await addCommentAction(comment)
-            return { commentId, comment }
+            return await addCommentAction(comment)
         })
     }
 

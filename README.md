@@ -27,6 +27,7 @@ npm/<your_beloved_pkg_manager> run lint
 
 ```
 .
+├── actions/
 ├── app
 │   ├── api/
 │   ├── auth/
@@ -63,6 +64,7 @@ npm/<your_beloved_pkg_manager> run lint
 ```
 
 ## Directory Overview
+`actions/` - Server Actions that bridge services to client components
 
 `app/` - Next.js App Router pages and layouts
 - (organization) and (yohpal) are route groups for visual organization [^{grouped-routes}]
@@ -113,11 +115,26 @@ npm/<your_beloved_pkg_manager> run lint
 ### Services
 - Business logic **must not leak into components**.
 - Use `services/client` for browser SDK logic, `services/server` for admin/server-side logic.
+- Bascially any database operation should be done here
 
 ### Providers
 - Keep global context/state management in `providers/`.
 - Providers should avoid heavy business logic — delegate that to `services/`.
 
+### Actions
+- Server Actions are the **bridge layer** between client components and server services.
+- Must be marked with `"use server"` at the top of the file.
+- Used for:
+  - Data mutations (create, update, delete operations)
+  - Server-side cookie management (set, unset, read)
+  - Form submissions and validations
+  - Any operation requiring server-only secrets or admin privileges
+
+*Why:*
+
+- **Security**: Actions run on the server, so they can safely use admin SDKs and environment secrets.
+- **Type safety**: Actions are fully type-safe when called from client components.
+- Group actions by domain (e.g. `actions/user/`, `actions/auth/`).
 
 ## Learn More
 > [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.

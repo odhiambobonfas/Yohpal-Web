@@ -51,9 +51,9 @@ export const getFollowingCount = async (userId: string, limit: number | undefine
                 .doc("organic")
                 .collection("userIds")
                 .orderBy("timestamp", "desc")
-            if (limit) {
-                query = query.limit(limit)
-            }
+
+            if (limit) query = query.limit(limit)
+
             const followingDocs = await query.get()
             if (followingDocs.empty) return []
             return followingDocs.docs.map((f) => f.id)

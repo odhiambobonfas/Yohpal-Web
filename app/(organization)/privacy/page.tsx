@@ -1,3 +1,4 @@
+import { withCache } from "@/lib/cache"
 import { getCompanyGeneralSettings } from "@/services/server/org/settings"
 import type { Metadata } from "next"
 import Link from "next/link"
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-    const settings = await getCompanyGeneralSettings()
+    const settings = await withCache(getCompanyGeneralSettings, "company-privacy")
 
     return (
         <div className="flex flex-col justify-center w-full items-center p-6">

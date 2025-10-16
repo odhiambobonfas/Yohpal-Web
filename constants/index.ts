@@ -1,19 +1,18 @@
-export const VIDEO_LIMIT = 30
-export const DEFAULT_THUMBNAIL = "/app/default_thumbnail.jpg"
-export const DEFAULT_PROFILE = "/logo_circular.png"
-export const CDN_URL = "https://cdn.stream.yohpal.com/"
-export const OLD_URL = "https://firebasestorage.googleapis.com/v0/b/yohlab.firebasestorage.app/o/"
+const DEFAULT_THUMBNAIL = "/app/default_thumbnail.jpg"
+const DEFAULT_PROFILE = "/logo_circular.png"
+const CDN_URL = "https://cdn.stream.yohpal.com/"
+const OLD_URL = "https://firebasestorage.googleapis.com/v0/b/yohlab.firebasestorage.app/o/"
 
-export const FOLLOWER_FOLLOWING_LIMIT = 30
-export const CACHE_TTL = 3600
+const FOLLOWER_FOLLOWING_LIMIT = 30
+const CACHE_TTL = 3600
 
-export const COOKIES = {
+const COOKIES = {
     Session: "__auth",
     EmailNotVerified: "__emailVerified",
     User: "__u",
 }
 
-export const INTERESTS = [
+const INTERESTS = [
     "Kids",
     "Politics & News",
     "Sports & Talents",
@@ -29,6 +28,26 @@ export const INTERESTS = [
     "Gaming & Esports",
     "Motivation & Self-Help",
     "Religion & Spirituality",
-]
+] as const
 
-export const SUPPORTED_COUNTRIES = ["Kenya", "Tanzania", "Uganda", "South-Sudan", "Sudan"]
+const SUPPORTED_COUNTRIES = ["Kenya", "Tanzania", "Uganda", "South-Sudan", "Sudan"] as const
+const DELETE_IDENT = "__dd"
+
+const DEBUG_BUILD = process.env.NODE_ENV === "development"
+
+const VIDEO_LIMIT = DEBUG_BUILD ? 10 : 30
+
+export {
+    CACHE_TTL,
+    CDN_URL,
+    COOKIES,
+    DEBUG_BUILD,
+    DEFAULT_PROFILE,
+    DEFAULT_THUMBNAIL,
+    DELETE_IDENT,
+    FOLLOWER_FOLLOWING_LIMIT,
+    INTERESTS,
+    OLD_URL,
+    SUPPORTED_COUNTRIES,
+    VIDEO_LIMIT,
+}

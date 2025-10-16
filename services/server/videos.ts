@@ -1,7 +1,8 @@
+"use server"
 import { VideoComment, VideoWithStats } from "#/videos"
 import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
 import { db } from "@/lib/firebase/firebase.admin"
-import getLast, { recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
+import { getLast, recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 
 import { withCache } from "@/lib/cache"
 import { onlyProd } from "@/lib/dev"
@@ -33,7 +34,14 @@ export const getLandingVideos = async (
 
                     const videoStats = await onlyProd(
                         () => getVideoStats(videoId, loggedInUserId),
-                        { shares: 1, views: 10, bookmarks: [], comments: [], likes: [] },
+                        {
+                            shares: [],
+                            views: [],
+                            bookmarks: [],
+                            comments: [],
+                            likes: [],
+                            downloads: [],
+                        },
                     )
 
                     firstVideo = {
@@ -61,11 +69,12 @@ export const getLandingVideos = async (
                     const videoData = v.data()
                     delete videoData["campaignMeta"]
                     const videoStats = await onlyProd(() => getVideoStats(v.id, loggedInUserId), {
-                        shares: 0,
-                        views: 10,
+                        shares: [],
+                        views: [],
                         likes: [],
                         comments: [],
                         bookmarks: [],
+                        downloads: [],
                     })
 
                     return {
@@ -132,38 +141,36 @@ async function getVideosFromProfile(
     )
 }
 
-export const getUploadedVideoStats = async (videoId: string) => {
-    return withCache(async () => {
-        const [likes, views] = await Promise.all([getVideoLikes(videoId), getVideoViews(videoId)])
+const getUploadedVideoStats = async (videoId: string) => {
+    const [likes, views] = await Promise.all([getVideoLikes(videoId), getVideoViews(videoId)])
 
-        return {
-            likes,
-            views,
-        }
-    }, `uploaded:video:stats:${videoId}`)
+    return {
+        likes,
+        views,
+    }
 }
 
-export const getVideoStats = async (videoId: string, loggedInUserId: string | undefined) => {
-    return withCache(async () => {
-        const [likes, bookmarks, shares, views, comments] = await Promise.all([
-            getVideoLikes(videoId),
-            getVideoBookmarks(videoId),
-            getVideoShares(videoId),
-            getVideoViews(videoId),
-            getVideoComments(videoId, loggedInUserId),
-        ])
+const getVideoStats = async (videoId: string, loggedInUserId: string | undefined) => {
+    const [likes, bookmarks, shares, views, comments, downloads] = await Promise.all([
+        getVideoLikes(videoId),
+        getVideoBookmarks(videoId),
+        getVideoShares(videoId),
+        getVideoViews(videoId),
+        getVideoComments(videoId, loggedInUserId),
+        getVideoDownloads(videoId),
+    ])
 
-        return {
-            likes,
-            bookmarks,
-            shares,
-            views,
-            comments,
-        }
-    }, `video:stats:${videoId}`)
+    return {
+        likes,
+        bookmarks,
+        shares,
+        views,
+        comments,
+        downloads,
+    }
 }
 
-export const getUserVideoUploads = async (
+const getUserVideoUploads = async (
     userId: string,
     loggedInUserId: string | undefined,
     limit: number | undefined,
@@ -190,7 +197,7 @@ export const getUserVideoUploads = async (
 
                     const videoStats = await onlyProd(() => getUploadedVideoStats(v.id), {
                         likes: [],
-                        views: 10,
+                        views: [],
                     })
 
                     return {
@@ -223,7 +230,23 @@ const getVideoLikes = async (videoId: string) => {
         if (videoRef.empty) return []
 
         return videoRef.docs.map((v) => v.id)
-    }, `video:likes:${videoId}`)
+    }, `likes:${videoId}`)
+}
+
+const getVideoDownloads = async (videoId: string) => {
+    return withCache(async () => {
+        const videoRef = await db
+            .collection("videos")
+            .doc(videoId)
+            .collection("downloads")
+            .doc(DOC)
+            .collection("userIds")
+            .get()
+
+        if (videoRef.empty) return []
+
+        return videoRef.docs.map((v) => v.id)
+    }, `downloads:${videoId}`)
 }
 
 const getVideoBookmarks = async (videoId: string) => {
@@ -239,7 +262,7 @@ const getVideoBookmarks = async (videoId: string) => {
         if (videoRef.empty) return []
 
         return videoRef.docs.map((v) => v.id)
-    }, `video:bookmarks:${videoId}`)
+    }, `bookmarks:${videoId}`)
 }
 
 const getVideoShares = async (videoId: string) => {
@@ -250,11 +273,12 @@ const getVideoShares = async (videoId: string) => {
             .collection("shares")
             .doc(DOC)
             .collection("userIds")
-            .count()
             .get()
 
-        return videoRef.data().count ?? 0
-    }, `video:shares:${videoId}`)
+        if (videoRef.empty) return []
+
+        return videoRef.docs.map((d) => d.id)
+    }, `shares:${videoId}`)
 }
 
 const getVideoViews = async (videoId: string) => {
@@ -265,11 +289,12 @@ const getVideoViews = async (videoId: string) => {
             .collection("views")
             .doc(DOC)
             .collection("userIds")
-            .count()
             .get()
 
-        return videoRef.data().count ?? 0
-    }, `video:views:${videoId}`)
+        if (videoRef.empty) return []
+
+        return videoRef.docs.map((d) => d.id)
+    }, `views:${videoId}`)
 }
 
 const getVideoComments = async (videoId: string, userId: string | undefined) => {
@@ -300,5 +325,7 @@ const getVideoComments = async (videoId: string, userId: string | undefined) => 
         )
 
         return comments as unknown as VideoComment[]
-    }, `video:comments:${videoId}`)
+    }, `comments:${videoId}`)
 }
+
+export { getLandingVideos, getUserVideoUploads, getVideoStats }
