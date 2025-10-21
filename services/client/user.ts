@@ -16,7 +16,7 @@ export async function getUserProfile(userId: string) {
 
     const data = userDoc.data()
     return {
-        id: userDoc.id,
+        uid: userDoc.id,
         ...data,
         profile_picture: replaceWithCDN(data.profile_picture ?? DEFAULT_THUMBNAIL),
     } as unknown as YPUser
@@ -49,7 +49,6 @@ export async function getWatchedVideos(userId: string) {
     if (profileStatsDocs.empty) return []
 
     const videoIds = profileStatsDocs.docs.map((v) => v.id)
-
     return getMultiVideosData(videoIds)
 }
 

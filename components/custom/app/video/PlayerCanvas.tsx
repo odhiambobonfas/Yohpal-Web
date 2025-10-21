@@ -18,6 +18,7 @@ import { getPromotedVideosAction } from "@/actions/videos/promoted-videos"
 import { Button } from "@/components/ui/button"
 import { DEFAULT_PROFILE, VIDEO_LIMIT } from "@/constants"
 import useVideoHandlers from "@/hooks/videos/use-video-handlers"
+import { logger } from "@/lib/logger"
 import { randomizeVideos } from "@/lib/randomize-videos"
 import { getLast } from "@/lib/utils"
 import { videoMix } from "@/services/server/mixed-feed"
@@ -106,8 +107,10 @@ export default function PlayerCanvas({
 
     const { data: userExtra } = useSWR(
         ["user-extra", profile?.uid],
-        async () => {
-            return await Promise.all([getFollowing(profile!.uid), getWatchedVideos(profile!.uid)])
+        async ([__, uid]) => {
+            logger.error("uid: ", uid)
+            if (!uid) return [[], []]
+            return await Promise.all([getFollowing(uid), getWatchedVideos(uid)])
         },
         swrConfig,
     )
@@ -117,7 +120,6 @@ export default function PlayerCanvas({
         ([, userId]) => getProfile(userId),
         swrConfig,
     )
-
     const videoHandlers = useVideoHandlers({
         activeVideo,
         followingData: userExtra?.[0],
@@ -333,9 +335,11 @@ export default function PlayerCanvas({
                                             activeIndex={activeIndex}
                                             onEnded={() => {
                                                 if (autoScrollEnabled) moveNext()
-                                            } }
+                                            }}
                                             autoScrollEnabled={autoScrollEnabled}
-                                            setAutoScrollEnabled={setAutoScrollEnabled} promoted={video.promoted}                                        />
+                                            setAutoScrollEnabled={setAutoScrollEnabled}
+                                            promoted={video.promoted}
+                                        />
                                     </div>
                                 )
                             })}

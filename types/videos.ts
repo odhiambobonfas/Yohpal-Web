@@ -121,6 +121,7 @@ export interface OptimisticVideoState {
     downloads?: number
     comments?: VideoComment[]
     following?: boolean
+    watchedVideos?: VideoWithStats[]
 }
 
 export interface VideoPlayerProps {
