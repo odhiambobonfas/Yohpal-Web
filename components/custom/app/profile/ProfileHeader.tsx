@@ -8,7 +8,7 @@ import { useUserMutation } from "@/hooks/user/use-user-mutation"
 import { useAuth } from "@/providers/Auth"
 import { YPUser } from "@/types/users"
 import { LucideUserMinus2, LucideUserPlus2 } from "lucide-react"
-import ProfileDetails from "./ProfileDetils"
+import ProfileDetails from "./ProfileDetails"
 interface ProfileHeaderProps {
     user: YPUser | null
     stats:
