@@ -160,7 +160,7 @@ function VideoStats({ video }: { video: VideoWithStats }) {
             </Button>
             <Button className="bg-transparent">
                 <LucideEye />
-                <span>{video.views}</span>
+                <span>{video.views.length}</span>
             </Button>
         </div>
     )
