@@ -26,10 +26,22 @@ import {
 const navItems = [
     { icon: LucideHome, title: "Suggested", link: "/" },
     { icon: LucideCompass, title: "Explore", link: "" },
-    { icon: LucideUserCheck, title: "following", link: "/following" },
-    { icon: LucideAlbum, title: "About Us", position: "bottom", link: "/about" },
-    { icon: LucideGlobeLock, title: "Privacy Policy", position: "bottom", link: "/privacy" },
-    { icon: LucideScrollText, title: "Terms & Conditions", position: "bottom", link: "/terms" },
+    { icon: LucideUserCheck, title: "following", link: "/following", prefetch: true },
+    { icon: LucideAlbum, title: "About Us", position: "bottom", link: "/about", prefetch: true },
+    {
+        icon: LucideGlobeLock,
+        title: "Privacy Policy",
+        position: "bottom",
+        link: "/privacy",
+        prefetch: true,
+    },
+    {
+        icon: LucideScrollText,
+        title: "Terms & Conditions",
+        position: "bottom",
+        link: "/terms",
+        prefetch: true,
+    },
     {
         icon: LucideBriefcase,
         title: "Yohpal Hustle",
@@ -74,6 +86,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
                                 href={item.link}
                                 target={item.target}
                                 className="w-full inline-flex  items-center p-1"
+                                prefetch={item.prefetch || false}
                                 key={idx}
                             >
                                 <SidebarMenuItem className="w-full">
@@ -100,6 +113,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
                             <Link
                                 href={item.link}
                                 className="w-full inline-flex  items-center p-1"
+                                prefetch={item.prefetch || false}
                                 key={idx}
                             >
                                 <SidebarMenuItem className="w-full">
