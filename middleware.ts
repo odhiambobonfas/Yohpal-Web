@@ -24,7 +24,8 @@ export async function middleware(request: NextRequest) {
     if (!isAuthed && request.nextUrl.pathname === "/") return NextResponse.next()
 
     if (!isAuthed && !request.nextUrl.pathname.startsWith("/auth")) {
-        return NextResponse.redirect(new URL("/auth/login", request.url))
+        const returnTo = encodeURIComponent(request.nextUrl.pathname + request.nextUrl.search)
+        return NextResponse.redirect(new URL(`/auth/login?returnTo=${returnTo}`, request.url))
     }
 
     // if authed and already inside /auth/*, send them back to /
