@@ -57,7 +57,7 @@ export default function useVideoHandlers({
 
     const handleView = async () => {
         if (isAuthenticated) {
-            updateOptimisticView(activeVideo.id)
+            updateOptimisticView(activeVideo.id, profile?.uid)
             await addView(activeVideo.id, profile?.uid)
         }
     }

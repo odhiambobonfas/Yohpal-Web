@@ -73,22 +73,28 @@ export default function useOptimisticVideo(
             userBookmarked,
             userLiked,
             isFollowing,
+            watchedVideos: optimist?.watchedVideos ?? watchedVideos,
         }
-    }, [activeVideo, userId, followings, optimisticStates])
+    }, [activeVideo, userId, followings, optimisticStates, watchedVideos])
 
     const resetOptimisticStore = () => {
         optimisticStates.clear()
     }
 
     const updateOptimisticView = useCallback(
-        (videoId: string) => {
+        (videoId: string, userId: string | undefined) => {
+            if (!userId) return
             const currentViews = optimisticStates.get(videoId)?.views ?? activeVideo.views.length
-
-            if (!watchedVideos?.some((v) => v.id === videoId)) {
+            const wv = optimisticStates.get(userId)?.watchedVideos ?? []
+            if (!wv?.some((v) => v.id === videoId)) {
                 updateOptimisticState(videoId, { views: currentViews + 1 })
+                wv?.push(activeVideo)
+                updateOptimisticState(userId, {
+                    watchedVideos: wv,
+                })
             }
         },
-        [optimisticStates, updateOptimisticState, activeVideo.views, watchedVideos],
+        [optimisticStates, activeVideo, updateOptimisticState],
     )
 
     const updateOptimisticLike = useCallback(

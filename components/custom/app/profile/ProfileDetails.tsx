@@ -2,6 +2,7 @@ import { AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useUser } from "@/hooks/user/use-user"
+import { useAuth } from "@/providers/Auth"
 import { YPUser } from "@/types/users"
 import { Avatar } from "@radix-ui/react-avatar"
 import Link from "next/link"
@@ -49,9 +50,10 @@ export default function ProfileDetails({
 }
 
 function UserPreview({ user }: { user: YPUser }) {
+    const { profile } = useAuth()
     return (
         <Link
-            href={`/user/${user.uid}`}
+            href={user.uid !== profile?.uid ? `/user/${user.uid}` : "/profile"}
             className="flex overflow-y-auto my-3 p-2 rounded-[8px] items-center hover:bg-muted-foreground/30 cursor-pointer"
         >
             <Avatar className="size-10">
