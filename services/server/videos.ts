@@ -1,20 +1,20 @@
 "use server"
 import { VideoComment, VideoWithStats } from "#/videos"
-import { COOKIES, DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
+import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
 import { db } from "@/lib/firebase/firebase.admin"
 import { getLast, recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 
 import { withCache } from "@/lib/cache"
 import { onlyProd } from "@/lib/dev"
-import { cookies } from "next/headers"
 import { DOC } from ".."
 
 const videoRef = db.collection("videos")
 
-const getLandingVideos = async (videoId: string | undefined, userId: string | undefined) => {
-    const cookieStore = await cookies()
-    const loggedInUserId = cookieStore.get(COOKIES.User)?.value
-
+const getLandingVideos = async (
+    videoId: string | undefined,
+    userId: string | undefined,
+    loggedInUserId: string | undefined,
+) => {
     return withCache(
         async () => {
             let firstVideo: VideoWithStats | null = null
@@ -97,7 +97,7 @@ const getLandingVideos = async (videoId: string | undefined, userId: string | un
                 firstVideo: firstVideo?.id || null,
             }
         },
-        `landing:videos:${userId || "anon"}:${videoId || ""}`,
+        `landing:videos-:${userId || "anon"}:${videoId || ""}`,
     )
 }
 

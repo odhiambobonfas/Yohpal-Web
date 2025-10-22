@@ -3,7 +3,7 @@ import { VideoWithStats } from "@/types/videos"
 import { getFollowingCount } from "./user"
 import { getUserVideoUploads } from "./videos"
 
-const FF_VIDEO_LIMIT = 5
+const FF_VIDEO_LIMIT = 10
 
 export const getFollowingFeed = async (userId: string) => {
     const followingIds = await getFollowingCount(userId, FOLLOWER_FOLLOWING_LIMIT)
@@ -16,7 +16,7 @@ export const getFollowingFeed = async (userId: string) => {
         followingIds.map(async (f) => {
             const vids = await getUserVideoUploads(f, undefined, FF_VIDEO_LIMIT)
             if (vids.length > 0) {
-                followingMeta.set(f, { lastDoc: vids[vids.length - 1].id, contentEnded: false })
+                followingMeta.set(f, { lastDoc: vids[vids.length - 1].id, contentEnded: vids.length < FF_VIDEO_LIMIT ? true : false  })
             }
             videos.push(...vids)
         }),

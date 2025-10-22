@@ -1,12 +1,13 @@
 import { useState } from "react"
 
+import {
+    blockUserAction,
+    followUserAction,
+    unfollowUserAction,
+} from "@/actions/users/user-interaction"
 import { getError } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
-import {
-    updatePreferences,
-    updateProfile,
-} from "@/services/client/user-mutations"
-import { followUserAction, unfollowUserAction } from "@/actions/users/user-interaction"
+import { updatePreferences, updateProfile } from "@/services/client/user-mutations"
 
 export function useUserMutation() {
     const [loading, setLoading] = useState(false)
@@ -68,5 +69,11 @@ export function useUserMutation() {
         })
     }
 
-    return { loading, error, toggleFollow, completeOnboarding }
+    const blockUser = (otherUserId: string) => {
+        return mutateWithAuth(async () => {
+            await blockUserAction(user!.uid, otherUserId)
+        })
+    }
+
+    return { loading, error, toggleFollow, completeOnboarding, blockUser }
 }
