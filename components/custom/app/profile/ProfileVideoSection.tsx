@@ -122,12 +122,13 @@ function ProfileVideoPreview({ videos }: { videos: VideoWithStats[] }) {
                 <div
                     key={v.id}
                     onClick={() => router.push(viewProfileVideos(v.userId, v.id))}
-                    className="relative overflow-hidden rounded-lg cursor-pointer"
+                    className="relative overflow-hidden rounded-lg cursor-pointer aspect-[9/16]"
                 >
                     <Image
                         src={v.thumbnail}
-                        width={100}
-                        height={100}
+                        // width={100}
+                        // height={100}
+                        fill
                         alt="thumbnail"
                         className="h-full w-full object-cover"
                     />
