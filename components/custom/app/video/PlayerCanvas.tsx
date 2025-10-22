@@ -193,6 +193,7 @@ export default function PlayerCanvas({
 
         setIsFetchingNext(false)
     }, [
+        blockedUsers,
         allVideos,
         lastFetchedVideoId,
         lastPromotedDocId,
@@ -212,9 +213,9 @@ export default function PlayerCanvas({
             const otherVideos = firstVideo ? videos.filter((v) => v.id !== firstVideo) : videos
             const randomized = randomizeVideos(otherVideos)
             const randomizedPromoted = randomizeVideos(promotedVideos ?? [])
-            let v = targetVideo ? [targetVideo, ...randomized] : randomized
+            const v = targetVideo ? [targetVideo, ...randomized] : randomized
 
-            let feedVideos = videoMix(v, randomizedPromoted, DEFAULT_PROMOTED_VIDEO_BIAS)
+            const feedVideos = videoMix(v, randomizedPromoted, DEFAULT_PROMOTED_VIDEO_BIAS)
 
             setAllVideos(feedVideos)
         }
