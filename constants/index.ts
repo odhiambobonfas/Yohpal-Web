@@ -5,6 +5,7 @@ const OLD_URL = "https://firebasestorage.googleapis.com/v0/b/yohlab.firebasestor
 
 const FOLLOWER_FOLLOWING_LIMIT = 30
 const CACHE_TTL = 3600
+const DEFAULT_PROMOTED_VIDEO_BIAS = 4
 
 const COOKIES = {
     Session: "__auth",
@@ -36,6 +37,7 @@ const DELETE_IDENT = "__dd"
 const DEBUG_BUILD = process.env.NODE_ENV === "development"
 
 const VIDEO_LIMIT = DEBUG_BUILD ? 10 : 30
+const PROMOTED_VIDEOS_LIMIT = Math.ceil(VIDEO_LIMIT / 4)
 
 export {
     CACHE_TTL,
@@ -43,11 +45,13 @@ export {
     COOKIES,
     DEBUG_BUILD,
     DEFAULT_PROFILE,
+    DEFAULT_PROMOTED_VIDEO_BIAS,
     DEFAULT_THUMBNAIL,
     DELETE_IDENT,
     FOLLOWER_FOLLOWING_LIMIT,
     INTERESTS,
     OLD_URL,
+    PROMOTED_VIDEOS_LIMIT,
     SUPPORTED_COUNTRIES,
     VIDEO_LIMIT,
 }

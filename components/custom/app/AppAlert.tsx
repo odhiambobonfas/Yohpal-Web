@@ -33,7 +33,7 @@ export default function AppAlert({
     description = "",
     actionText = "OK",
     cancelText = "Cancel",
-    showCancel = type === "confirm",
+    showCancel = type === "confirm" || cancelText.length > 0,
 }: AlertProps) {
     const config = alertConfig[type]
     const IconComponent = config.icon

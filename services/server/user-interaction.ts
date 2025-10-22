@@ -1,4 +1,5 @@
 import { db, serverTimestamp } from "@/lib/firebase/firebase.admin"
+import { DOC } from ".."
 
 async function followUser(userId: string, toFollowUserId: string) {
     const myFollowingRef = db
@@ -43,4 +44,31 @@ async function unfollowUser(userId: string, toUnfollowUserId: string) {
     await Promise.all([myFollowingRef.delete(), otherFollowersRef.delete()])
 }
 
-export { followUser, unfollowUser }
+async function blockUser(userId: string, toBlockUserId: string) {
+    const myBlockedRef = db
+        .collection("users")
+        .doc(userId)
+        .collection("blocked")
+        .doc(DOC)
+        .collection("userIds")
+        .doc(toBlockUserId)
+
+    await myBlockedRef.set({
+        uid: toBlockUserId,
+        timestamp: serverTimestamp(),
+    })
+}
+
+async function unblockUser(userId: string, toUnblockUserId: string) {
+    const myBlockedRef = db
+        .collection("users")
+        .doc(userId)
+        .collection("blocked")
+        .doc(DOC)
+        .collection("userIds")
+        .doc(toUnblockUserId)
+
+    await myBlockedRef.delete()
+}
+
+export { blockUser, followUser, unblockUser, unfollowUser }
