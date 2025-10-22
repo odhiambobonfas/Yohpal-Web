@@ -3,7 +3,7 @@ import "@/app/globals.css"
 import { LucideEye, LucideEyeOff, LucideLoader } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { FormEvent, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -14,6 +14,7 @@ import { toast } from "sonner"
 
 export default function Page() {
     const router = useRouter()
+    const searchParams = useSearchParams()
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -30,6 +31,12 @@ export default function Page() {
 
         if (success) {
             toast.success("Login successfull")
+            const returnTo = searchParams.get("returnTo")
+            if (returnTo) {
+                const decodedUrl = decodeURIComponent(returnTo)
+                router.push(decodedUrl)
+                return
+            }
             router.push("/")
         }
     }
