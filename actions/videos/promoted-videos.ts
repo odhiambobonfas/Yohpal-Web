@@ -1,6 +1,6 @@
 "use server"
 
-import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
+import { DEFAULT_THUMBNAIL } from "@/constants"
 import { onlyProd } from "@/lib/dev"
 import { db } from "@/lib/firebase/firebase.admin"
 import { replaceWithCDN, serializeTimestamp } from "@/lib/utils"
@@ -8,14 +8,14 @@ import { getVideoStats } from "@/services/server/videos"
 import { VideoWithStats } from "@/types/videos"
 
 const videoRef = db.collection("videos")
-const LIMIT = Math.ceil(VIDEO_LIMIT / 4) // fetch 7 promoted videos per batch
 
 async function getPromotedVideosAction(
     loggedInUserId: string | undefined,
+    limit: number,
     lastPromotedDocId?: string,
 ) {
     try {
-        let query = videoRef.where("promoted", "==", true).orderBy("timestamp", "desc").limit(LIMIT)
+        let query = videoRef.where("promoted", "==", true).orderBy("timestamp", "desc").limit(limit)
 
         // Apply pagination if we have a lastPromotedDocId
         if (lastPromotedDocId) {

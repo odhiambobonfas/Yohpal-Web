@@ -16,8 +16,14 @@ import { getWatchedVideos } from "@/services/client/user"
 
 import { getPromotedVideosAction } from "@/actions/videos/promoted-videos"
 import { Button } from "@/components/ui/button"
-import { DEFAULT_PROFILE, VIDEO_LIMIT } from "@/constants"
+import {
+    DEFAULT_PROFILE,
+    DEFAULT_PROMOTED_VIDEO_BIAS,
+    PROMOTED_VIDEOS_LIMIT,
+    VIDEO_LIMIT,
+} from "@/constants"
 import useVideoHandlers from "@/hooks/videos/use-video-handlers"
+import { filterBlocked } from "@/lib/filter-blocked"
 import { randomizeVideos } from "@/lib/randomize-videos"
 import { getLast } from "@/lib/utils"
 import { videoMix } from "@/services/server/mixed-feed"
@@ -27,7 +33,6 @@ import InteractionsLoginPrompt from "./InteractionsLoginPrompt"
 import VideoPlayer from "./VideoPlayer"
 
 const FETCH_TRIGGER_OFFSET = Math.floor(VIDEO_LIMIT * 0.75)
-const PROMOTED_VIDEO_BIAS = 4
 
 const swrConfig = {
     revalidateOnFocus: false,
@@ -37,17 +42,22 @@ const swrConfig = {
     revalidateOnMount: false,
 }
 
+interface PlayerCanvasProps {
+    videos: VideoWithStats[]
+    promotedVideos: VideoWithStats[] | undefined
+    blockedUsers: string[] | undefined
+
+    lastVideoDoc: string
+    firstVideo: string | undefined
+}
+
 export default function PlayerCanvas({
     videos,
     promotedVideos,
+    blockedUsers,
     lastVideoDoc,
     firstVideo,
-}: {
-    videos: VideoWithStats[]
-    promotedVideos: VideoWithStats[] | undefined
-    lastVideoDoc: string
-    firstVideo: string | null
-}) {
+}: PlayerCanvasProps) {
     const [allVideos, setAllVideos] = useState(videos)
     const [activeId, setActiveId] = useState<string | null>(videos[0]?.id ?? null)
     const [isFetchingNext, setIsFetchingNext] = useState(false)
@@ -139,24 +149,39 @@ export default function PlayerCanvas({
 
         setIsFetchingNext(true)
 
-        const [newContent, promotedContent] = await Promise.all([
-            getClientPaginatedVideos(lastFetchedVideoId, profile?.uid),
-            getPromotedVideosAction(profile?.uid, lastPromotedDocId ?? undefined),
-        ])
+        const newContent = await getClientPaginatedVideos(lastFetchedVideoId, profile?.uid)
+        const blockedFiltered = filterBlocked(newContent.videos, blockedUsers)
+
+        let promotedVideosFetchLimit = PROMOTED_VIDEOS_LIMIT
+        if (blockedFiltered.length < PROMOTED_VIDEOS_LIMIT) {
+            promotedVideosFetchLimit = blockedFiltered.length / 2
+        }
+        const promotedContent = await getPromotedVideosAction(
+            profile?.uid,
+            promotedVideosFetchLimit,
+            lastPromotedDocId ?? undefined,
+        )
 
         if (newContent.videos?.length) {
             const existingIds = new Set(allVideos.map((v) => v.id))
 
             let uniqueNewVideos = newContent.videos.filter((v) => !existingIds.has(v.id))
-            if (!userId) uniqueNewVideos = randomizeVideos(uniqueNewVideos)
+            if (!userId) {
+                uniqueNewVideos = randomizeVideos(uniqueNewVideos)
+            }
 
-            const uniquePromotedVideos = promotedContent.videos.filter(
-                (v) => !existingIds.has(v.id),
+            const uniquePromotedVideos = randomizeVideos(
+                promotedContent.videos.filter((v) => !existingIds.has(v.id)),
             )
 
             const overallOffset = allVideos.length
 
-            const mixed = videoMix(uniqueNewVideos, uniquePromotedVideos, 4, overallOffset)
+            const mixed = videoMix(
+                uniqueNewVideos,
+                uniquePromotedVideos,
+                DEFAULT_PROMOTED_VIDEO_BIAS,
+                overallOffset,
+            )
 
             setAllVideos((prev) => [...prev, ...mixed])
             setLastFetchedVideoId(newContent.lastVideoDocId)
@@ -179,22 +204,26 @@ export default function PlayerCanvas({
         videoHandlers,
     ])
 
+    // randomization and anything that needs to happen to the initial
+    // video load
     useEffect(() => {
         if (videos.length > 0) {
             const targetVideo = firstVideo ? videos.find((v) => v.id === firstVideo) : null
             const otherVideos = firstVideo ? videos.filter((v) => v.id !== firstVideo) : videos
             const randomized = randomizeVideos(otherVideos)
             const randomizedPromoted = randomizeVideos(promotedVideos ?? [])
-            const v = targetVideo ? [targetVideo, ...randomized] : randomized
+            let v = targetVideo ? [targetVideo, ...randomized] : randomized
 
-            setAllVideos(videoMix(v, randomizedPromoted, PROMOTED_VIDEO_BIAS))
+            let feedVideos = videoMix(v, randomizedPromoted, DEFAULT_PROMOTED_VIDEO_BIAS)
+
+            setAllVideos(feedVideos)
         }
     }, [firstVideo, videos, promotedVideos])
 
     useEffect(() => {
         if (loading || isFetchingNext) return
         const triggerIndex = allVideos.length - FETCH_TRIGGER_OFFSET
-        if (activeIndex >= triggerIndex) {
+        if (activeIndex >= triggerIndex || allVideos.length <= FETCH_TRIGGER_OFFSET) {
             fetchNextVideos()
         }
     }, [activeIndex, allVideos.length, loading, isFetchingNext, fetchNextVideos])
@@ -259,6 +288,8 @@ export default function PlayerCanvas({
                 <div>Fetching: {isFetchingNext ? "Yes" : "No"}</div>
                 <div>parentSize: {parentRef.current?.clientHeight}</div>
                 <span>LastFetchedDoc: {lastFetchedVideoId}</span>
+                <br />
+                <span>Blocked: [{blockedUsers?.length}]</span>
 
                 <div>Limit: {FETCH_TRIGGER_OFFSET}</div>
                 <br />
@@ -333,9 +364,11 @@ export default function PlayerCanvas({
                                             activeIndex={activeIndex}
                                             onEnded={() => {
                                                 if (autoScrollEnabled) moveNext()
-                                            } }
+                                            }}
                                             autoScrollEnabled={autoScrollEnabled}
-                                            setAutoScrollEnabled={setAutoScrollEnabled} promoted={video.promoted}                                        />
+                                            setAutoScrollEnabled={setAutoScrollEnabled}
+                                            promoted={video.promoted}
+                                        />
                                     </div>
                                 )
                             })}

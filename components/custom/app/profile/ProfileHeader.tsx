@@ -8,6 +8,8 @@ import { useUserMutation } from "@/hooks/user/use-user-mutation"
 import { useAuth } from "@/providers/Auth"
 import { YPUser } from "@/types/users"
 import { LucideUserMinus2, LucideUserPlus2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import AppAlert from "../AppAlert"
 import ProfileDetails from "./ProfileDetils"
 interface ProfileHeaderProps {
@@ -35,6 +37,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
     const [userFollowed, setUserFollowed] = useState(false)
     const [confirmBlock, setConfirmBlock] = useState(false)
     const { toggleFollow } = useUserMutation()
+    const router = useRouter()
 
     const isPersonal = profileType === "personal"
 
@@ -58,7 +61,13 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
     }
 
     const { blockUser } = useUserMutation()
-    const handleBlockUser = async () => await blockUser(user!.uid)
+    const handleBlockUser = async () => {
+        if (user?.uid) {
+            await blockUser(user.uid)
+            toast.success(`Blocked ${user.userName} successfully`)
+            router.replace("/")
+        }
+    }
 
     return (
         <>
