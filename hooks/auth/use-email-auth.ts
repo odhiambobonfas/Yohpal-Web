@@ -14,43 +14,6 @@ import {
 } from "@/services/client/auth"
 import { createUser } from "@/services/client/user-mutations"
 
-function getUserFriendlyError(error: string, context: "login" | "signup" | "verify"): string {
-    const errorMsg = error.toLowerCase() || ""
-
-    if (context === "login") {
-        if (
-            errorMsg.includes("invalid-credential") ||
-            errorMsg.includes("wrong-password") ||
-            errorMsg.includes("user-not-found")
-        ) {
-            return "Invalid email or password"
-        }
-        if (errorMsg.includes("too-many-requests")) {
-            return "Too many failed attempts. Please try again later"
-        }
-        return "Failed to login. Please try again"
-    }
-
-    if (context === "signup") {
-        if (errorMsg.includes("invalid-email")) {
-            return "Please enter a valid email address"
-        }
-        if (errorMsg.includes("weak-password")) {
-            return "Password is too weak. Please use at least 6 characters"
-        }
-        // Don't reveal if email exists - security risk
-        return "Failed to create account. Please try again"
-    }
-
-    if (context === "verify") {
-        if (errorMsg.includes("too-many-requests")) {
-            return "Too many verification emails sent. Please wait before trying again"
-        }
-        return "Failed to send verification email. Please try again"
-    }
-
-    return "Something went wrong. Please try again"
-}
 export function useEmailAuth() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -131,4 +94,42 @@ export function useEmailAuth() {
     }
 
     return { login, signUp, logOut, verifyEmail, loading, error }
+}
+
+function getUserFriendlyError(error: string, context: "login" | "signup" | "verify"): string {
+    const errorMsg = error.toLowerCase() || ""
+
+    if (context === "login") {
+        if (
+            errorMsg.includes("invalid-credential") ||
+            errorMsg.includes("wrong-password") ||
+            errorMsg.includes("user-not-found")
+        ) {
+            return "Invalid email or password"
+        }
+        if (errorMsg.includes("too-many-requests")) {
+            return "Too many failed attempts. Please try again later"
+        }
+        return "Failed to login. Please try again"
+    }
+
+    if (context === "signup") {
+        if (errorMsg.includes("invalid-email")) {
+            return "Please enter a valid email address"
+        }
+        if (errorMsg.includes("weak-password")) {
+            return "Password is too weak. Please use at least 6 characters"
+        }
+        // Don't reveal if email exists - security risk
+        return "Failed to create account. Please try again"
+    }
+
+    if (context === "verify") {
+        if (errorMsg.includes("too-many-requests")) {
+            return "Too many verification emails sent. Please wait before trying again"
+        }
+        return "Failed to send verification email. Please try again"
+    }
+
+    return "Something went wrong. Please try again"
 }
