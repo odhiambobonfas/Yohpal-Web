@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { formatTime, serializeTimestamp } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
 import { LucideHeart, LucideTrash2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 interface CommentMutationProps {
     comment: VideoComment
@@ -21,6 +23,14 @@ export default function CommentCard({
     handleCommentLikeToggle,
 }: CommentMutationProps) {
     const { profile } = useAuth()
+    const [active, setActive] = useState(false)
+    const router = useRouter()
+
+    useEffect(() => {
+        if (active) {
+            router.prefetch(`/user/${comment.userId}`)
+        }
+    })
 
     // TODO(80186fb26301)
     if (comment.deleted) return null
@@ -39,7 +49,11 @@ export default function CommentCard({
                         />
                         <AvatarFallback>{comment.username[0]}</AvatarFallback>
                     </Avatar>
-                    <Link href={`/user/${comment.userId}`}>
+                    <Link
+                        href={`/user/${comment.userId}`}
+                        prefetch={active ? null : false}
+                        onMouseEnter={() => setActive(true)}
+                    >
                         <span className="text-sm font-semibold">{comment.username}</span>
                     </Link>
                     <span className="ml-auto text-muted-foreground text-sm">

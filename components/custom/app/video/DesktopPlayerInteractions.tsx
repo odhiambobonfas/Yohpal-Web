@@ -25,6 +25,8 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatStat, formatTime } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function DesktopPlayerInteractions({
     handleBookmark,
@@ -43,6 +45,14 @@ export default function DesktopPlayerInteractions({
     commentMutation,
 }: InteractionMutationProps) {
     const { profile } = useAuth()
+    const [active, setActive] = useState(false)
+    const router = useRouter()
+
+    useEffect(() => {
+        if (active) {
+            router.prefetch(`/user/${video.userId}`)
+        }
+    }, [active, video.userId, router])
 
     return (
         <div className="w-6/12 px-3 gap-3 flex flex-col h-full">
@@ -65,6 +75,8 @@ export default function DesktopPlayerInteractions({
                                 <Link
                                     href={`/user/${video.userId}`}
                                     className="hover:underline underline-offset-2"
+                                    prefetch={active ? null : false}
+                                    onMouseEnter={() => setActive(true)}
                                 >
                                     <b>@{video.userName}</b>
                                 </Link>
