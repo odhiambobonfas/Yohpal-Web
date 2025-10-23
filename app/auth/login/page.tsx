@@ -4,7 +4,7 @@ import { LucideEye, LucideEyeOff, LucideLoader } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { FormEvent, useState } from "react"
+import { FormEvent, Suspense, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,7 +12,16 @@ import { Label } from "@/components/ui/label"
 import { useEmailAuth } from "@/hooks/auth/use-email-auth"
 import { toast } from "sonner"
 
+// Wrapped component in <Suspense> to fix useSearchParams() prerender build error
 export default function Page() {
+    return (
+        <Suspense>
+            <LoginComponent />
+        </Suspense>
+    )
+}
+
+function LoginComponent() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
