@@ -5,7 +5,6 @@ import {
     LucideDownload,
     LucideEye,
     LucideHeart,
-    LucideLoader,
     LucideMessageCircleMore,
     LucideSend,
     LucideShare2,
@@ -162,23 +161,20 @@ export default function DesktopPlayerInteractions({
                 </div>
             </div>
             <div className="h-120 py-3 w-full flex gap-3 flex-col">
-                <form
-                    onSubmit={handleComment}
-                    className="inline-flex w-full items-center gap-2 h-10"
-                >
+                <form onSubmit={handleComment} className="relative w-full h-10">
                     <Input
                         type="text"
                         value={commentMutation.text}
                         onChange={(e) => commentMutation.setText(e.target.value)}
-                        className="rounded-full p-3 text-lg"
+                        className="rounded-full py-4 pr-12 text-lg w-full h-full"
                         placeholder="What's going on..."
                     />
                     <Button
                         type="submit"
-                        className="rounded-full"
+                        className="absolute right-1 top-1/2 transform -translate-y-1/2 rounded-full size-8"
                         disabled={commentMutation.disabled}
                     >
-                        {isLoading ? <LucideLoader className="animate-spin" /> : <LucideSend />}
+                        <LucideSend />
                     </Button>
                 </form>
                 <ScrollArea className="flex-1 h-1/2 overflow-hidden py-3 flex flex-col gap-2">

@@ -22,9 +22,6 @@ export default async function Page() {
         <>
             <DebugWindow>
                 <span>Count: {feed.videos.length}</span>
-                <div className="whitespace-pre-wrap">
-                    Meta: {JSON.stringify(Object.fromEntries(feed.followingMeta))}
-                </div>
             </DebugWindow>
             <div
                 className="grid gap-4 p-2"
