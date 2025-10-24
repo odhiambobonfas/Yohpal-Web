@@ -43,6 +43,20 @@ export async function getUserfollowing(userId: string, limit?: number) {
     return userFollowingDocs.docs.map((f) => f.id)
 }
 
+export async function getUserFriends(userId: string) {
+    const [followers, following] = await Promise.all([
+        getUserfollowers(userId),
+        getUserfollowing(userId),
+    ])
+
+    if (!followers.length || !following.length) return []
+
+    const followerSet = new Set(followers)
+    const friends = following.filter((uid) => followerSet.has(uid))
+
+    return friends
+}
+
 export async function getWatchedVideos(userId: string) {
     const profileStatsRef = collection(db, "users", userId, "watched", DOC, "videoIds")
     const profileStatsDocs = await getDocs(profileStatsRef)

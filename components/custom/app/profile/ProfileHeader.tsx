@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 
+import FriendsDialog from "@/app/(yohpal)/friends/page"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
@@ -21,6 +22,7 @@ interface ProfileHeaderProps {
               followersStat?: string[]
               followingStat?: number
               likedStat?: number
+              friendsStat?: number
           }
         | null
         | undefined
@@ -196,6 +198,21 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                                     profileType={profileType}
                                     userId={user?.uid}
                                 />
+                            </DialogContent>
+                        </Dialog>
+
+                        <Dialog>
+                            <DialogTrigger>
+                                <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                                    <span className="text-sm md:text-base">{}</span>
+                                    <span className="text-sm md:text-base">
+                                        {stats?.friendsStat}
+                                    </span>
+                                    <span className="text-[10px] md:text-xs">Friends</span>
+                                </div>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <FriendsDialog />
                             </DialogContent>
                         </Dialog>
 
