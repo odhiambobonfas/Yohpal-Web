@@ -14,6 +14,7 @@ export default async function Page() {
     const userId = cookieStore.get(COOKIES.User)?.value
 
     if (!userId) return <NotLoggedIn />
+
     const feed = await getFollowingFeed(userId)
     const videos = randomizeVideos(feed.videos)
 
