@@ -1,10 +1,17 @@
 "use client"
 
 import AppAlert from "@/components/custom/app/AppAlert"
+import { useEmailAuth } from "@/hooks/auth/use-email-auth"
 import { useRouter } from "next/navigation"
 
 export default function NotLoggedIn() {
+    const { logOut } = useEmailAuth()
     const router = useRouter()
+
+    const handleLoginAction = async () => {
+        await logOut()
+        router.push("/auth/login")
+    }
 
     return (
         <AppAlert
@@ -15,7 +22,7 @@ export default function NotLoggedIn() {
             cancelText="Go back"
             onClose={router.back}
             actionText="Login"
-            onAction={() => router.push("/auth/login")}
+            onAction={handleLoginAction}
         />
     )
 }
