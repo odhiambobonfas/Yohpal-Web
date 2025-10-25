@@ -3,6 +3,7 @@ import { VideoPlayerProps } from "#/videos"
 import VideoPlayerSettings from "@/components/custom/app/video/VideoPlayerSettings"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
 import { DEFAULT_THUMBNAIL } from "@/constants"
 import { useAutoPauseVideo } from "@/hooks/videos/use-auto-pause-video"
 import { LucideMegaphone, LucidePlay, LucideVolume2, LucideVolumeOff } from "lucide-react"
@@ -78,6 +79,7 @@ export default function VideoPlayer({
         video.addEventListener("loadedmetadata", handleLoadedMetadata)
         return () => video.removeEventListener("loadedmetadata", handleLoadedMetadata)
     }, [])
+
     const togglePlayPause = async () => {
         const video = videoRef.current
         if (!video) return
@@ -90,6 +92,24 @@ export default function VideoPlayer({
             setPlaying(false)
         }
     }
+
+    const [progress, setProgress] = useState(0)
+    useEffect(() => {
+        const v = videoRef.current
+        if (!v) return
+        let frame: number
+
+        const update = () => {
+            setProgress(v.currentTime)
+            frame = requestAnimationFrame(update)
+        }
+
+        if (!v.paused) frame = requestAnimationFrame(update)
+        v.addEventListener("play", () => (frame = requestAnimationFrame(update)))
+        v.addEventListener("pause", () => cancelAnimationFrame(frame))
+
+        return () => cancelAnimationFrame(frame)
+    }, [])
 
     if (!shouldRender) {
         return (
@@ -186,6 +206,15 @@ export default function VideoPlayer({
                                 src={thumbnail || DEFAULT_THUMBNAIL}
                                 alt="video thumbnail"
                                 className="h-full w-full object-cover blur-2xl"
+                            />
+                        </div>
+                    )}
+
+                    {isLoaded && (
+                        <div className="absolute bottom-0 left-0 w-full h-1">
+                            <Progress
+                                value={(progress / (videoRef.current?.duration || 1)) * 100}
+                                className="w-full h-2 bg-slate-100/20 rounded-none"
                             />
                         </div>
                     )}
