@@ -17,7 +17,7 @@ import { VideoWithStats } from "#/videos"
 import { VIDEO_LIMIT } from "@/constants"
 import { onlyProd } from "@/lib/dev"
 import { db } from "@/lib/firebase/firebase.browser"
-import { recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
+import { flattenObject, recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 import { DOC } from "@/services"
 import { getVideoStats } from "../server/videos"
 
@@ -160,7 +160,7 @@ export async function getUserUploadedVideos(userId: string) {
     const videos = await Promise.all(
         videoDocsRef.docs.map(async (v) => {
             const videoStats = await getVideoStats(v.id, userId)
-            return { id: v.id, ...v.data(), ...videoStats }
+            return flattenObject({ id: v.id, ...v.data(), ...videoStats })
         }),
     )
     return videos as unknown as VideoWithStats[]

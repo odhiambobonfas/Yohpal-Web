@@ -2,13 +2,21 @@
 import { VideoComment, VideoWithStats } from "#/videos"
 import { DEFAULT_THUMBNAIL, VIDEO_LIMIT } from "@/constants"
 import { db } from "@/lib/firebase/firebase.admin"
-import { getLast, recoverThumbnail, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
+import {
+    flattenObject,
+    getLast,
+    recoverThumbnail,
+    replaceWithCDN,
+    serializeTimestamp,
+} from "@/lib/utils"
 
 import { withCache } from "@/lib/cache"
 import { onlyProd } from "@/lib/dev"
 import { DOC } from ".."
 
 const videoRef = db.collection("videos")
+
+type ColName = "downloads" | "views" | "likes" | "bookmarks" | "watched"
 
 const getLandingVideos = async (
     videoId: string | undefined,
@@ -30,7 +38,6 @@ const getLandingVideos = async (
                 if (videoDoc.exists) {
                     const videoData = videoDoc.data()
                     if (!videoData) return
-                    delete videoData["campaignMeta"]
 
                     const videoStats = await onlyProd(
                         () => getVideoStats(videoId, loggedInUserId),
@@ -44,14 +51,14 @@ const getLandingVideos = async (
                         },
                     )
 
-                    firstVideo = {
+                    firstVideo = flattenObject({
                         id: videoDoc.id,
                         ...videoData,
                         videoUrl: replaceWithCDN(videoData.videoUrl),
                         thumbnail: recoverThumbnail(videoData.thumbnail),
                         timestamp: serializeTimestamp(videoData.timestamp),
                         ...videoStats,
-                    } as VideoWithStats
+                    }) as VideoWithStats
                 }
             }
 
@@ -77,14 +84,14 @@ const getLandingVideos = async (
                         downloads: [],
                     })
 
-                    return {
+                    return flattenObject({
                         id: v.id,
                         ...videoData,
                         videoUrl: replaceWithCDN(videoData.videoUrl),
                         thumbnail: replaceWithCDN(videoData.thumbnail) || DEFAULT_THUMBNAIL,
                         timestamp: serializeTimestamp(videoData.timestamp),
                         ...videoStats,
-                    }
+                    })
                 }),
             )) as (VideoWithStats | null)[]
 
@@ -127,16 +134,15 @@ async function getVideosFromProfile(
         videoDocs.docs.map(async (v) => {
             const videoStats = await getVideoStats(v.id, loggedInUserId)
             const videoData = v.data()
-            delete videoData["campaignMeta"]
 
-            return {
+            return flattenObject({
                 id: v.id,
                 ...videoData,
                 videoUrl: replaceWithCDN(videoData.videoUrl),
                 thumbnail: recoverThumbnail(videoData.thumbnail),
                 timestamp: serializeTimestamp(videoData.timestamp),
                 ...videoStats,
-            } as VideoWithStats
+            }) as VideoWithStats
         }),
     )
 }
@@ -193,21 +199,20 @@ const getUserVideoUploads = async (
             const videos = await Promise.all(
                 videoUploads.docs.map(async (v) => {
                     const videoData = v.data()
-                    delete videoData["campaignMeta"]
 
                     const videoStats = await onlyProd(() => getUploadedVideoStats(v.id), {
                         likes: [],
                         views: [],
                     })
 
-                    return {
+                    return flattenObject({
                         id: v.id,
                         ...videoData,
                         videoUrl: replaceWithCDN(videoData.videoUrl),
                         thumbnail: recoverThumbnail(videoData.thumbnail),
                         timestamp: serializeTimestamp(videoData.timestamp),
                         ...videoStats,
-                    }
+                    })
                 }),
             )
 
@@ -328,4 +333,59 @@ const getVideoComments = async (videoId: string, userId: string | undefined) => 
     }, `comments:${videoId}`)
 }
 
-export { getLandingVideos, getUserVideoUploads, getVideoStats }
+const getUserProfileVideos = async (userId: string) => {
+    const [uploaded, liked, bookmarks, watched] = await Promise.all([
+        getUserVideoUploads(userId, undefined, undefined),
+        getUserLikedVideos(userId),
+        getUserBookmarkedVideos(userId),
+        getUserWatchedVideos(userId),
+    ])
+    return {
+        uploadedVideo: uploaded,
+        likedVideos: liked,
+        bookmarkedVideos: bookmarks,
+        watchedVideos: watched,
+    }
+}
+
+const getUserLikedVideos = async (userId: string) => await getUserVideoGeneral(userId, "likes")
+const getUserBookmarkedVideos = async (userId: string) => {
+    return await getUserVideoGeneral(userId, "bookmarks")
+}
+const getUserWatchedVideos = async (userId: string) => {
+    return await getUserVideoGeneral(userId, "watched")
+}
+
+const getUserVideoGeneral = async (userId: string, colName: ColName) => {
+    const userVideoDocs = await db
+        .collection("users")
+        .doc(userId)
+        .collection(colName)
+        .doc(DOC)
+        .collection("videoIds")
+        .get()
+
+    const videos = await Promise.all(userVideoDocs.docs.map(async (v) => await getVideo(v.id)))
+    return videos.filter((v) => v !== null)
+}
+
+const getVideo = async (videoId: string) => {
+    const getOp = async () => {
+        const videoDoc = await db.collection("videos").doc(videoId).get()
+        if (!videoDoc.exists) return null
+
+        const videoData = videoDoc.data()
+
+        return flattenObject({
+            id: videoDoc.id,
+            ...videoData,
+            videoUrl: replaceWithCDN(videoData!.videoUrl),
+            thumbnail: recoverThumbnail(videoData!.thumbnail),
+            timestamp: serializeTimestamp(videoData!.timestamp),
+        }) as VideoWithStats
+    }
+
+    return await withCache(getOp, `video:${videoId}`)
+}
+
+export { getLandingVideos, getUserProfileVideos, getUserVideoUploads, getVideoStats }

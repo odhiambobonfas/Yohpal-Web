@@ -11,7 +11,7 @@ import { LucideUserMinus2, LucideUserPlus2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import AppAlert from "../AppAlert"
-import ProfileDetails from "./ProfileDetils"
+import ProfileDetails from "./ProfileDetails"
 interface ProfileHeaderProps {
     user: YPUser | null
     stats:
