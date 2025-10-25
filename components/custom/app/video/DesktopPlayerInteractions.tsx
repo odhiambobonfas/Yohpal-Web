@@ -73,7 +73,11 @@ export default function DesktopPlayerInteractions({
 
                             <span className="flex flex-col items-start">
                                 <Link
-                                    href={`/user/${video.userId}`}
+                                    href={
+                                        video.userId === profile?.uid
+                                            ? `/profile`
+                                            : `/user/${video.userId}`
+                                    }
                                     className="hover:underline underline-offset-2"
                                     prefetch={active ? null : false}
                                     onMouseEnter={() => setActive(true)}
