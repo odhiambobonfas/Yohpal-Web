@@ -37,6 +37,16 @@ export function useUser() {
         try {
             setLoading(true)
             setError(null)
+            if (userId === "") {
+                return {
+                    uploadedStat: 0,
+                    followersStat: [],
+                    followingStat: 0,
+                    likedStat: 0,
+                    viewedStat: 0,
+                    friendsStat: 0,
+                }
+            }
 
             const [uploaded, followers, following, friends, liked, viewed] = await Promise.all([
                 getUserUploadedVideos(userId),
@@ -53,7 +63,7 @@ export function useUser() {
                 followingStat: following.length,
                 likedStat: liked.length,
                 viewedStat: viewed.length,
-                friendsStats: friends.length,
+                friendsStat: friends.length,
             }
         } catch (e) {
             const errorMsg = getError(e) || "Failed to get profile details"
@@ -151,6 +161,7 @@ export function useUser() {
         try {
             setLoading(true)
             setError(null)
+
             return (
                 await Promise.all(
                     (await getUserFriends(userId)).map(async (u) => await getUserProfile(u)),

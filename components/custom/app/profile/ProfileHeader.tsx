@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import AppAlert from "../AppAlert"
 import ProfileDetails from "./ProfileDetails"
-interface ProfileHeaderProps {
+interface ProfileHeaderProps { 
     user: YPUser | null
     stats:
         | {
@@ -204,7 +204,6 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                         <Dialog>
                             <DialogTrigger>
                                 <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
-                                    <span className="text-sm md:text-base">{}</span>
                                     <span className="text-sm md:text-base">
                                         {stats?.friendsStat}
                                     </span>

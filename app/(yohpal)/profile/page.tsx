@@ -13,14 +13,13 @@ export default function Page() {
     const { getProfileStats, getProfileVideos } = useUser()
     const { data: profileStats, isLoading: profileStatsLoading } = useSWR(
         ["user-profile", profile?.uid],
-        () => getProfileStats(profile?.uid || ""),
+        ([, profileId]) => getProfileStats(profileId || ""),
     )
 
     const { data: profileVideos, isLoading: profileVideosLoading } = useSWR(
         ["user-profile-videos", profile?.uid],
-        () => getProfileVideos(profile?.uid || ""),
+        ([, profileId]) => getProfileVideos(profileId || ""),
     )
-
     const isLoading = profileStatsLoading || profileVideosLoading
 
     return (
