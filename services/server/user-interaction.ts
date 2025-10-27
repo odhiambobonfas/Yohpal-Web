@@ -53,10 +53,14 @@ async function blockUser(userId: string, toBlockUserId: string) {
         .collection("userIds")
         .doc(toBlockUserId)
 
-    await myBlockedRef.set({
-        uid: toBlockUserId,
-        timestamp: serverTimestamp(),
-    })
+    await Promise.all([
+        myBlockedRef.set({
+            uid: toBlockUserId,
+            timestamp: serverTimestamp(),
+        }),
+
+        unfollowUser(userId, toBlockUserId).catch(() => null), // ignore if an error occurs
+    ])
 }
 
 async function unblockUser(userId: string, toUnblockUserId: string) {

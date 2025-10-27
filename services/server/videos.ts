@@ -104,7 +104,7 @@ const getLandingVideos = async (
                 firstVideo: firstVideo?.id || null,
             }
         },
-        `landing:videos-:${userId || "anon"}:${videoId || ""}`,
+        `landing:videos:${userId || "anon"}:${videoId || ""}`,
     )
 }
 
