@@ -1,4 +1,4 @@
-import { LucideLoader, LucideSend } from "lucide-react"
+import { LucideSend } from "lucide-react"
 import { FormEvent } from "react"
 
 import { VideoComment } from "#/videos"
@@ -61,19 +61,21 @@ export default function CommentDrawer({
                             ))
                         )}
                     </ScrollArea>
-                    <form
-                        onSubmit={handleComment}
-                        className="inline-flex w-full items-center gap-2 h-10 mt-auto"
-                    >
+
+                    <form onSubmit={handleComment} className="relative w-full h-10">
                         <Input
                             type="text"
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
-                            className="rounded-full p-3 text-lg"
+                            className="rounded-full py-4 pr-12 text-lg w-full h-full"
                             placeholder="What's going on..."
                         />
-                        <Button type="submit" className="rounded-full" disabled={isDisabled}>
-                            {isLoading ? <LucideLoader className="animate-spin" /> : <LucideSend />}
+                        <Button
+                            type="submit"
+                            className="absolute right-1 top-1/2 transform -translate-y-1/2 rounded-full size-8"
+                            disabled={isDisabled}
+                        >
+                            <LucideSend />
                         </Button>
                     </form>
                 </div>

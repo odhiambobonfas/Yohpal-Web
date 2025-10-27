@@ -19,6 +19,8 @@ export interface Video {
 
     campaignMeta: CampaignMeta | null
     promoted: boolean
+    viewsCount: number | undefined
+    likesCount: number | undefined
 }
 
 export interface VideoWithStats extends Video {

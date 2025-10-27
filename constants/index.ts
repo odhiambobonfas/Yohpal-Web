@@ -11,7 +11,7 @@ const COOKIES = {
     Session: "__auth",
     EmailNotVerified: "__emailVerified",
     User: "__u",
-}
+} as const
 
 const INTERESTS = [
     "Kids",
