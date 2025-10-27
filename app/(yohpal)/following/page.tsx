@@ -27,7 +27,7 @@ export default async function Page() {
                 className="grid gap-4 p-2"
                 style={{
                     gridTemplateColumns:
-                        "repeat(auto-fit, minmax(max(calc(100% / 6 - 1rem), 200px), 1fr))",
+                        "repeat(auto-fit, minmax(clamp(200px, 100% / 6, 50%), 1fr))",
                 }}
             >
                 {videos.map((video) => (
@@ -54,7 +54,7 @@ function VideoPreview({ video, userId }: { video: VideoWithStats; userId: string
                     height={100}
                 />
             </div>
-            <div className="absolute text-white bottom-0 w-full h-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex justify-center items-end gap-2 px-4 py-3">
+            <div className="absolute text-slate-200 bottom-0 w-full h-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex justify-between items-end gap-2 px-4 py-3">
                 {video.userName}
                 <div className=" inline-flex gap-1 text-sm items-center">
                     <LucideHeart
