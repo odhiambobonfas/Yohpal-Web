@@ -25,6 +25,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
                     uploadedStat: stats.uploadedVideos,
                     viewedStat: stats.views,
                     likedStat: stats.likes,
+                    friendsStat: stats.friends,
                 }}
                 user={user}
             />

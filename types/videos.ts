@@ -19,6 +19,8 @@ export interface Video {
 
     campaignMeta: CampaignMeta | null
     promoted: boolean
+    viewsCount: number | undefined
+    likesCount: number | undefined
 }
 
 export interface VideoWithStats extends Video {
@@ -87,7 +89,6 @@ export interface InteractionMutationProps {
     handleCommentDelete: (commentId: string, videoId: string) => void
     handleCommentLikeToggle: (commentId: string, videoId: string, wasLiked: boolean) => void
 
-    isLoading: boolean
     error: string | null
 
     currentStats: {

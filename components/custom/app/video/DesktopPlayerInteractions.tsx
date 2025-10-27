@@ -5,7 +5,6 @@ import {
     LucideDownload,
     LucideEye,
     LucideHeart,
-    LucideLoader,
     LucideMessageCircleMore,
     LucideSend,
     LucideShare2,
@@ -25,6 +24,8 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatStat, formatTime } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function DesktopPlayerInteractions({
     handleBookmark,
@@ -35,7 +36,6 @@ export default function DesktopPlayerInteractions({
     handleComment,
     handleCommentDelete,
     handleCommentLikeToggle,
-    isLoading,
     currentStats,
     userFollowed,
     ownerProfilePicture,
@@ -43,6 +43,14 @@ export default function DesktopPlayerInteractions({
     commentMutation,
 }: InteractionMutationProps) {
     const { profile } = useAuth()
+    const [active, setActive] = useState(false)
+    const router = useRouter()
+
+    useEffect(() => {
+        if (active) {
+            router.prefetch(`/user/${video.userId}`)
+        }
+    }, [active, video.userId, router])
 
     return (
         <div className="w-6/12 px-3 gap-3 flex flex-col h-full">
@@ -63,8 +71,14 @@ export default function DesktopPlayerInteractions({
 
                             <span className="flex flex-col items-start">
                                 <Link
-                                    href={`/user/${video.userId}`}
+                                    href={
+                                        video.userId === profile?.uid
+                                            ? `/profile`
+                                            : `/user/${video.userId}`
+                                    }
                                     className="hover:underline underline-offset-2"
+                                    prefetch={active ? null : false}
+                                    onMouseEnter={() => setActive(true)}
                                 >
                                     <b>@{video.userName}</b>
                                 </Link>
@@ -120,7 +134,6 @@ export default function DesktopPlayerInteractions({
                         variant={"ghost"}
                         className="text-foreground"
                         onClick={handleLikeToggle}
-                        disabled={isLoading}
                     >
                         <LucideHeart
                             className={currentStats.userLiked ? "text-red-500 fill-current" : ""}
@@ -137,7 +150,6 @@ export default function DesktopPlayerInteractions({
                             currentStats.userBookmarked ? "text-blue-500" : "text-foreground"
                         }
                         onClick={handleBookmark}
-                        disabled={isLoading}
                     >
                         <LucideBookmark
                             className={currentStats.userBookmarked ? "fill-current" : ""}
@@ -145,40 +157,32 @@ export default function DesktopPlayerInteractions({
                         {currentStats.bookmarks}
                     </Button>
                     <ResponsiveShareDialog videoId={video.id} onAction={handleShare}>
-                        <Button variant={"ghost"} className="text-foreground" disabled={isLoading}>
+                        <Button variant={"ghost"} className="text-foreground">
                             <LucideShare2 />
                             {currentStats.shares}
                         </Button>
                     </ResponsiveShareDialog>
 
-                    <Button
-                        variant={"ghost"}
-                        className="text-foreground"
-                        onClick={handleDownload}
-                        disabled={isLoading}
-                    >
+                    <Button variant={"ghost"} className="text-foreground" onClick={handleDownload}>
                         <LucideDownload /> {currentStats.downloads}
                     </Button>
                 </div>
             </div>
             <div className="h-120 py-3 w-full flex gap-3 flex-col">
-                <form
-                    onSubmit={handleComment}
-                    className="inline-flex w-full items-center gap-2 h-10"
-                >
+                <form onSubmit={handleComment} className="relative w-full h-10">
                     <Input
                         type="text"
                         value={commentMutation.text}
                         onChange={(e) => commentMutation.setText(e.target.value)}
-                        className="rounded-full p-3 text-lg"
+                        className="rounded-full py-4 pr-12 text-lg w-full h-full"
                         placeholder="What's going on..."
                     />
                     <Button
                         type="submit"
-                        className="rounded-full"
+                        className="absolute right-1 top-1/2 transform -translate-y-1/2 rounded-full size-8"
                         disabled={commentMutation.disabled}
                     >
-                        {isLoading ? <LucideLoader className="animate-spin" /> : <LucideSend />}
+                        <LucideSend />
                     </Button>
                 </form>
                 <ScrollArea className="flex-1 h-1/2 overflow-hidden py-3 flex flex-col gap-2">

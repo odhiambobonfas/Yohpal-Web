@@ -1,43 +1,46 @@
-"use client"
-import useSWR from "swr"
-
 import ProfileHeader from "@/components/custom/app/profile/ProfileHeader"
-import ProfileHeaderLoading from "@/components/custom/app/profile/ProfileHeaderLoading"
 import ProfileVideosSection from "@/components/custom/app/profile/ProfileVideoSection"
-import { useUser } from "@/hooks/user/use-user"
-import { useAuth } from "@/providers/Auth"
+import NotLoggedIn from "@/components/custom/app/video/following/NotLoggedIn"
+import { COOKIES } from "@/constants"
+import { logger } from "@/lib/logger"
+import { getUserProfile, getUserProfileStats } from "@/services/server/user"
+import { getUserProfileVideos } from "@/services/server/videos"
+import { cookies } from "next/headers"
 
-export default function Page() {
-    const { profile } = useAuth()
+export default async function Page() {
+    const cookieStore = await cookies()
+    const userId = cookieStore.get(COOKIES.User)?.value
 
-    const { getProfileStats, getProfileVideos } = useUser()
-    const { data: profileStats, isLoading: profileStatsLoading } = useSWR(
-        ["user-profile", profile?.uid],
-        () => getProfileStats(profile?.uid || ""),
-    )
+    if (!userId) return <NotLoggedIn />
 
-    const { data: profileVideos, isLoading: profileVideosLoading } = useSWR(
-        ["user-profile-videos", profile?.uid],
-        () => getProfileVideos(profile?.uid || ""),
-    )
-
-    const isLoading = profileStatsLoading || profileVideosLoading
+    const [stats, videos, user] = await Promise.all([
+        getUserProfileStats(userId),
+        getUserProfileVideos(userId),
+        getUserProfile(userId),
+    ])
 
     return (
         <div className="flex flex-col min-h-screen p-2 gap-2">
-            {isLoading ? (
-                <ProfileHeaderLoading />
-            ) : (
-                <ProfileHeader user={profile!} stats={profileStats} profileType="personal" />
-            )}
+            <ProfileHeader
+                user={user!}
+                stats={{
+                    followersStat: stats.followers,
+                    followingStat: stats.following,
+                    friendsStat: stats.friends,
+                    likedStat: stats.likes,
+                    uploadedStat: stats.uploadedVideos,
+                    viewedStat: stats.views,
+                }}
+                profileType="personal"
+            />
             <ProfileVideosSection
                 profileType="personal"
-                loading={isLoading}
+                loading={false}
                 videos={{
-                    uploads: profileVideos?.uploaded,
-                    bookmarked: profileVideos?.bookmarked,
-                    history: profileVideos?.watched,
-                    liked: profileVideos?.liked,
+                    uploads: videos.uploadedVideo,
+                    bookmarked: videos.bookmarkedVideos,
+                    history: videos.watchedVideos,
+                    liked: videos.likedVideos,
                 }}
             />
         </div>

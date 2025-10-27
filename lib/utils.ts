@@ -66,8 +66,28 @@ function formatStat(num: number) {
     return num.toString()
 }
 
+function flattenObject<T extends object>(raw: T): object {
+    const result: Record<string, unknown> = {}
+
+    function flatten(obj: object, prefix = ""): void {
+        Object.entries(obj).forEach(([key, value]) => {
+            const newKey = prefix ? `${prefix}.${key}` : key
+
+            if (value !== null && typeof value === "object" && !Array.isArray(value)) {
+                flatten(value as object, newKey)
+            } else {
+                result[newKey] = value
+            }
+        })
+    }
+
+    flatten(raw)
+    return result as object
+}
+
 export {
     cn,
+    flattenObject,
     formatStat,
     formatTime,
     getError,

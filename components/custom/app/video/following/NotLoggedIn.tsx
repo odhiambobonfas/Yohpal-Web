@@ -1,22 +1,28 @@
 "use client"
 
 import AppAlert from "@/components/custom/app/AppAlert"
-import { useAuth } from "@/providers/Auth"
+import { useEmailAuth } from "@/hooks/auth/use-email-auth"
 import { useRouter } from "next/navigation"
 
 export default function NotLoggedIn() {
-    const { isAuthenticated } = useAuth()
+    const { logOut } = useEmailAuth()
     const router = useRouter()
+
+    const handleLoginAction = async () => {
+        await logOut()
+        router.push("/auth/login")
+    }
+
     return (
         <AppAlert
-            isOpen={!isAuthenticated}
+            isOpen
             type="info"
             title="Logged Out"
             description="We can't show you your following feed just yet"
             cancelText="Go back"
             onClose={router.back}
             actionText="Login"
-            onAction={() => router.push("/auth/login")}
+            onAction={handleLoginAction}
         />
     )
 }

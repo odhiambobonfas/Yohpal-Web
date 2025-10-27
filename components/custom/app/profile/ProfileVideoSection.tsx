@@ -12,7 +12,6 @@ import {
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 
-import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { VideoWithStats } from "@/types/videos"
@@ -154,15 +153,18 @@ function ProfileNoVideos() {
 
 function VideoStats({ video }: { video: VideoWithStats }) {
     return (
-        <div className="flex justify-around absolute bottom-2 w-full">
-            <Button className="bg-transparent">
-                <LucideHeart />
-                <span>{video.likes.length}</span>
-            </Button>
-            <Button className="bg-transparent">
-                <LucideEye />
-                <span>{video.views.length}</span>
-            </Button>
+        <div>
+            <div className="absolute bottom-0 w-full h-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex justify-center items-end gap-2 px-4 py-3"></div>
+            <div className="flex justify-around absolute bottom-2 w-full z-10">
+                <div className="text-slate-200 text-xs bg-transparent size-10 flex items-center justify-center flex-col">
+                    <LucideHeart className="size-5" />
+                    <span>{video.likesCount || 0}</span>
+                </div>
+                <div className="text-slate-100 text-xs bg-transparent size-10 flex items-center justify-center flex-col">
+                    <LucideEye className="size-5" />
+                    <span>{video.viewsCount || 0}</span>
+                </div>
+            </div>
         </div>
     )
 }

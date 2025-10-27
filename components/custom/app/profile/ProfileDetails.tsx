@@ -1,3 +1,4 @@
+"use client"
 import { AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -14,24 +15,32 @@ export default function ProfileDetails({
     profileType,
     userId,
 }: {
-    view: "followers" | "following"
+    view: "followers" | "following" | "friends"
     profileType: "personal" | "public"
     userId: string | undefined
 }) {
-    const { getFollowersProfile, getFollowingProfile } = useUser()
-
-    const getFF = (userId: string) =>
-        view === "followers" ? getFollowersProfile(userId) : getFollowingProfile(userId)
+    const { getFollowersProfile, getFollowingProfile, getFriendsProfile } = useUser()
+    const getFF = (userId: string) => {
+        if (view === "followers") return getFollowersProfile(userId)
+        if (view === "following") return getFollowingProfile(userId)
+        if (view === "friends") return getFriendsProfile(userId)
+    }
+    // view === "followers" ? getFollowersProfile(userId) : view === "following" ? getFollowingProfile(userId) :
     const { data, isLoading } = useSWR(["user-ff-profile", view, profileType, userId], () =>
         getFF(userId || ""),
     )
 
+    const viewTitle = () => {
+        if (view === "followers") return "Followers"
+        if (view === "following") return "Followers"
+        if (view === "friends") return "Friends"
+    }
     return (
         <>
             <DialogTitle>
-                {view === "followers" ? "Followers" : "Following"} ({data?.length})
+                {viewTitle()} ({data?.length})
             </DialogTitle>
-            <ScrollArea className="h-96">
+            <ScrollArea className="max-h-96">
                 {isLoading && (
                     <>
                         <UserPreviewSkeleton />

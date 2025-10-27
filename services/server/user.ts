@@ -24,10 +24,11 @@ export const getUserProfile = async (userId: string) => {
 
 export const getUserProfileStats = async (userId: string) => {
     return withCache(async () => {
-        const [followers, following, uploadedVideos, views, likes] = await Promise.all([
+        const [followers, following, uploadedVideos, friends, views, likes] = await Promise.all([
             getFollowersCount(userId),
             getFollowingCount(userId, undefined),
             getUserVideoUploads(userId, undefined, undefined),
+            getFriendsCount(userId, undefined),
             onlyProd(() => getViewsCount(userId), []),
             onlyProd(() => getLikedCount(userId), []),
         ])
@@ -35,10 +36,26 @@ export const getUserProfileStats = async (userId: string) => {
             followers: followers,
             following: following.length,
             uploadedVideos: uploadedVideos.length,
+            friends: friends.length,
             views: views.length,
             likes: likes.length,
         }
     }, `user:profile:stats:${userId}`)
+}
+
+export const getFriendsCount = async (userId: string, limit: number | undefined) => {
+    const friendsFilter = async () => {
+        const [followers, following] = await Promise.all([
+            getFollowersCount(userId),
+            getFollowingCount(userId, limit),
+        ])
+
+        const followerSet = new Set(followers)
+        const friends = following.filter((uid) => followerSet.has(uid))
+        return friends
+    }
+
+    return withCache(friendsFilter, `user:friends:${userId}`)
 }
 
 export const getFollowingCount = async (userId: string, limit: number | undefined) => {

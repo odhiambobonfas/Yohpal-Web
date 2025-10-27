@@ -24,9 +24,9 @@ export default async function Home({
 
     const blockFiltered = filterBlocked(content!.videos, blockedUsers)
 
-    const LIMIT = Math.min(PROMOTED_VIDEOS_LIMIT, blockFiltered.length / 2)
+    const LIMIT = Math.min(PROMOTED_VIDEOS_LIMIT, blockFiltered.length / 2) || 3
 
-    const promoted = await getPromotedVideosAction(loggedInUserId, LIMIT)
+    const promoted = await getPromotedVideosAction(loggedInUserId, LIMIT, undefined)
 
     return (
         <PlayerCanvas
