@@ -1,7 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
 
-import FriendsDialog from "@/app/(yohpal)/friends/page"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
@@ -12,8 +11,9 @@ import { LucideUserMinus2, LucideUserPlus2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import AppAlert from "../AppAlert"
+import FriendsDialog from "./Friends"
 import ProfileDetails from "./ProfileDetails"
-interface ProfileHeaderProps { 
+interface ProfileHeaderProps {
     user: YPUser | null
     stats:
         | {
@@ -205,7 +205,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                             <DialogTrigger>
                                 <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
                                     <span className="text-sm md:text-base">
-                                        {stats?.friendsStat}
+                                        {stats?.friendsStat ||0}
                                     </span>
                                     <span className="text-[10px] md:text-xs">Friends</span>
                                 </div>

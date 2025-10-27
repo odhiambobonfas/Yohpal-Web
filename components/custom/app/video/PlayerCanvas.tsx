@@ -388,7 +388,6 @@ export default function PlayerCanvas({
                             handleFollowToggle={() =>
                                 videoHandlers.handleFollowToggle(activeVideo.userId)
                             }
-                            isLoading={isLoading}
                             error={videoHandlers.error}
                             currentStats={currentStats}
                             userFollowed={currentStats.isFollowing}
@@ -414,7 +413,6 @@ export default function PlayerCanvas({
                                 handleFollowToggle={() =>
                                     videoHandlers.handleFollowToggle(activeVideo.userId)
                                 }
-                                isLoading={isLoading}
                                 error={videoHandlers.error}
                                 currentStats={currentStats}
                                 userFollowed={currentStats.isFollowing}

@@ -89,7 +89,6 @@ export interface InteractionMutationProps {
     handleCommentDelete: (commentId: string, videoId: string) => void
     handleCommentLikeToggle: (commentId: string, videoId: string, wasLiked: boolean) => void
 
-    isLoading: boolean
     error: string | null
 
     currentStats: {

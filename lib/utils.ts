@@ -66,7 +66,7 @@ function formatStat(num: number) {
     return num.toString()
 }
 
-function flattenObject<T extends object>(raw: T): Record<string, unknown> {
+function flattenObject<T extends object>(raw: T): object {
     const result: Record<string, unknown> = {}
 
     function flatten(obj: object, prefix = ""): void {
@@ -82,7 +82,7 @@ function flattenObject<T extends object>(raw: T): Record<string, unknown> {
     }
 
     flatten(raw)
-    return result
+    return result as object
 }
 
 export {

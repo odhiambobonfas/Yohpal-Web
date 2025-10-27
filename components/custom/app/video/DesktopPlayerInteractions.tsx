@@ -36,7 +36,6 @@ export default function DesktopPlayerInteractions({
     handleComment,
     handleCommentDelete,
     handleCommentLikeToggle,
-    isLoading,
     currentStats,
     userFollowed,
     ownerProfilePicture,
@@ -135,7 +134,6 @@ export default function DesktopPlayerInteractions({
                         variant={"ghost"}
                         className="text-foreground"
                         onClick={handleLikeToggle}
-                        disabled={isLoading}
                     >
                         <LucideHeart
                             className={currentStats.userLiked ? "text-red-500 fill-current" : ""}
@@ -152,7 +150,6 @@ export default function DesktopPlayerInteractions({
                             currentStats.userBookmarked ? "text-blue-500" : "text-foreground"
                         }
                         onClick={handleBookmark}
-                        disabled={isLoading}
                     >
                         <LucideBookmark
                             className={currentStats.userBookmarked ? "fill-current" : ""}
@@ -160,18 +157,13 @@ export default function DesktopPlayerInteractions({
                         {currentStats.bookmarks}
                     </Button>
                     <ResponsiveShareDialog videoId={video.id} onAction={handleShare}>
-                        <Button variant={"ghost"} className="text-foreground" disabled={isLoading}>
+                        <Button variant={"ghost"} className="text-foreground">
                             <LucideShare2 />
                             {currentStats.shares}
                         </Button>
                     </ResponsiveShareDialog>
 
-                    <Button
-                        variant={"ghost"}
-                        className="text-foreground"
-                        onClick={handleDownload}
-                        disabled={isLoading}
-                    >
+                    <Button variant={"ghost"} className="text-foreground" onClick={handleDownload}>
                         <LucideDownload /> {currentStats.downloads}
                     </Button>
                 </div>

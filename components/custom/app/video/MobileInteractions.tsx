@@ -29,7 +29,6 @@ export default function MobileInteractions({
     handleComment,
     handleCommentDelete,
     handleCommentLikeToggle,
-    isLoading,
     currentStats,
     ownerProfilePicture,
     video,
@@ -86,7 +85,6 @@ export default function MobileInteractions({
 
                 <CommentDrawer
                     isDisabled={!video.allowComments || commentMutation.disabled}
-                    isLoading={isLoading}
                     comments={currentStats.comments}
                     handleComment={handleComment}
                     handleCommentDelete={handleCommentDelete}
