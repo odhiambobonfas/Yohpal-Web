@@ -31,7 +31,7 @@ export default function ProfileDetails({
             <DialogTitle>
                 {view === "followers" ? "Followers" : "Following"} ({data?.length})
             </DialogTitle>
-            <ScrollArea className="h-96">
+            <ScrollArea className="max-h-96">
                 {isLoading && (
                     <>
                         <UserPreviewSkeleton />

@@ -27,6 +27,7 @@ export default async function Page() {
                 stats={{
                     followersStat: stats.followers,
                     followingStat: stats.following,
+                    friendsStat: stats.friends,
                     likedStat: stats.likes,
                     uploadedStat: stats.uploadedVideos,
                     viewedStat: stats.views,

@@ -205,13 +205,13 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                             <DialogTrigger>
                                 <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
                                     <span className="text-sm md:text-base">
-                                        {stats?.friendsStat ||0}
+                                        {stats?.friendsStat || 0}
                                     </span>
                                     <span className="text-[10px] md:text-xs">Friends</span>
                                 </div>
                             </DialogTrigger>
                             <DialogContent>
-                                <FriendsDialog />
+                                <FriendsDialog userId={user!.uid}/>
                             </DialogContent>
                         </Dialog>
 

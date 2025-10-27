@@ -50,7 +50,9 @@ export default function CommentCard({
                         <AvatarFallback>{comment.username[0]}</AvatarFallback>
                     </Avatar>
                     <Link
-                        href={`/user/${comment.userId}`}
+                        href={
+                            comment.userId === profile?.uid ? `/profile` : `/user/${comment.userId}`
+                        }
                         prefetch={active ? null : false}
                         onMouseEnter={() => setActive(true)}
                     >
