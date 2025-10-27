@@ -11,7 +11,6 @@ import { LucideUserMinus2, LucideUserPlus2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import AppAlert from "../AppAlert"
-import FriendsDialog from "./Friends"
 import ProfileDetails from "./ProfileDetails"
 interface ProfileHeaderProps {
     user: YPUser | null
@@ -211,7 +210,11 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                                 </div>
                             </DialogTrigger>
                             <DialogContent>
-                                <FriendsDialog userId={user!.uid} />
+                                <ProfileDetails
+                                    view="friends"
+                                    profileType={profileType}
+                                    userId={user!.uid}
+                                />
                             </DialogContent>
                         </Dialog>
 

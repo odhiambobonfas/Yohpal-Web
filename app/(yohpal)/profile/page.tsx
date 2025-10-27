@@ -18,7 +18,6 @@ export default async function Page() {
         getUserProfileVideos(userId),
         getUserProfile(userId),
     ])
-    logger.debug("DD: ", videos)
 
     return (
         <div className="flex flex-col min-h-screen p-2 gap-2">
