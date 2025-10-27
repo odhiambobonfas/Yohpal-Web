@@ -63,7 +63,7 @@ export default function CommentCard({
                     </span>
                 </div>
                 <div className="flex flex-col">
-                    <p>{comment.msg}</p>
+                    <p className="wrap-anywhere">{comment.msg}</p>
                     <div className="flex flex-row gap-3 ml-auto">
                         <Button
                             className="flex flex-row"
