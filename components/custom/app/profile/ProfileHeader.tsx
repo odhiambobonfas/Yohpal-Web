@@ -160,14 +160,14 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                     )}
 
                     {/* Stats */}
-                    <div className="flex flex-row mt-2 gap-2 md:gap-4">
+                    <div className="flex flex-row mt-2 gap-2 md:gap-4 cursor-pointer">
                         <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
                             <span className="text-sm md:text-base">{stats?.uploadedStat}</span>
                             <span className="text-[10px] md:text-xs">Posts</span>
                         </div>
                         <Dialog>
                             <DialogTrigger>
-                                <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                                <div className="bg-accent cursor-pointer py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
                                     <span className="text-sm md:text-base">
                                         {stats?.followersStat?.length}
                                     </span>
@@ -185,7 +185,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
 
                         <Dialog>
                             <DialogTrigger>
-                                <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                                <div className="bg-accent cursor-pointer py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
                                     <span className="text-sm md:text-base">
                                         {stats?.followingStat}
                                     </span>
@@ -203,7 +203,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
 
                         <Dialog>
                             <DialogTrigger>
-                                <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
+                                <div className="bg-accent cursor-pointer py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
                                     <span className="text-sm md:text-base">
                                         {stats?.friendsStat || 0}
                                     </span>
@@ -211,7 +211,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                                 </div>
                             </DialogTrigger>
                             <DialogContent>
-                                <FriendsDialog userId={user!.uid}/>
+                                <FriendsDialog userId={user!.uid} />
                             </DialogContent>
                         </Dialog>
 
