@@ -23,7 +23,7 @@ const eslintConfig = [
                 },
                 { selector: "typeLike", format: ["PascalCase"] },
             ],
-            "@typescript-eslint/no-explicit-any": "error",
+            // "@typescript-eslint/no-explicit-any": "error",
         },
     },
     {

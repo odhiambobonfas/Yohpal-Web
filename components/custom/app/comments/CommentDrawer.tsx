@@ -25,13 +25,11 @@ interface CommentOperations {
 
     comments: VideoComment[]
     commentText: string
-    isLoading: boolean
     isDisabled: boolean
     children: React.ReactNode
 }
 export default function CommentDrawer({
     comments,
-    isLoading,
     isDisabled,
     handleComment,
     setCommentText,
