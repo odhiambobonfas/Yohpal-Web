@@ -27,15 +27,15 @@ import DesktopPlayerInteractions from "../video/DesktopPlayerInteractions"
 import MobileInteractions from "../video/MobileInteractions"
 import VideoPlayer from "../video/VideoPlayer"
 
-export default function FollowingCanvas({ promotedVideos }: { promotedVideos: VideoWithStats[] }) {
-    const swrConfig = {
-        revalidateOnFocus: false,
-        revalidateOnReconnect: true,
-        dedupingInterval: 6000,
-        errorRetryCount: 2,
-        revalidateOnMount: false,
-    }
+const swrConfig = {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
+    dedupingInterval: 6000,
+    errorRetryCount: 2,
+    revalidateOnMount: false,
+}
 
+export default function FollowingCanvas({ promotedVideos }: { promotedVideos: VideoWithStats[] }) {
     const router = useRouter()
     const parentRef = useRef<HTMLDivElement | null>(null)
     const isMobile = useIsMobile()
@@ -67,6 +67,10 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
         setActiveVideoId(currentVideoId)
     }, [promotedVideos])
 
+    const activeVideoIdx = feed.findIndex((v) => v.id === activeVideoId)
+    const activeVideo =
+        activeVideoIdx && activeVideoIdx >= 0 ? feed[activeVideoIdx] : promotedVideos[0]
+
     const estimateSize = () => parentRef.current?.clientHeight ?? 850
 
     const rowVirtualizer = useVirtualizer({
@@ -94,13 +98,6 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
         })
     }
 
-    const activeVideoIdx = feed.findIndex((v) => v.id === activeVideoId)
-    const activeVideo =
-        activeVideoIdx && activeVideoIdx >= 0
-            ? feed[activeVideoIdx]
-            : promotedVideos[activeVideoIdx]
-
-    logger.debug("activeVideo", activeVideoIdx)
     const { data: userExtra } = useSWR(
         ["user-extra", profile?.uid],
         async ([, uid]) => {
@@ -121,8 +118,35 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
         watchedVideos: userExtra?.[1],
     })
 
+    const virtualItems = rowVirtualizer.getVirtualItems()
+    useEffect(() => {
+        const rootEl = parentRef.current
+        if (!rootEl) return
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute("data-id")
+                        if (id && id !== activeVideoId) {
+                            setActiveVideoId(id)
+                            // videoHandlers.handleView()
+                        }
+                    }
+                })
+            },
+            { threshold: 0.6, root: rootEl },
+        )
+
+        const videoElements = rootEl.querySelectorAll("[data-id]")
+        videoElements.forEach((el) => observer.observe(el))
+
+        return () => observer.disconnect()
+    }, [virtualItems, activeVideoId, videoHandlers])
+
     const isLoading = videoHandlers.isLoading
     const currentStats = videoHandlers.handleGetCurrentStats()
+    logger.debug("Stats: ", currentStats)
 
     if (feedErr) {
         return (
@@ -138,13 +162,12 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
     return (
         <>
             <DebugWindow>
-                <p>All videos: {feed.length}</p>
                 <p>
-                    active {activeVideoIdx}/{feed.length}
+                    Active Video {activeVideoIdx + 1}/{feed.length}
                 </p>
                 <p>PromotedVideos: {promotedVideos.length}</p>
                 <p>ActiveVideoId: {activeVideo?.id} </p>
-                <p>ActiveVideoIdx: {activeVideoIdx}</p>
+                <p>Handlers Loading: {isLoading ? "y" : "n"}</p>
             </DebugWindow>
 
             <h1>Canvas</h1>
@@ -186,7 +209,6 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
                         >
                             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
                                 const video = feed[virtualRow.index]
-                                // const video = activeVideo
                                 return (
                                     <div
                                         key={video.id}
