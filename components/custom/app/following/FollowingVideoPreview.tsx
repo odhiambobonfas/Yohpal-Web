@@ -1,6 +1,7 @@
 "use client"
 
-import { VideoWithStats } from "@/types/videos"
+import { FOLLOWING_FEED_CURRENT_VID_KEY, FOLLOWING_FEED_KEY } from "@/constants"
+import { FollowingFeed, VideoWithStats } from "@/types/videos"
 import { LucideHeart } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -9,13 +10,13 @@ import { useCallback } from "react"
 interface VideoPreviewProps {
     video: VideoWithStats
     userId: string
-    feed: unknown
+    feed: FollowingFeed
 }
 
-export default function VideoPreview({ video, userId, feed }: VideoPreviewProps) {
+export default function FollowingVideoPreview({ video, userId, feed }: VideoPreviewProps) {
     const handleClick = useCallback(() => {
-        sessionStorage.setItem("feedData", JSON.stringify(feed))
-        sessionStorage.setItem("currentId", video.id)
+        sessionStorage.setItem(FOLLOWING_FEED_KEY, JSON.stringify(feed))
+        sessionStorage.setItem(FOLLOWING_FEED_CURRENT_VID_KEY, video.id)
     }, [feed, video.id])
 
     return (

@@ -1,4 +1,4 @@
-import VideoPreview from "@/components/custom/app/following/Following-VideoPreview"
+import FollowingVideoPreview from "@/components/custom/app/following/FollowingVideoPreview"
 import NotLoggedIn from "@/components/custom/app/video/following/NotLoggedIn"
 import DebugWindow from "@/components/custom/DebugWindow"
 import { COOKIES } from "@/constants"
@@ -28,7 +28,12 @@ export default async function Page() {
                 }}
             >
                 {videos.map((video) => (
-                    <VideoPreview key={video.id} video={video} userId={userId} feed={feed} />
+                    <FollowingVideoPreview
+                        key={video.id}
+                        video={video}
+                        userId={userId}
+                        feed={feed}
+                    />
                 ))}
             </div>
         </>

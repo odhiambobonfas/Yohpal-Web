@@ -1,5 +1,5 @@
 import { FOLLOWER_FOLLOWING_LIMIT } from "@/constants"
-import { VideoWithStats } from "@/types/videos"
+import { FollowingFeed, VideoWithStats } from "@/types/videos"
 import { getFollowingCount } from "./user"
 import { getUserVideoUploads } from "./videos"
 
@@ -16,13 +16,16 @@ export const getFollowingFeed = async (userId: string) => {
         followingIds.map(async (f) => {
             const vids = await getUserVideoUploads(f, undefined, FF_VIDEO_LIMIT)
             if (vids.length > 0) {
-                followingMeta.set(f, { lastDoc: vids[vids.length - 1].id, contentEnded: vids.length < FF_VIDEO_LIMIT ? true : false  })
+                followingMeta.set(f, {
+                    lastDoc: vids[vids.length - 1].id,
+                    contentEnded: vids.length < FF_VIDEO_LIMIT ? true : false,
+                })
             }
             videos.push(...vids)
         }),
     )
     return {
         videos: videos.sort((a, b) => b.timestamp.localeCompare(a.timestamp)),
-        followingMeta: followingMeta,
-    }
+        followingMeta: Object.fromEntries(followingMeta),
+    } as FollowingFeed
 }

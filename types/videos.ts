@@ -137,3 +137,13 @@ export interface VideoPlayerProps {
     autoScrollEnabled: boolean
     setAutoScrollEnabled: (val: boolean) => void
 }
+
+export interface FollowingFeed {
+    videos: VideoWithStats[]
+    followingMeta: {
+        [k: string]: {
+            contentEnded: boolean
+            lastDoc: string
+        }
+    }
+}
