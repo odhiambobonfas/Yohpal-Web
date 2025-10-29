@@ -80,6 +80,12 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
         overscan: 3,
     })
 
+    useEffect(() => {
+        rowVirtualizer.scrollToIndex(activeVideoIdx, {
+            behavior: "smooth",
+        })
+    }, [])
+
     function moveNext() {
         const currentIndex = feed.findIndex((v) => v.id === activeVideoId)
         const nextId = currentIndex + 1

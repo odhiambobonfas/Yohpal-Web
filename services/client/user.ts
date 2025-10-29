@@ -40,7 +40,11 @@ export async function getUserfollowing(userId: string, limit?: number) {
     const userFollowingDocs = await getDocs(q)
     if (userFollowingDocs.empty) return []
 
-    return userFollowingDocs.docs.map((f) => f.id)
+    return userFollowingDocs.docs
+        .map((f) => {
+            if (f.exists()) return f.id
+        })
+        .filter((v) => v !== undefined)
 }
 
 export async function getUserFriends(userId: string) {

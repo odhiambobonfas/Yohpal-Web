@@ -61,15 +61,14 @@ export const getFriendsCount = async (userId: string, limit: number | undefined)
 export const getFollowingCount = async (userId: string, limit: number | undefined) => {
     return withCache(
         async () => {
-            let query = db
+            const followingDoc = db
                 .collection("users")
                 .doc(userId)
                 .collection("following")
                 .doc("organic")
                 .collection("userIds")
-                .orderBy("timestamp", "desc")
 
-            if (limit) query = query.limit(limit)
+            const query = limit ? followingDoc.limit(limit) : followingDoc
 
             const followingDocs = await query.get()
             if (followingDocs.empty) return []
