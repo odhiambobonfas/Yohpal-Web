@@ -56,14 +56,14 @@ export async function getVideos(
                 comments: [],
                 bookmarks: [],
             })
-            return {
+            return flattenObject({
                 id: v.id,
                 ...videoData,
                 thumbnail: recoverThumbnail(videoData.thumbnail),
                 videoUrl: replaceWithCDN(videoData.videoUrl),
                 timestamp: serializeTimestamp(videoData.timestamp),
                 ...videoStats,
-            }
+            })
         }),
     )
 
@@ -108,14 +108,14 @@ async function getVideosFromProfile(
             const videoStats = await getVideoStats(v.id, loggedInUserId)
             const videoData = v.data()
             delete videoData["campaignMeta"]
-            return {
+            return flattenObject({
                 id: v.id,
                 ...videoData,
                 videoUrl: replaceWithCDN(videoData.videoUrl),
                 thumbnail: recoverThumbnail(videoData.thumbnail),
                 timestamp: serializeTimestamp(videoData.timestamp),
                 ...videoStats,
-            } as VideoWithStats
+            }) as VideoWithStats
         }),
     )
 }
@@ -143,11 +143,11 @@ export async function getVideo(videoId: string, userId: string | undefined) {
 
     const videoStats = await getVideoStats(videoId, userId)
 
-    return {
+    return flattenObject({
         id: videoDoc.id,
         ...videoDoc.data(),
         ...videoStats,
-    } as unknown as VideoWithStats
+    }) as unknown as VideoWithStats
 }
 
 export async function getUserUploadedVideos(userId: string) {
