@@ -24,7 +24,7 @@ export default async function Page() {
                 className="grid gap-4 p-2"
                 style={{
                     gridTemplateColumns:
-                        "repeat(auto-fit, minmax(max(calc(100% / 6 - 1rem), 200px), 1fr))",
+                        "repeat(auto-fit, minmax(clamp(200px, 100% / 6, 50%), 1fr))",
                 }}
             >
                 {videos.map((video) => (

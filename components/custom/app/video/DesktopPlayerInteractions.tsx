@@ -121,7 +121,7 @@ export default function DesktopPlayerInteractions({
                     <div className="inline-flex gap-2">
                         {video.tags &&
                             Array.isArray(video.tags) &&
-                            video.tags.map((tag, idx) => <span key={idx}>{tag}</span>)}
+                            video.tags.map((t, idx) => <span key={idx}>{t}</span>)}
                     </div>
                 </CardContent>
             </Card>
