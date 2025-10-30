@@ -48,6 +48,7 @@ export default function Page() {
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
     const [country, setCountry] = useState("")
+    const [refererCode, setRefererCode] = useState("")
     const [usernameSuggestions, setUsernameSuggestions] = useState<string[]>([])
     const { verifyEmail, loading: verificationEmailLoading } = useEmailAuth()
     const {
@@ -66,6 +67,7 @@ export default function Page() {
             setLastName((prev) => prev || profile.lastName)
             setSelected((prev) => (prev.length ? prev : (profile?.contentPreferences ?? [])))
             setCountry((prev) => prev || profile.Country)
+            setRefererCode((prev) => prev || profile.refererCode)
         }
     }, [profile])
 
@@ -116,6 +118,7 @@ export default function Page() {
             firstName,
             lastName,
             country,
+            refererCode,
             userName: safeUserName,
             preferences: selected,
         })
@@ -252,6 +255,19 @@ export default function Page() {
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="refererCode" className="text-muted-foreground">
+                                Refferer Code
+                            </Label>
+                            <Input
+                                id="referrerCode"
+                                type="text"
+                                value={refererCode}
+                                onChange={(e) => setRefererCode(e.target.value)}
+                                placeholder="referer Code (optional)"
+                                disabled={!!profile?.refererCode}
+                            />
                         </div>
                     </div>
                 </CardContent>
