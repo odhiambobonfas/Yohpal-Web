@@ -1,6 +1,8 @@
 import { doc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore"
 
+import { DEFAULT_REFERER_CODE } from "@/constants"
 import { db } from "@/lib/firebase/firebase.browser"
+import { logger } from "@/lib/logger"
 
 export async function createUser(userId: string) {
     const newUserRef = doc(db, "users", userId)
@@ -18,16 +20,28 @@ export async function updateProfile({
     firstName,
     lastName,
     country,
+    refererCode,
     userId,
 }: {
     userName: string
     firstName: string
     lastName: string
-    country: string
+    country?: string
+    refererCode: string
     userId: string
 }) {
     const userRef = doc(db, "users", userId)
-    await updateDoc(userRef, { firstName, lastName, userName, country })
+    try {
+        await updateDoc(userRef, {
+            firstName,
+            lastName,
+            userName,
+            country: country ?? "",
+            refererCode: refererCode ?? DEFAULT_REFERER_CODE,
+        })
+    } catch (error) {
+        logger.debug("error updating doc", error)
+    }
 }
 
 export async function updatePreferences(preferences: string[], userId: string) {
