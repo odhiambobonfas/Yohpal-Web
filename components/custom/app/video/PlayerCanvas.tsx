@@ -19,8 +19,8 @@ import { Button } from "@/components/ui/button"
 import {
     DEFAULT_PROFILE,
     DEFAULT_PROMOTED_VIDEO_BIAS,
+    FETCH_TRIGGER_OFFSET,
     PROMOTED_VIDEOS_LIMIT,
-    VIDEO_LIMIT,
 } from "@/constants"
 import useVideoHandlers from "@/hooks/videos/use-video-handlers"
 import { filterBlocked } from "@/lib/filter-blocked"
@@ -31,8 +31,6 @@ import { LucideChevronDown, LucideChevronUp } from "lucide-react"
 import DesktopPlayerInteractions from "./DesktopPlayerInteractions"
 import InteractionsLoginPrompt from "./InteractionsLoginPrompt"
 import VideoPlayer from "./VideoPlayer"
-
-const FETCH_TRIGGER_OFFSET = Math.floor(VIDEO_LIMIT * 0.75)
 
 const swrConfig = {
     revalidateOnFocus: false,

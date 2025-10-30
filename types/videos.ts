@@ -140,10 +140,11 @@ export interface VideoPlayerProps {
 
 export interface FollowingFeed {
     videos: VideoWithStats[]
-    followingMeta: {
-        [k: string]: {
-            contentEnded: boolean
-            lastDoc: string
-        }
+    followingMeta: FollowingFeedMeta
+}
+export interface FollowingFeedMeta {
+    [k: string]: {
+        contentEnded: boolean
+        lastDoc: string
     }
 }

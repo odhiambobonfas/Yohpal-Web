@@ -76,6 +76,5 @@ export default function useVideo(userId: string | undefined) {
         singleVideo,
         getClientVideoStats,
         getClientPaginatedVideos,
-        // randomizeVideos,
     }
 }
