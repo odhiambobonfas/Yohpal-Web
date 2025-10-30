@@ -109,19 +109,23 @@ export default function DesktopPlayerInteractions({
                             </Button>
                         )}
                     </div>
-                    <span className="text-sm text-muted-foreground font-semibold">
-                        {video.title || "Yohpal monetizing Creativity"}
-                    </span>
+                    <div className="flex flex-col">
+                        <span className="text-sm text-muted-foreground font-semibold">
+                            {video.title || "Yohpal monetizing Creativity"}
+                        </span>
 
-                    {video.caption && (
-                        <div className="py-2 text-foreground text-lg max-h-24 overflow-y-auto">
-                            {video.caption}
+                        {video.caption && (
+                            <div className="py-2 text-foreground text-lg max-h-24 overflow-y-auto">
+                                {video.caption}
+                            </div>
+                        )}
+                        <div className="inline-flex gap-2">
+                            {video.tags &&
+                                Array.isArray(video.tags) &&
+                                video.tags.map((tag, idx) =>
+                                    tag !== "[]" ? <span key={idx}>{tag}</span> : null,
+                                )}
                         </div>
-                    )}
-                    <div className="inline-flex gap-2">
-                        {video.tags &&
-                            Array.isArray(video.tags) &&
-                            video.tags.map((t, idx) => <span key={idx}>{t}</span>)}
                     </div>
                 </CardContent>
             </Card>

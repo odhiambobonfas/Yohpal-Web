@@ -6,6 +6,7 @@ const OLD_URL = "https://firebasestorage.googleapis.com/v0/b/yohlab.firebasestor
 const FOLLOWER_FOLLOWING_LIMIT = 30
 const CACHE_TTL = 3600
 const DEFAULT_PROMOTED_VIDEO_BIAS = 4
+const DEFAULT_REFERER_CODE = "rjjYT4peGQ"
 
 const COOKIES = {
     Session: "__auth",
@@ -54,6 +55,7 @@ export {
     DELETE_IDENT,
     FETCH_TRIGGER_OFFSET,
     FOLLOWER_FOLLOWING_LIMIT,
+    DEFAULT_REFERER_CODE,
     FOLLOWING_FEED_CURRENT_VID_KEY,
     FOLLOWING_FEED_KEY,
     INTERESTS,
