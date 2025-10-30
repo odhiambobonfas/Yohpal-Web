@@ -1,13 +1,10 @@
+import FollowingVideoPreview from "@/components/custom/app/following/FollowingVideoPreview"
 import NotLoggedIn from "@/components/custom/app/video/following/NotLoggedIn"
 import DebugWindow from "@/components/custom/DebugWindow"
 import { COOKIES } from "@/constants"
 import { randomizeVideos } from "@/lib/randomize-videos"
 import { getFollowingFeed } from "@/services/server/following-feed"
-import { VideoWithStats } from "@/types/videos"
-import { LucideHeart } from "lucide-react"
 import { cookies } from "next/headers"
-import Image from "next/image"
-import Link from "next/link"
 
 export default async function Page() {
     const cookieStore = await cookies()
@@ -31,38 +28,14 @@ export default async function Page() {
                 }}
             >
                 {videos.map((video) => (
-                    <VideoPreview key={video.id} video={video} userId={userId} />
+                    <FollowingVideoPreview
+                        key={video.id}
+                        video={video}
+                        userId={userId}
+                        feed={feed}
+                    />
                 ))}
             </div>
         </>
-    )
-}
-
-function VideoPreview({ video, userId }: { video: VideoWithStats; userId: string }) {
-    return (
-        <Link
-            href={`/?u=${video.userId}&v=${video.id}`}
-            key={video.id}
-            className="h-70 relative w-full bg-secondary/40 shadow-md rounded-lg flex flex-col overflow-hidden"
-        >
-            <div className="h-full w-full bg-slate-100/10">
-                <Image
-                    src={video.thumbnail}
-                    className="flex bg-slate-100/10 h-full w-full object-cover"
-                    alt="videoId"
-                    width={100}
-                    height={100}
-                />
-            </div>
-            <div className="absolute text-slate-200 bottom-0 w-full h-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex justify-between items-end gap-2 px-4 py-3">
-                {video.userName}
-                <div className=" inline-flex gap-1 text-sm items-center">
-                    <LucideHeart
-                        className={`size-4 ${video.likes.includes(userId) ? "text-red-500 fill-current" : ""}`}
-                    />{" "}
-                    {video.likes.length}
-                </div>
-            </div>
-        </Link>
     )
 }

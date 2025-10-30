@@ -39,6 +39,9 @@ const DEBUG_BUILD = process.env.NODE_ENV === "development"
 const VIDEO_LIMIT = DEBUG_BUILD ? 10 : 30
 const PROMOTED_VIDEOS_LIMIT = Math.ceil(VIDEO_LIMIT / 4)
 
+const FOLLOWING_FEED_KEY = "followingFeedVideos"
+const FOLLOWING_FEED_CURRENT_VID_KEY = "currentFollowingVideoId"
+
 export {
     CACHE_TTL,
     CDN_URL,
@@ -49,6 +52,8 @@ export {
     DEFAULT_THUMBNAIL,
     DELETE_IDENT,
     FOLLOWER_FOLLOWING_LIMIT,
+    FOLLOWING_FEED_CURRENT_VID_KEY,
+    FOLLOWING_FEED_KEY,
     INTERESTS,
     OLD_URL,
     PROMOTED_VIDEOS_LIMIT,

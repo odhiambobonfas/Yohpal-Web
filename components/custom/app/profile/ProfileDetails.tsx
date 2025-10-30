@@ -25,14 +25,13 @@ export default function ProfileDetails({
         if (view === "following") return getFollowingProfile(userId)
         if (view === "friends") return getFriendsProfile(userId)
     }
-    // view === "followers" ? getFollowersProfile(userId) : view === "following" ? getFollowingProfile(userId) :
     const { data, isLoading } = useSWR(["user-ff-profile", view, profileType, userId], () =>
         getFF(userId || ""),
     )
 
     const viewTitle = () => {
         if (view === "followers") return "Followers"
-        if (view === "following") return "Followers"
+        if (view === "following") return "Following"
         if (view === "friends") return "Friends"
     }
     return (

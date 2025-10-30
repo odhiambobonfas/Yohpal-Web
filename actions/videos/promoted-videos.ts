@@ -3,7 +3,7 @@
 import { DEFAULT_THUMBNAIL } from "@/constants"
 import { onlyProd } from "@/lib/dev"
 import { db } from "@/lib/firebase/firebase.admin"
-import { replaceWithCDN, serializeTimestamp } from "@/lib/utils"
+import { flattenObject, replaceWithCDN, serializeTimestamp } from "@/lib/utils"
 import { getVideoStats } from "@/services/server/videos"
 import { VideoWithStats } from "@/types/videos"
 
@@ -14,8 +14,12 @@ async function getPromotedVideosAction(
     limit: number,
     lastPromotedDocId?: string,
 ) {
+    const safeLimit = limit ?? 3
     try {
-        let query = videoRef.where("promoted", "==", true).orderBy("timestamp", "desc").limit(limit)
+        let query = videoRef
+            .where("promoted", "==", true)
+            .orderBy("timestamp", "desc")
+            .limit(safeLimit)
 
         // Apply pagination if we have a lastPromotedDocId
         if (lastPromotedDocId) {
@@ -31,7 +35,6 @@ async function getPromotedVideosAction(
         const promotedVideos = await Promise.all(
             promotedSnapshot.docs.map(async (doc) => {
                 const data = doc.data()
-                delete data["campaignMeta"]
 
                 const stats = await onlyProd(() => getVideoStats(doc.id, loggedInUserId), {
                     shares: [],
@@ -42,14 +45,14 @@ async function getPromotedVideosAction(
                     downloads: [],
                 })
 
-                return {
+                return flattenObject({
                     id: doc.id,
                     ...data,
                     videoUrl: replaceWithCDN(data.videoUrl),
                     thumbnail: replaceWithCDN(data.thumbnail) || DEFAULT_THUMBNAIL,
                     timestamp: serializeTimestamp(data.timestamp),
                     ...stats,
-                } as VideoWithStats
+                }) as VideoWithStats
             }),
         )
 

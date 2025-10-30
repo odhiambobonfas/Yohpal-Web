@@ -35,12 +35,14 @@ export default function useOptimisticVideo(
             followings?.includes(activeVideo.userId) ??
             false
         const userLiked =
-            optimist?.likes?.liked ?? activeVideo.likes.includes(userId || "") ?? false
+            optimist?.likes?.liked ?? activeVideo?.likes?.includes(userId || "") ?? false
         const userBookmarked =
-            optimist?.bookmarks?.bookmarked ?? activeVideo.bookmarks.includes(userId || "") ?? false
+            optimist?.bookmarks?.bookmarked ??
+            activeVideo?.bookmarks?.includes(userId || "") ??
+            false
 
         const optimisticComments = optimist?.comments ?? []
-        const realComments = activeVideo.comments ?? []
+        const realComments = activeVideo?.comments ?? []
 
         // Separate new optimistic comments from updates to real comments
         const newComments: VideoComment[] = []
@@ -64,11 +66,11 @@ export default function useOptimisticVideo(
         const finalComments = [...newComments, ...updatedRealComments]
 
         return {
-            likes: optimist?.likes?.count ?? activeVideo.likes.length ?? 0,
-            bookmarks: optimist?.bookmarks?.count ?? activeVideo.bookmarks.length ?? 0,
-            shares: optimist?.shares ?? activeVideo.shares.length ?? 0,
-            views: optimist?.views ?? activeVideo.views.length ?? 0,
-            downloads: optimist?.downloads ?? activeVideo.downloads.length ?? 0,
+            likes: optimist?.likes?.count ?? activeVideo?.likes?.length ?? 0,
+            bookmarks: optimist?.bookmarks?.count ?? activeVideo?.bookmarks?.length ?? 0,
+            shares: optimist?.shares ?? activeVideo?.shares?.length ?? 0,
+            views: optimist?.views ?? activeVideo?.views?.length ?? 0,
+            downloads: optimist?.downloads ?? activeVideo?.downloads?.length ?? 0,
             comments: finalComments,
             userBookmarked,
             userLiked,
