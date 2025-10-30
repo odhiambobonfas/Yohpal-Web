@@ -76,6 +76,7 @@ export interface CommentActionProps {
 export interface VideoInteraction {
     userId: string
     videoId: string
+    promoted: boolean
 }
 
 export interface InteractionMutationProps {

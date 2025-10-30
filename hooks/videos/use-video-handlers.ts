@@ -58,7 +58,7 @@ export default function useVideoHandlers({
     const handleView = async () => {
         if (isAuthenticated) {
             updateOptimisticView(activeVideo.id, profile?.uid)
-            await addView(activeVideo.id, profile?.uid)
+            await addView(activeVideo.id, profile?.uid, activeVideo.promoted)
         }
     }
 
@@ -81,7 +81,7 @@ export default function useVideoHandlers({
 
         const currentStats = getCurrentStats()
         updateOptimisticLike(activeVideo.id)
-        await toggleLike(activeVideo.id, currentStats.userLiked)
+        await toggleLike(activeVideo.id, currentStats.userLiked, activeVideo.promoted)
     }
 
     const handleBookmark = async () => {
@@ -92,7 +92,7 @@ export default function useVideoHandlers({
 
         const currentStats = getCurrentStats()
         updateOptimisticBookmark(activeVideo.id)
-        await toggleBookmark(activeVideo.id, currentStats.userBookmarked)
+        await toggleBookmark(activeVideo.id, currentStats.userBookmarked, activeVideo.promoted)
     }
 
     const handleShare = async () => {
@@ -102,7 +102,7 @@ export default function useVideoHandlers({
         }
 
         updateOptimisticShare(activeVideo.id)
-        await shareVideo(activeVideo.id)
+        await shareVideo(activeVideo.id, activeVideo.promoted)
     }
 
     const handleDownload = async () => {
@@ -116,7 +116,7 @@ export default function useVideoHandlers({
         link.click()
         document.body.removeChild(link)
 
-        await downloadVideo(videoId)
+        await downloadVideo(videoId, activeVideo.promoted)
     }
 
     const handleComment = async (e: React.FormEvent) => {

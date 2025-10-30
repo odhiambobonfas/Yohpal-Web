@@ -83,13 +83,13 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
         const nextBatch = await getFollowingVideosBatch(followingMeta)
         if (nextBatch.videos.length !== 0) {
             const existingIds = new Set(feed.map((v) => v.id))
-            let uniqueNewVideos = nextBatch.videos.filter((v) => !existingIds.has(v.id))
+            const uniqueNewVideos = nextBatch.videos.filter((v) => !existingIds.has(v.id))
 
             setFeed((prev) => [...prev, ...uniqueNewVideos])
         }
         setFollowingMeta(nextBatch.followingMeta)
         setIsFetchingNext(false)
-    }, [followingMeta, getFollowingVideosBatch])
+    }, [followingMeta, getFollowingVideosBatch, feed])
 
     useEffect(() => {
         if (loading || isFetchingNext) return
@@ -158,7 +158,7 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
                         const id = entry.target.getAttribute("data-id")
                         if (id && id !== activeVideoId) {
                             setActiveVideoId(id)
-                            // videoHandlers.handleView()
+                            videoHandlers.handleView()
                         }
                     }
                 })
