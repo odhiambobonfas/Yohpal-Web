@@ -113,6 +113,15 @@ function LoginComponent() {
                                 Sign up
                             </Link>
                         </p>
+                        <span className="-my-4 text-center text-muted-foreground text-sm">or</span>
+                        <p className="text-center">
+                            <Link
+                                href="/auth/forgot-password"
+                                className="hover:underline text-accent-foreground"
+                            >
+                                Forgot password
+                            </Link>
+                        </p>
                     </form>
                 </div>
                 <div className="hidden h-full md:block col-span-1">
