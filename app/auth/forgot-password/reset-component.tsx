@@ -50,7 +50,6 @@ export default function ResetPasswordComponent({ oobCode }: { oobCode: string })
                         <h4 className="text-4xl font-semibold">YOHPAL</h4>
                         <h5 className="text-lg">Welcome to Yohpal website!</h5>
                     </div>
-                    <span>{oobCode}</span>
                     {(error || confirmError) && (
                         <span className="text-red-500">{error || confirmError}</span>
                     )}
