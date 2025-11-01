@@ -23,8 +23,9 @@ export default async function Page() {
             <ProfileHeader
                 user={user!}
                 stats={{
-                    followersStat: stats.followers,
-                    followingStat: stats.following,
+                    followersStat: user!.followersCount,
+                    followingStat: user!.followingCount,
+                    followerProfileStat: stats.followers,
                     friendsStat: stats.friends,
                     likedStat: stats.likes,
                     uploadedStat: stats.uploadedVideos,

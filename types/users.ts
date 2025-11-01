@@ -10,6 +10,8 @@ export interface YPUser {
     Country: string
     refererCode: string
     referralCode: string
+    followersCount: number
+    followingCount: number
     contentPreferences: string[] | undefined
 }
 
