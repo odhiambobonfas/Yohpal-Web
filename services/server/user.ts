@@ -18,27 +18,27 @@ export const getUserProfile = async (userId: string) => {
             bio: user.bio,
             phoneNumber: user.phoneNumber,
             profile_picture: replaceWithCDN(user.profile_picture),
+            followersCount: user.followersCount ?? 0,
+            followingCount: user.followingCount ?? 0,
         } as unknown as YPUser
     }, `user:profile:${userId}`)
 }
 
 export const getUserProfileStats = async (userId: string) => {
     return withCache(async () => {
-        const [followers, following, uploadedVideos, friends, views, likes] = await Promise.all([
-            getFollowersCount(userId),
-            getFollowingCount(userId, undefined),
+        const [uploadedVideos, followers, friends, views, likes] = await Promise.all([
             getUserVideoUploads(userId, undefined, undefined),
             getFriendsCount(userId, undefined),
+            getFollowersCount(userId),
             onlyProd(() => getViewsCount(userId), []),
             onlyProd(() => getLikedCount(userId), []),
         ])
         return {
-            followers: followers,
-            following: following.length,
             uploadedVideos: uploadedVideos.length,
             friends: friends.length,
             views: views.length,
             likes: likes.length,
+            followers: followers
         }
     }, `user:profile:stats:${userId}`)
 }

@@ -20,8 +20,9 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
             <ProfileHeader
                 profileType="public"
                 stats={{
-                    followersStat: stats.followers,
-                    followingStat: stats.following,
+                    followersStat: user.followersCount,
+                    followingStat: user.followingCount,
+                    followerProfileStat: stats.followers,
                     uploadedStat: stats.uploadedVideos,
                     viewedStat: stats.views,
                     likedStat: stats.likes,

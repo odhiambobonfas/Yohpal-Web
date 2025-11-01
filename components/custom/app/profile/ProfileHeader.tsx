@@ -18,8 +18,9 @@ interface ProfileHeaderProps {
         | {
               uploadedStat?: number
               viewedStat?: number
-              followersStat?: string[]
+              followersStat?: number
               followingStat?: number
+              followerProfileStat: string[]
               likedStat?: number
               friendsStat?: number
           }
@@ -44,9 +45,9 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
 
     useEffect(() => {
         if (profile?.uid && stats?.followersStat) {
-            setUserFollowed(stats.followersStat.includes(profile.uid))
+            setUserFollowed(stats?.followerProfileStat.includes(profile.uid))
         }
-    }, [profile?.uid, stats?.followersStat])
+    }, [profile?.uid, stats?.followerProfileStat, stats?.followersStat])
 
     const handleFollowToggle = async ({
         targetUserId,
@@ -168,7 +169,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                             <DialogTrigger>
                                 <div className="bg-accent cursor-pointer py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
                                     <span className="text-sm md:text-base">
-                                        {stats?.followersStat?.length}
+                                        {stats?.followersStat}
                                     </span>
                                     <span className="text-[10px] md:text-xs">Followers</span>
                                 </div>
