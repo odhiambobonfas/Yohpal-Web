@@ -1,5 +1,6 @@
 "use client"
 
+import { getPromotedVideosAction } from "@/actions/videos/promoted-videos"
 import AppAlert from "@/components/custom/app/AppAlert"
 import DesktopPlayerInteractions from "@/components/custom/app/video/DesktopPlayerInteractions"
 import MobileInteractions from "@/components/custom/app/video/MobileInteractions"
@@ -13,12 +14,15 @@ import {
     FETCH_TRIGGER_OFFSET,
     FOLLOWING_FEED_CURRENT_VID_KEY,
     FOLLOWING_FEED_KEY,
+    PROMOTED_VIDEOS_LIMIT,
 } from "@/constants"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useUser } from "@/hooks/user/use-user"
 import useFollowingVideos from "@/hooks/videos/use-following-videos"
 import useVideoHandlers from "@/hooks/videos/use-video-handlers"
+import { randomizeVideos } from "@/lib/randomize-videos"
+import { getLast } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
 import { getWatchedVideos } from "@/services/client/user"
 import { videoMix } from "@/services/server/mixed-feed"
@@ -51,6 +55,7 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
     const [autoScrollEnabled, setAutoScrollEnabled] = useState(false)
     const [isFetchingNext, setIsFetchingNext] = useState(false)
     const [followingMeta, setFollowingMeta] = useState<FollowingFeedMeta | null>(null)
+    const [lastPromotedDocId, setLastPromotedDocId] = useState(getLast(promotedVideos)?.id)
 
     useEffect(() => {
         const followingFeed = sessionStorage.getItem(FOLLOWING_FEED_KEY)
@@ -81,12 +86,28 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
         if (!followingMeta) return
 
         const nextBatch = await getFollowingVideosBatch(followingMeta)
-        if (nextBatch.videos.length !== 0) {
+
+        if (nextBatch.videos.length > 0) {
+            const promotedContent = await getPromotedVideosAction(
+                profile?.uid,
+                PROMOTED_VIDEOS_LIMIT,
+                lastPromotedDocId,
+            )
+            setLastPromotedDocId(promotedContent.lastPromotedDoc || undefined)
+
             const existingIds = new Set(feed.map((v) => v.id))
             const uniqueNewVideos = nextBatch.videos.filter((v) => !existingIds.has(v.id))
 
-            setFeed((prev) => [...prev, ...uniqueNewVideos])
+            const mixedFeed = videoMix(
+                uniqueNewVideos,
+                randomizeVideos(promotedContent.videos),
+                DEFAULT_PROMOTED_VIDEO_BIAS,
+                feed.length,
+            )
+
+            setFeed((prev) => [...prev, ...mixedFeed])
         }
+
         setFollowingMeta(nextBatch.followingMeta)
         setIsFetchingNext(false)
     }, [followingMeta, getFollowingVideosBatch, feed])
@@ -198,6 +219,7 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
                 <p>PromotedVideos: {promotedVideos.length}</p>
                 <p>ActiveVideoId: {activeVideo?.id} </p>
                 <p>Handlers Loading: {isLoading ? "y" : "n"}</p>
+                <p>LastPromoted: {lastPromotedDocId}</p>
             </DebugWindow>
 
             <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
