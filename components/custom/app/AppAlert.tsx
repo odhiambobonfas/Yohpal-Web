@@ -51,7 +51,7 @@ export default function AppAlert({
                         <IconComponent className={`size-6 ${config.iconColor}`} />
                     </div>
                     <AlertDialogTitle className="text-lg font-semibold">{title}</AlertDialogTitle>
-                    <AlertDialogDescription className="text-muted-foreground">
+                    <AlertDialogDescription className="text-muted-foreground wrap-anywhere">
                         {description}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
