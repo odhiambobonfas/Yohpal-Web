@@ -141,7 +141,6 @@ export default function useOptimisticVideo(
 
     const updateOptimisticFollow = useCallback(
         (userId: string) => {
-            // const isFollowing = optimist?.following ?? followings?.includes(activeVideo.userId) ?? false
             const currentStats = getCurrentStats()
             const newFollowing = !currentStats.isFollowing
             updateOptimisticState(userId, { following: newFollowing })
