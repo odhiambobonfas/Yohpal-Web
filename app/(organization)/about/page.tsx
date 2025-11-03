@@ -75,7 +75,7 @@ export default async function Page() {
                             />
                         </div>
                     </div>
-                    <div className="w-full mt-5 flex gap-4 md:flex-nowrap flex-wrap items-stretch justify-center">
+                    <div className="w-full mt-[50px] flex gap-4 md:flex-nowrap flex-wrap items-stretch justify-center">
                         {heroCardData.map((d, idx) => (
                             <div
                                 key={idx}
