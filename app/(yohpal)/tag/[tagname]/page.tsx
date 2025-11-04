@@ -43,7 +43,7 @@ export default async function Page({ params }: Props) {
                 {taggedContent.videos.map((v, k) => (
                     <div
                         key={k}
-                        className={`${k === 0 ? "border-2 border-primary/40" : ""} relative bg-muted h-120 rounded-md max-w-3/6 md:max-w-1/6`}
+                        className={`${k === 0 ? "border-2 border-primary/40" : ""} relative bg-muted h-70 md:h-120 rounded-md max-w-3/6 md:max-w-1/6`}
                     >
                         <Image
                             src={v.thumbnail}
