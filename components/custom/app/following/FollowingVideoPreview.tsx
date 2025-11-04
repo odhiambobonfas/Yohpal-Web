@@ -24,7 +24,7 @@ export default function FollowingVideoPreview({ video, userId, feed }: VideoPrev
             href="/following/feed"
             key={video.id}
             onClick={handleClick}
-            className="h-70 md:h-120 relative w-full bg-secondary/40 shadow-md rounded-lg flex flex-col overflow-hidden"
+            className="h-70 md:h-120 relative max-w-3/6 md:w-full bg-secondary/40 shadow-md rounded-lg flex flex-col overflow-hidden"
         >
             <div className="h-full w-full bg-slate-100/10">
                 <Image
