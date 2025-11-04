@@ -70,7 +70,7 @@ function NoTagFound({ tagname }: { tagname: string }) {
         <section className="flex flex-col gap-2 items-center justify-center mt-10">
             <h1 className="text-[7rem] text-muted-foreground font-semibold">#</h1>
             <h2 className="text-2xl">
-                Couldn't find this hashtag{" "}
+                Couldn&apos;t find this hashtag{" "}
                 <em>
                     <b>#{tagname}</b>
                 </em>

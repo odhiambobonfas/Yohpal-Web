@@ -110,7 +110,7 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
 
         setFollowingMeta(nextBatch.followingMeta)
         setIsFetchingNext(false)
-    }, [followingMeta, getFollowingVideosBatch, feed, lastPromotedDocId])
+    }, [followingMeta, getFollowingVideosBatch, feed, lastPromotedDocId, profile?.uid])
 
     useEffect(() => {
         if (loading || isFetchingNext) return
