@@ -6,20 +6,22 @@ import { Toaster } from "sonner"
 import AppSidebar from "@/components/custom/AppSidebar"
 import UserDropDown from "@/components/custom/app/UserDropDown"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-
+import { cookies } from "next/headers"
 export const metadata: Metadata = {
     title: "Yohpal",
     description: "Yohpal International limited",
 }
 
-export default function AppLayout({
+export default async function AppLayout({
     children,
 }: Readonly<{
     children: React.ReactNode
 }>) {
+    const cookieStore = await cookies()
+    const sidebarState = cookieStore.get("sidebar_state")?.value
     return (
         <>
-            <SidebarProvider>
+            <SidebarProvider defaultOpen={sidebarState === "true"}>
                 <AppSidebar />
                 <SidebarInset>
                     <header
