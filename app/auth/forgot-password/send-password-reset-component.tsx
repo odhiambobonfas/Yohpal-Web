@@ -20,7 +20,9 @@ export default function SendPasswordResetComponent() {
         e.preventDefault()
 
         await sendPasswordResetLink(email)
-        toast.success("Reset code has been sent")
+        if (!error) {
+            toast.success("Reset code has been sent")
+        }
     }
     return (
         <div className="h-screen flex items-center justify-center">
