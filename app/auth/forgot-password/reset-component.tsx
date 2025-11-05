@@ -1,6 +1,6 @@
 "use client"
 import "@/app/globals.css"
-import { LucideEye, LucideEyeOff, LucideLoader } from "lucide-react"
+import { LucideEye, LucideEyeOff, LucideLoader2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -104,8 +104,8 @@ export default function ResetPasswordComponent({ oobCode }: { oobCode: string })
                                 </button>
                             </div>
                         </div>
-                        <Button className="w-full hover:scale-100 text-primary-foreground font-semibold text-lg p-3">
-                            {loading && <LucideLoader className="animate-spin" />}
+                        <Button className="w-full hover:scale-100 text-primary-foreground font-semibold text-lg p-4">
+                            {loading && <LucideLoader2 className="animate-spin" />}
                             {loading ? "Resetting..." : "Reset Password"}
                         </Button>
 

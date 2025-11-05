@@ -1,6 +1,6 @@
 "use client"
 import "@/app/globals.css"
-import { LucideEye, LucideEyeOff, LucideLoader } from "lucide-react"
+import { LucideEye, LucideEyeOff, LucideLoader2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -115,7 +115,7 @@ export default function Page() {
                             </div>
                         </div>
                         <Button className="w-full text-primary-foreground font-semibold text-lg p-3">
-                            {loading && <LucideLoader className="animate-spin" />}
+                            {loading && <LucideLoader2 className="animate-spin" />}
                             {loading ? "Registering..." : "Register"}
                         </Button>
 
