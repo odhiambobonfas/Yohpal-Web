@@ -1,5 +1,6 @@
 "use server"
 
+import { withCache } from "@/lib/cache"
 import { logger } from "@/lib/logger"
 import { redis } from "@/lib/redis"
 import { getError } from "@/lib/utils"
@@ -43,7 +44,7 @@ async function addCommentCacheAction(interaction: VideoCommentInteraction) {
         }
 
         cachedComments.push(tempComment)
-        redis.set(key, JSON.stringify(cachedComments))
+        withCache(() => Promise.resolve(JSON.stringify(cachedComments)), key)
         updateCachedVideosLookup(interaction.videoId)
         return tempComment
     } catch (e) {
@@ -64,7 +65,7 @@ async function deleteCacheComment(commentId: string, videoId: string) {
         if (commentIdx === -1) return //we couldnt find the comment
 
         parsedComments[commentIdx].deleted = true
-        redis.set(key, JSON.stringify(parsedComments))
+        withCache(() => Promise.resolve(JSON.stringify(parsedComments)), key)
         updateCachedVideosLookup(videoId)
     } catch (e) {
         logger.error(`[COMMENT CACHE DELETE ERR]: ${getError(e)}`)
@@ -87,7 +88,7 @@ async function toggleCacheCommentLike(cap: CommentActionProps, like: boolean) {
 
         parsedComments[commentIdx].likes = like ? (oldLikes += 1) : Math.max(0, oldLikes - 1)
 
-        redis.set(key, JSON.stringify(parsedComments))
+        withCache(() => Promise.resolve(JSON.stringify(parsedComments)), key)
         updateCachedVideosLookup(cap.videoId)
     } catch (e) {
         logger.error(`[COMMENT CACHE LIKE TOGGLE ERR]: ${getError(e)}`)
