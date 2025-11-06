@@ -1,5 +1,6 @@
 "use server"
 import { DELETE_IDENT } from "@/constants"
+import { withCache } from "@/lib/cache"
 import { logger } from "@/lib/logger"
 import { redis } from "@/lib/redis"
 import { getError } from "@/lib/utils"
@@ -23,7 +24,7 @@ async function toggleCachedVideoLikeAction(interaction: VideoInteraction) {
             parsedVideoLikes[userIndex] = `${interaction.userId}:${DELETE_IDENT}`
         }
 
-        await redis.set(key, JSON.stringify(parsedVideoLikes))
+        withCache(() => Promise.resolve(JSON.stringify(parsedVideoLikes)), key)
         await updateCachedVideosLookup(interaction.videoId)
     } catch (e) {
         logger.error(`[LIKE CACHE UPDATE ERR]:${getError(e)}`)
@@ -48,7 +49,7 @@ async function toggleBookmarkCachedVideoAction(interaction: VideoInteraction) {
             parsedVideoBookmarks[userIndex] = `${interaction.userId}:${DELETE_IDENT}`
         }
 
-        await redis.set(key, JSON.stringify(parsedVideoBookmarks))
+        withCache(() => Promise.resolve(JSON.stringify(parsedVideoBookmarks)), key)
         await updateCachedVideosLookup(interaction.videoId)
     } catch (e) {
         logger.error(`[BOOKMARK CACHE UPDATE ERR]:${getError(e)}`)
@@ -67,7 +68,7 @@ async function downloadCachedVideoAction(interaction: VideoInteraction) {
 
         parsedVideoDownloads.push(interaction.userId)
 
-        await redis.set(key, JSON.stringify(parsedVideoDownloads))
+        withCache(() => Promise.resolve(JSON.stringify(parsedVideoDownloads)), key)
         await updateCachedVideosLookup(interaction.videoId)
     } catch (e) {
         logger.error(`[DOWNLOADS CACHE UPDATE ERR]:${getError(e)}`)
@@ -86,7 +87,7 @@ async function viewCachedVideoAction(interaction: VideoInteraction) {
 
         parsedVideoViews.push(interaction.userId)
 
-        await redis.set(key, JSON.stringify(parsedVideoViews))
+        withCache(() => Promise.resolve(JSON.stringify(parsedVideoViews)), key)
         await updateCachedVideosLookup(interaction.videoId)
     } catch (e) {
         logger.error(`[VIEWS CACHE UPDATE ERR]:${getError(e)}`)
@@ -95,20 +96,20 @@ async function viewCachedVideoAction(interaction: VideoInteraction) {
 
 async function shareCachedVideoAction(interaction: VideoInteraction) {
     const key = `shares:${interaction.videoId}`
-    let parsedVideoViews: string[] = []
+    let parsedVideoShared: string[] = []
 
     try {
-        const videoViews = await redis.get(key)
-        if (videoViews) parsedVideoViews = JSON.parse(videoViews)
+        const videoShared = await redis.get(key)
+        if (videoShared) parsedVideoShared = JSON.parse(videoShared)
 
-        if (parsedVideoViews.includes(interaction.userId)) return
+        if (parsedVideoShared.includes(interaction.userId)) return
 
-        parsedVideoViews.push(interaction.userId)
+        parsedVideoShared.push(interaction.userId)
 
-        await redis.set(key, JSON.stringify(parsedVideoViews))
+        withCache(() => Promise.resolve(JSON.stringify(parsedVideoShared)), key)
         await updateCachedVideosLookup(interaction.videoId)
     } catch (e) {
-        logger.error(`[VIEWS CACHE UPDATE ERR]:${getError(e)}`)
+        logger.error(`[SHARES CACHE UPDATE ERR]:${getError(e)}`)
     }
 }
 
@@ -121,6 +122,7 @@ async function updateCachedVideosLookup(videoId: string) {
 
         if (!parsedLookup.includes(videoId)) {
             parsedLookup.push(videoId)
+
             await redis.set("videos:lookup", JSON.stringify(parsedLookup))
         }
     } catch (e) {

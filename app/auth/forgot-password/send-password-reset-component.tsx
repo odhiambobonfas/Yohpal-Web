@@ -1,6 +1,6 @@
 "use client"
 import "@/app/globals.css"
-import { LucideLoader } from "lucide-react"
+import { LucideLoader2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { FormEvent, useState } from "react"
@@ -20,7 +20,9 @@ export default function SendPasswordResetComponent() {
         e.preventDefault()
 
         await sendPasswordResetLink(email)
-        toast.success("Reset code has been sent")
+        if (!error) {
+            toast.success("Reset code has been sent")
+        }
     }
     return (
         <div className="h-screen flex items-center justify-center">
@@ -44,7 +46,7 @@ export default function SendPasswordResetComponent() {
                             />
                         </div>
                         <Button className="w-full hover:scale-100 text-primary-foreground font-semibold text-lg p-3">
-                            {loading && <LucideLoader className="animate-spin" />}
+                            {loading && <LucideLoader2 className="animate-spin" />}
                             {loading ? "Sending Link..." : "Reset password"}
                         </Button>
 

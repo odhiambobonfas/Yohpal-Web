@@ -33,17 +33,11 @@ export default async function Page({ params }: Props) {
                 </div>
             </div>
 
-            <div
-                className="grid gap-4 p-2"
-                style={{
-                    gridTemplateColumns:
-                        "repeat(auto-fit, minmax(clamp(200px, 100% / 6, 50%), 1fr))",
-                }}
-            >
+            <div className="grid gap-4 p-2 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
                 {taggedContent.videos.map((v, k) => (
                     <div
                         key={k}
-                        className={`${k === 0 ? "border-2 border-primary/40" : ""} relative bg-muted h-70 md:h-120 rounded-md max-w-3/6 md:max-w-1/6 overflow-hidden`}
+                        className={`${k === 0 ? "border-2 border-primary/40" : ""} relative aspect-[9/16] bg-muted h-80 md:h-120 rounded-md overflow-hidden`}
                     >
                         <Image
                             src={v.thumbnail}
@@ -54,7 +48,10 @@ export default async function Page({ params }: Props) {
                         />
 
                         <div className="absolute text-white bottom-0 w-full h-20 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex justify-center items-end gap-2 px-4 py-3">
-                            <Link href={`/user/${v.userId}`} className="hover:underline">
+                            <Link
+                                href={`/user/${v.userId}`}
+                                className="hover:underline cursor-pointer"
+                            >
                                 @{v.userName}
                             </Link>
                         </div>
