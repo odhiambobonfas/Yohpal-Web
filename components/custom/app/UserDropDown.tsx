@@ -59,11 +59,12 @@ export default function UserDropDown({ className }: { className: string | undefi
         <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild className={className}>
                 <Button variant="ghost" className="relative size-8 rounded-full">
-                    <Avatar className="rounded-xl">
+                    <Avatar className="rounded-xl inline-flex items-center justify-center">
                         <AvatarImage
                             loading="lazy"
-                            width={100}
-                            height={100}
+                            width={50}
+                            height={60}
+                            className="object-cover"
                             src={profile?.profile_picture || "/logo_circular.png"}
                             alt={profile?.userName || "User profile image"}
                         />
