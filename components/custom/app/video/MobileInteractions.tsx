@@ -148,7 +148,7 @@ export default function MobileInteractions({
                     {video.tags &&
                         Array.isArray(video.tags) &&
                         video.tags.map((tag, idx) =>
-                            tag !== "[]" ? (
+                            !tag.includes("[]") ? (
                                 <Link
                                     key={idx}
                                     href={`/tag/${tag}`}

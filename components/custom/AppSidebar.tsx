@@ -1,3 +1,4 @@
+"use client"
 import {
     LucideAlbum,
     LucideBriefcase,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import React from "react"
 
 import {
@@ -25,9 +27,20 @@ import {
 
 const navItems = [
     { icon: LucideHome, title: "Suggested", link: "/" },
-    { icon: LucideCompass, title: "Explore", link: "" },
-    { icon: LucideUserCheck, title: "following", link: "/following", prefetch: true },
-    { icon: LucideAlbum, title: "About Us", position: "bottom", link: "/about", prefetch: true },
+    { icon: LucideCompass, title: "Explore", link: "//" },
+    {
+        icon: LucideUserCheck,
+        title: "following",
+        link: "/following",
+        prefetch: true,
+    },
+    {
+        icon: LucideAlbum,
+        title: "About Us",
+        position: "bottom",
+        link: "/about",
+        prefetch: true,
+    },
     {
         icon: LucideGlobeLock,
         title: "Privacy Policy",
@@ -57,6 +70,16 @@ const navItems = [
 ]
 
 export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const pathname = usePathname()
+
+    const isActive = (itemLink: string) => {
+        if (itemLink === "/") {
+            console.log("active")
+            return pathname === "/"
+        }
+        return pathname.startsWith(itemLink)
+    }
+
     return (
         <Sidebar collapsible="icon" className="group/sidebar" {...props}>
             <SidebarHeader className="flex justify-center">
@@ -85,13 +108,14 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
                             <Link
                                 href={item.link}
                                 target={item.target}
-                                className="w-full inline-flex  items-center p-1"
+                                className="w-full inline-flex items-center p-1"
                                 prefetch={item.prefetch || false}
                                 key={idx}
                             >
                                 <SidebarMenuItem className="w-full">
                                     <SidebarMenuButton
                                         tooltip={item.title}
+                                        isActive={isActive(item.link)}
                                         className="hover:bg-primary/5 cursor-pointer"
                                     >
                                         <item.icon />
@@ -112,13 +136,14 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
                         item.position === "bottom" ? (
                             <Link
                                 href={item.link}
-                                className="w-full inline-flex  items-center p-1"
+                                className="w-full inline-flex items-center p-1"
                                 prefetch={item.prefetch || false}
                                 key={idx}
                             >
                                 <SidebarMenuItem className="w-full">
                                     <SidebarMenuButton
                                         tooltip={item.title}
+                                        isActive={isActive(item.link)}
                                         className="hover:bg-primary/5 cursor-pointer"
                                     >
                                         <item.icon />

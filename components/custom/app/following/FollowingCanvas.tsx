@@ -32,6 +32,7 @@ import { LucideChevronDown, LucideChevronUp } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import useSWR from "swr"
+import KeyShortcuts from "../KeyShortcuts"
 
 const swrConfig = {
     revalidateOnFocus: false,
@@ -211,6 +212,7 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
     }
     return (
         <>
+            <KeyShortcuts nextVideo={moveNext} prevVideo={movePrev} />
             <DebugWindow>
                 <p>
                     Active Video {activeVideoIdx + 1}/{feed.length}
