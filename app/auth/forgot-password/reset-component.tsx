@@ -58,6 +58,7 @@ export default function ResetPasswordComponent({ oobCode }: { oobCode: string })
                             <Label htmlFor="password">New Password</Label>
                             <div className="relative">
                                 <Input
+                                    minLength={8}
                                     name="password"
                                     onChange={(e) => setPassword(e.target.value)}
                                     type={showPassword ? "text" : "password"}
@@ -85,6 +86,7 @@ export default function ResetPasswordComponent({ oobCode }: { oobCode: string })
                             <div className="relative">
                                 <Input
                                     name="confirmPassword"
+                                    minLength={8}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     type={showConfirmPassword ? "text" : "password"}
                                     placeholder="confirm password"
