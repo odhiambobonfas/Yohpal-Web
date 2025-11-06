@@ -84,10 +84,14 @@ export default function UserDropDown({ className }: { className: string | undefi
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <Link href="/profile" className="cursor-pointer">
+                    <Button
+                        variant={"ghost"}
+                        className="cursor-pointer bg-transparent hover:bg-transparent w-full justify-start hover:shadow-none shadow-none hover:scale-100"
+                        onClick={() => router.push("/profile")}
+                    >
                         <User className="mr-2 size-4" />
                         <span>Profile</span>
-                    </Link>
+                    </Button>
                 </DropdownMenuItem>
 
                 <DropdownMenuSub>
