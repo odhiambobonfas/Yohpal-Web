@@ -41,7 +41,8 @@ export default function DesktopPlayerInteractions({
     ownerProfilePicture,
     video,
     commentMutation,
-}: InteractionMutationProps) {
+    setIsTyping,
+}: InteractionMutationProps & { setIsTyping: (typing: boolean) => void }) {
     const { profile } = useAuth()
     const [active, setActive] = useState(false)
     const router = useRouter()
@@ -188,6 +189,8 @@ export default function DesktopPlayerInteractions({
                     <Input
                         type="text"
                         value={commentMutation.text}
+                        onFocus={() => setIsTyping(true)}
+                        onBlur={() => setIsTyping(false)}
                         onChange={(e) => commentMutation.setText(e.target.value)}
                         className="rounded-full py-4 pr-12 text-lg w-full h-full"
                         placeholder="Add comment..."
