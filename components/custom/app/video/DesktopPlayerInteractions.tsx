@@ -200,7 +200,7 @@ export default function DesktopPlayerInteractions({
                         <LucideSend />
                     </Button>
                 </form>
-                <ScrollArea className="flex-1 h-1/2 overflow-hidden py-3 flex flex-col gap-2">
+                <ScrollArea className="flex-1 h-[30%] overflow-hidden py-3 flex flex-col gap-2">
                     {currentStats.comments.length === 0 ? (
                         <NoCommentsCard />
                     ) : (
