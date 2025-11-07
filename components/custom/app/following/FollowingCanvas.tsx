@@ -1,31 +1,37 @@
 "use client"
 
+import { getPromotedVideosAction } from "@/actions/videos/promoted-videos"
+import AppAlert from "@/components/custom/app/AppAlert"
+import DesktopPlayerInteractions from "@/components/custom/app/video/DesktopPlayerInteractions"
+import MobileInteractions from "@/components/custom/app/video/MobileInteractions"
+import VideoPlayer from "@/components/custom/app/video/VideoPlayer"
+import ClientOnly from "@/components/custom/ClientOnly"
+import DebugWindow from "@/components/custom/DebugWindow"
 import { Button } from "@/components/ui/button"
 import {
     DEFAULT_PROFILE,
     DEFAULT_PROMOTED_VIDEO_BIAS,
+    FETCH_TRIGGER_OFFSET,
     FOLLOWING_FEED_CURRENT_VID_KEY,
     FOLLOWING_FEED_KEY,
+    PROMOTED_VIDEOS_LIMIT,
 } from "@/constants"
+
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useUser } from "@/hooks/user/use-user"
+import useFollowingVideos from "@/hooks/videos/use-following-videos"
 import useVideoHandlers from "@/hooks/videos/use-video-handlers"
-import { logger } from "@/lib/logger"
+import { randomizeVideos } from "@/lib/randomize-videos"
+import { getLast } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
 import { getWatchedVideos } from "@/services/client/user"
 import { videoMix } from "@/services/server/mixed-feed"
-import { FollowingFeed, VideoWithStats } from "@/types/videos"
+import { FollowingFeed, FollowingFeedMeta, VideoWithStats } from "@/types/videos"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { LucideChevronDown, LucideChevronUp } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import useSWR from "swr"
-import ClientOnly from "../../ClientOnly"
-import DebugWindow from "../../DebugWindow"
-import AppAlert from "../AppAlert"
-import DesktopPlayerInteractions from "../video/DesktopPlayerInteractions"
-import MobileInteractions from "../video/MobileInteractions"
-import VideoPlayer from "../video/VideoPlayer"
 
 const swrConfig = {
     revalidateOnFocus: false,
@@ -41,11 +47,15 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
     const isMobile = useIsMobile()
     const { profile } = useAuth()
     const { getProfile, getFollowing } = useUser()
+    const { loading, getFollowingVideos: getFollowingVideosBatch } = useFollowingVideos()
 
     const [feedErr, showFeedErr] = useState(false)
     const [activeVideoId, setActiveVideoId] = useState("")
     const [feed, setFeed] = useState<VideoWithStats[]>([])
     const [autoScrollEnabled, setAutoScrollEnabled] = useState(false)
+    const [isFetchingNext, setIsFetchingNext] = useState(false)
+    const [followingMeta, setFollowingMeta] = useState<FollowingFeedMeta | null>(null)
+    const [lastPromotedDocId, setLastPromotedDocId] = useState(getLast(promotedVideos)?.id)
 
     useEffect(() => {
         const followingFeed = sessionStorage.getItem(FOLLOWING_FEED_KEY)
@@ -63,13 +73,52 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
             parsedFollowingFeed.videos.length,
         )
 
+        setFollowingMeta(parsedFollowingFeed.followingMeta)
         setFeed(interleavedVideos)
         setActiveVideoId(currentVideoId)
     }, [promotedVideos])
 
     const activeVideoIdx = feed.findIndex((v) => v.id === activeVideoId)
-    const activeVideo =
-        activeVideoIdx && activeVideoIdx >= 0 ? feed[activeVideoIdx] : promotedVideos[0]
+    const activeVideo = activeVideoIdx >= 0 ? feed[activeVideoIdx] : promotedVideos[0]
+
+    const fetchNextBatch = useCallback(async () => {
+        setIsFetchingNext(true)
+        if (!followingMeta) return
+
+        const nextBatch = await getFollowingVideosBatch(followingMeta)
+
+        if (nextBatch.videos.length > 0) {
+            const promotedContent = await getPromotedVideosAction(
+                profile?.uid,
+                PROMOTED_VIDEOS_LIMIT,
+                lastPromotedDocId,
+            )
+            setLastPromotedDocId(promotedContent.lastPromotedDoc || undefined)
+
+            const existingIds = new Set(feed.map((v) => v.id))
+            const uniqueNewVideos = nextBatch.videos.filter((v) => !existingIds.has(v.id))
+
+            const mixedFeed = videoMix(
+                uniqueNewVideos,
+                randomizeVideos(promotedContent.videos),
+                DEFAULT_PROMOTED_VIDEO_BIAS,
+                feed.length,
+            )
+
+            setFeed((prev) => [...prev, ...mixedFeed])
+        }
+
+        setFollowingMeta(nextBatch.followingMeta)
+        setIsFetchingNext(false)
+    }, [followingMeta, getFollowingVideosBatch, feed, lastPromotedDocId, profile?.uid])
+
+    useEffect(() => {
+        if (loading || isFetchingNext) return
+        const triggerIdx = feed.length - FETCH_TRIGGER_OFFSET
+        if (activeVideoIdx > 0 && activeVideoIdx >= triggerIdx) {
+            fetchNextBatch()
+        }
+    }, [activeVideoId, feed.length, fetchNextBatch, isFetchingNext, loading, activeVideoIdx])
 
     const estimateSize = () => parentRef.current?.clientHeight ?? 850
 
@@ -79,12 +128,6 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
         estimateSize: estimateSize,
         overscan: 3,
     })
-
-    useEffect(() => {
-        rowVirtualizer.scrollToIndex(activeVideoIdx, {
-            behavior: "smooth",
-        })
-    }, [])
 
     function moveNext() {
         const currentIndex = feed.findIndex((v) => v.id === activeVideoId)
@@ -136,7 +179,7 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
                         const id = entry.target.getAttribute("data-id")
                         if (id && id !== activeVideoId) {
                             setActiveVideoId(id)
-                            // videoHandlers.handleView()
+                            videoHandlers.handleView()
                         }
                     }
                 })
@@ -152,15 +195,16 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
 
     const isLoading = videoHandlers.isLoading
     const currentStats = videoHandlers.handleGetCurrentStats()
-    logger.debug("Stats: ", currentStats)
 
     if (feedErr) {
         return (
             <AppAlert
                 type="error"
                 isOpen={feedErr}
-                title="Sth went wrong"
-                description="stuff"
+                title="Following feed"
+                description="Something went wrong on our end"
+                actionText="Retry"
+                showCancel={false}
                 onAction={() => router.back()}
             />
         )
@@ -171,12 +215,13 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
                 <p>
                     Active Video {activeVideoIdx + 1}/{feed.length}
                 </p>
+                <p> Fetching next: {isFetchingNext ? "Y" : "N"}</p>
                 <p>PromotedVideos: {promotedVideos.length}</p>
                 <p>ActiveVideoId: {activeVideo?.id} </p>
                 <p>Handlers Loading: {isLoading ? "y" : "n"}</p>
+                <p>LastPromoted: {lastPromotedDocId}</p>
             </DebugWindow>
 
-            <h1>Canvas</h1>
             <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
                 <ClientOnly>
                     {!isMobile && (

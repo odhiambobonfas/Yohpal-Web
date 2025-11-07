@@ -47,11 +47,12 @@ export default function useVideoMutation() {
         }
     }
 
-    const toggleLike = async (videoId: string, isCurrentlyLiked: boolean) => {
+    const toggleLike = async (videoId: string, isCurrentlyLiked: boolean, promoted: boolean) => {
         return mutateWithAuth(async () => {
             const interaction: VideoInteraction = {
                 videoId,
                 userId: profile!.uid,
+                promoted,
             }
 
             if (isCurrentlyLiked) {
@@ -63,11 +64,16 @@ export default function useVideoMutation() {
             }
         })
     }
-    const toggleBookmark = async (videoId: string, isCurrentlyBookmarked: boolean) => {
+    const toggleBookmark = async (
+        videoId: string,
+        isCurrentlyBookmarked: boolean,
+        promoted: boolean,
+    ) => {
         return mutateWithAuth(async () => {
             const interaction: VideoInteraction = {
                 videoId,
                 userId: profile!.uid,
+                promoted,
             }
 
             if (isCurrentlyBookmarked) {
@@ -80,22 +86,22 @@ export default function useVideoMutation() {
         })
     }
 
-    const shareVideo = async (videoId: string) => {
+    const shareVideo = async (videoId: string, promoted: boolean) => {
         return mutateWithAuth(async () => {
-            await shareVideoAction({ videoId, userId: profile!.uid })
+            await shareVideoAction({ videoId, userId: profile!.uid, promoted })
             return { shared: true }
         })
     }
 
-    const downloadVideo = async (videoId: string) => {
+    const downloadVideo = async (videoId: string, promoted: boolean) => {
         return mutateWithAuth(async () => {
-            await downloadVideoAction({ videoId, userId: profile!.uid })
+            await downloadVideoAction({ videoId, userId: profile!.uid, promoted })
             return { downloaded: true }
         })
     }
 
-    const addView = async (videoId: string, userId: string | undefined) => {
-        if (userId) await updateViewAction({ videoId, userId })
+    const addView = async (videoId: string, userId: string | undefined, promoted: boolean) => {
+        if (userId) await updateViewAction({ videoId, userId, promoted })
     }
 
     const addComment = async (tempId: string, videoId: string, text: string) => {

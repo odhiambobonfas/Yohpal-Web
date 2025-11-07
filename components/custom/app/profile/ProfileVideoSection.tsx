@@ -125,8 +125,6 @@ function ProfileVideoPreview({ videos }: { videos: VideoWithStats[] }) {
                 >
                     <Image
                         src={v.thumbnail}
-                        // width={100}
-                        // height={100}
                         fill
                         alt="thumbnail"
                         className="h-full w-full object-cover"

@@ -143,6 +143,22 @@ export default function MobileInteractions({
                     {video.caption?.split(" ").slice(0, 6).join(" ") +
                         (video.caption?.split(" ").length > 6 ? "…" : "")}
                 </p>
+
+                <div className="inline-flex gap-2">
+                    {video.tags &&
+                        Array.isArray(video.tags) &&
+                        video.tags.map((tag, idx) =>
+                            tag !== "[]" ? (
+                                <Link
+                                    key={idx}
+                                    href={`/tag/${tag}`}
+                                    className="hover:underline hover:text-primary/80"
+                                >
+                                    #{tag}
+                                </Link>
+                            ) : null,
+                        )}
+                </div>
             </div>
         </>
     )

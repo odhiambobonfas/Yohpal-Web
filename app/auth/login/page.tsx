@@ -1,6 +1,6 @@
 "use client"
 import "@/app/globals.css"
-import { LucideEye, LucideEyeOff, LucideLoader } from "lucide-react"
+import { LucideEye, LucideEyeOff, LucideLoader2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -96,7 +96,7 @@ function LoginComponent() {
                             </div>
                         </div>
                         <Button className="w-full text-primary-foreground font-semibold text-lg p-3">
-                            {loading && <LucideLoader className="animate-spin" />}
+                            {loading && <LucideLoader2 className="animate-spin" />}
                             {loading ? "Signin In..." : "Sign In"}
                         </Button>
 
@@ -111,6 +111,15 @@ function LoginComponent() {
                                 className="hover:underline text-accent-foreground"
                             >
                                 Sign up
+                            </Link>
+                        </p>
+                        <span className="-my-4 text-center text-muted-foreground text-sm">or</span>
+                        <p className="text-center">
+                            <Link
+                                href="/auth/forgot-password"
+                                className="hover:underline text-accent-foreground"
+                            >
+                                Forgot password
                             </Link>
                         </p>
                     </form>

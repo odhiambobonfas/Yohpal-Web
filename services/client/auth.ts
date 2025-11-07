@@ -1,6 +1,8 @@
 import {
+    confirmPasswordReset,
     createUserWithEmailAndPassword,
     sendEmailVerification,
+    sendPasswordResetEmail,
     signInWithEmailAndPassword,
     signOut,
 } from "firebase/auth"
@@ -26,4 +28,25 @@ async function verifyEmailAction() {
     if (auth.currentUser) await sendEmailVerification(auth.currentUser)
 }
 
-export { loginWithEmailAndPassword, logout, signUpWithEmailAndPassword, verifyEmailAction }
+async function sendPasswordResetLinkAction(email: string) {
+    await sendPasswordResetEmail(auth, email)
+}
+
+async function confirmPasswordResetAction({
+    oobCode,
+    newPassword,
+}: {
+    oobCode: string
+    newPassword: string
+}) {
+    await confirmPasswordReset(auth, oobCode, newPassword)
+}
+
+export {
+    confirmPasswordResetAction,
+    loginWithEmailAndPassword,
+    logout,
+    sendPasswordResetLinkAction,
+    signUpWithEmailAndPassword,
+    verifyEmailAction,
+}

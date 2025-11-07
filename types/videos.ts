@@ -76,6 +76,7 @@ export interface CommentActionProps {
 export interface VideoInteraction {
     userId: string
     videoId: string
+    promoted: boolean
 }
 
 export interface InteractionMutationProps {
@@ -140,10 +141,11 @@ export interface VideoPlayerProps {
 
 export interface FollowingFeed {
     videos: VideoWithStats[]
-    followingMeta: {
-        [k: string]: {
-            contentEnded: boolean
-            lastDoc: string
-        }
+    followingMeta: FollowingFeedMeta
+}
+export interface FollowingFeedMeta {
+    [k: string]: {
+        contentEnded: boolean
+        lastDoc: string
     }
 }

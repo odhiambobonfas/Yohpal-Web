@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { formatStat, formatTime } from "@/lib/utils"
+import { cn, formatStat, formatTime } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -123,7 +123,15 @@ export default function DesktopPlayerInteractions({
                             {video.tags &&
                                 Array.isArray(video.tags) &&
                                 video.tags.map((tag, idx) =>
-                                    tag !== "[]" ? <span key={idx}>{tag}</span> : null,
+                                    tag !== "[]" ? (
+                                        <Link
+                                            key={idx}
+                                            href={`/tag/${tag}`}
+                                            className="hover:underline hover:text-primary/80"
+                                        >
+                                            #{tag}
+                                        </Link>
+                                    ) : null,
                                 )}
                         </div>
                     </div>
@@ -152,9 +160,10 @@ export default function DesktopPlayerInteractions({
 
                     <Button
                         variant={"ghost"}
-                        className={
-                            currentStats.userBookmarked ? "text-blue-500" : "text-foreground"
-                        }
+                        className={cn(
+                            currentStats.userBookmarked ? "text-blue-500" : "text-foreground",
+                            "hover:text-blue-500",
+                        )}
                         onClick={handleBookmark}
                     >
                         <LucideBookmark

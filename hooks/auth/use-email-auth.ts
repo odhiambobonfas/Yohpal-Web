@@ -7,8 +7,10 @@ import { COOKIES } from "@/constants"
 import { logger } from "@/lib/logger"
 import { getError } from "@/lib/utils"
 import {
+    confirmPasswordResetAction,
     loginWithEmailAndPassword,
     logout,
+    sendPasswordResetLinkAction,
     signUpWithEmailAndPassword,
     verifyEmailAction,
 } from "@/services/client/auth"
@@ -93,7 +95,47 @@ export function useEmailAuth() {
         }
     }
 
-    return { login, signUp, logOut, verifyEmail, loading, error }
+    const sendPasswordResetLink = async (email: string) => {
+        setLoading(true)
+        setError(null)
+        try {
+            await sendPasswordResetLinkAction(email)
+        } catch (e) {
+            const errorMsg = getError(e)
+            logger.error(`[SEND PASSWORD RESET EMAIL ERR]: ${errorMsg}`)
+            setError("Failed to send reset link")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const confirmPasswordReset = async (newPasswordParams: {
+        oobCode: string
+        newPassword: string
+    }) => {
+        setLoading(true)
+        setError(null)
+        try {
+            await confirmPasswordResetAction(newPasswordParams)
+        } catch (e) {
+            const errorMsg = getError(e)
+            logger.error(`[SET NEW PASSWORD ERR]: ${errorMsg}`)
+            setError("Failed to reset password")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return {
+        login,
+        signUp,
+        logOut,
+        verifyEmail,
+        sendPasswordResetLink,
+        confirmPasswordReset,
+        loading,
+        error,
+    }
 }
 
 function getUserFriendlyError(error: string, context: "login" | "signup" | "verify"): string {

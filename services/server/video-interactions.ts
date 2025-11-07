@@ -129,9 +129,19 @@ async function updateView(interaction: VideoInteraction) {
         .collection("userIds")
         .doc(interaction.userId)
 
+    const promotedViewsRef = db
+        .collection("videos")
+        .doc(interaction.videoId)
+        .collection("campaign_stats")
+        .doc(DOC)
+        .collection("userIds")
+        .doc(interaction.userId)
+
+    const ref = interaction.promoted ? promotedViewsRef : videoWatchRef
+
     await Promise.all([
         userVideoWatchRef.set({ videoId: interaction.videoId, timestamp: serverTimestamp() }),
-        videoWatchRef.set({ userId: interaction.userId, timestamp: serverTimestamp() }),
+        ref.set({ userId: interaction.userId, timestamp: serverTimestamp() }),
     ])
 }
 
