@@ -4,12 +4,13 @@ import { DEFAULT_REFERER_CODE } from "@/constants"
 import { db } from "@/lib/firebase/firebase.browser"
 import { logger } from "@/lib/logger"
 
-export async function createUser(userId: string) {
+export async function createUser(userId: string, email: string) {
     const newUserRef = doc(db, "users", userId)
 
     await setDoc(newUserRef, {
         uid: userId,
         userName: "",
+        email: email,
         createdAt: serverTimestamp(),
         referralCode: userId.slice(0, 10),
     })
