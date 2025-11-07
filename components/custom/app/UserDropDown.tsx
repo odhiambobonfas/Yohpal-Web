@@ -59,11 +59,12 @@ export default function UserDropDown({ className }: { className: string | undefi
         <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild className={className}>
                 <Button variant="ghost" className="relative size-8 rounded-full">
-                    <Avatar className="rounded-xl">
+                    <Avatar className="rounded-xl inline-flex items-center justify-center">
                         <AvatarImage
                             loading="lazy"
-                            width={100}
-                            height={100}
+                            width={50}
+                            height={60}
+                            className="object-cover"
                             src={profile?.profile_picture || "/logo_circular.png"}
                             alt={profile?.userName || "User profile image"}
                         />
@@ -84,10 +85,14 @@ export default function UserDropDown({ className }: { className: string | undefi
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <Link href="/profile" className="cursor-pointer">
+                    <Button
+                        variant={"ghost"}
+                        className="cursor-pointer bg-transparent hover:bg-transparent w-full justify-start hover:shadow-none shadow-none hover:scale-100"
+                        onClick={() => router.push("/profile")}
+                    >
                         <User className="mr-2 size-4" />
                         <span>Profile</span>
-                    </Link>
+                    </Button>
                 </DropdownMenuItem>
 
                 <DropdownMenuSub>

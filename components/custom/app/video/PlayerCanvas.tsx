@@ -28,6 +28,7 @@ import { randomizeVideos } from "@/lib/randomize-videos"
 import { getLast } from "@/lib/utils"
 import { videoMix } from "@/services/server/mixed-feed"
 import { LucideChevronDown, LucideChevronUp } from "lucide-react"
+import KeyShortcuts from "../KeyShortcuts"
 import DesktopPlayerInteractions from "./DesktopPlayerInteractions"
 import InteractionsLoginPrompt from "./InteractionsLoginPrompt"
 import VideoPlayer from "./VideoPlayer"
@@ -277,6 +278,8 @@ export default function PlayerCanvas({
 
     return (
         <>
+            <KeyShortcuts nextVideo={moveNext} prevVideo={movePrev} />
+
             <DebugWindow>
                 <div>
                     Active: {activeIndex + 1}/{allVideos.length}

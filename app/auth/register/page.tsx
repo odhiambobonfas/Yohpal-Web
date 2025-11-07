@@ -68,6 +68,7 @@ export default function Page() {
                             <Label htmlFor="password">Password</Label>
                             <div className="relative">
                                 <Input
+                                    minLength={8}
                                     name="password"
                                     onChange={(e) => setPassword(e.target.value)}
                                     type={showPassword ? "text" : "password"}
@@ -94,6 +95,7 @@ export default function Page() {
                             <Label htmlFor="confirmPassword">Confirm Password</Label>
                             <div className="relative">
                                 <Input
+                                    minLength={8}
                                     name="confirmPassword"
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     type={showConfirmPassword ? "text" : "password"}

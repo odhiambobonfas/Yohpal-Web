@@ -66,7 +66,7 @@ export default function CommentDrawer({
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                             className="rounded-full py-4 pr-12 text-lg w-full h-full"
-                            placeholder="What's going on..."
+                            placeholder="Add comment..."
                         />
                         <Button
                             type="submit"
