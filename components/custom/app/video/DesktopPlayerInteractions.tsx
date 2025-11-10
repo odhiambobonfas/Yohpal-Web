@@ -46,7 +46,8 @@ export default function DesktopPlayerInteractions({
     ownerProfilePicture,
     video,
     commentMutation,
-}: InteractionMutationProps) {
+    setIsTyping,
+}: InteractionMutationProps & { setIsTyping: (typing: boolean) => void }) {
     const { profile } = useAuth()
     const [active, setActive] = useState(false)
     const router = useRouter()
@@ -193,6 +194,8 @@ export default function DesktopPlayerInteractions({
                     <InputGroup className="rounded-2xl">
                         <InputGroupTextarea
                             required
+                            onFocus={() => setIsTyping(true)}
+                            onBlur={() => setIsTyping(false)}
                             ref={(el) => {
                                 if (el) {
                                     el.style.height = "auto"

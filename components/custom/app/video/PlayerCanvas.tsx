@@ -275,6 +275,7 @@ export default function PlayerCanvas({
 
     const isLoading = videoHandlers.isLoading
     const currentStats = videoHandlers.handleGetCurrentStats()
+    const [isTyping, setIsTyping] = useState(false)
 
     return (
         <>
@@ -308,7 +309,7 @@ export default function PlayerCanvas({
                 closePrompt={videoHandlers.closeAuthDialog}
             />
 
-            <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
+            <section className="h-[calc(100vh-6rem)] flex justify-center w-full overflow-y-hidden">
                 <ClientOnly>
                     {!isMobile && (
                         <div className="flex flex-col justify-center gap-5 rounded-full mr-[10%]">
@@ -365,7 +366,7 @@ export default function PlayerCanvas({
                                             index={virtualRow.index}
                                             activeIndex={activeIndex}
                                             onEnded={() => {
-                                                if (autoScrollEnabled) moveNext()
+                                                if (autoScrollEnabled && !isTyping) moveNext()
                                             }}
                                             autoScrollEnabled={autoScrollEnabled}
                                             setAutoScrollEnabled={setAutoScrollEnabled}
@@ -427,6 +428,7 @@ export default function PlayerCanvas({
                                         videoHandlers.handleCommentTextChange(activeVideo.id, text),
                                     disabled: isLoading,
                                 }}
+                                setIsTyping={setIsTyping}
                             />
                         </ClientOnly>
                     )}

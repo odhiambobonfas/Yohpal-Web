@@ -499,7 +499,7 @@ function SidebarMenuButton({
             className={cn(
                 sidebarMenuButtonVariants({ variant, size }),
                 className,
-                "data-[active=true]:bg-primary/30 data-[active=true]:text-slate-900 data-[active=true]:font-semibold",
+                "data-[active=true]:bg-primary/30 data-[active=true]:text-slate-900 dark:data-[active=true]:text-slate-200 data-[active=true]:font-semibold",
             )}
             {...props}
         />

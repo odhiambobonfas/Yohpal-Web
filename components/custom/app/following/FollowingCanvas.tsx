@@ -57,6 +57,7 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
     const [isFetchingNext, setIsFetchingNext] = useState(false)
     const [followingMeta, setFollowingMeta] = useState<FollowingFeedMeta | null>(null)
     const [lastPromotedDocId, setLastPromotedDocId] = useState(getLast(promotedVideos)?.id)
+    const [isTyping, setIsTyping] = useState(false)
 
     useEffect(() => {
         const followingFeed = sessionStorage.getItem(FOLLOWING_FEED_KEY)
@@ -281,7 +282,7 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
                                             index={virtualRow.index}
                                             activeIndex={activeVideoIdx}
                                             onEnded={() => {
-                                                if (autoScrollEnabled) moveNext()
+                                                if (autoScrollEnabled && !isTyping) moveNext()
                                             }}
                                             autoScrollEnabled={autoScrollEnabled}
                                             setAutoScrollEnabled={setAutoScrollEnabled}
@@ -342,6 +343,7 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
                                         videoHandlers.handleCommentTextChange(activeVideo.id, text),
                                     disabled: isLoading,
                                 }}
+                                setIsTyping={setIsTyping}
                             />
                         </ClientOnly>
                     )}
