@@ -17,6 +17,7 @@ import {
     PROMOTED_VIDEOS_LIMIT,
 } from "@/constants"
 
+import KeyShortcuts from "@/components/custom/app/KeyShortcuts"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useUser } from "@/hooks/user/use-user"
 import useFollowingVideos from "@/hooks/videos/use-following-videos"
@@ -32,7 +33,6 @@ import { LucideChevronDown, LucideChevronUp } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useRef, useState } from "react"
 import useSWR from "swr"
-import KeyShortcuts from "../KeyShortcuts"
 
 const swrConfig = {
     revalidateOnFocus: false,
@@ -68,12 +68,22 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
             return
         }
         const parsedFollowingFeed = JSON.parse(followingFeed!) as FollowingFeed
+
         const interleavedVideos = videoMix(
             parsedFollowingFeed.videos,
             promotedVideos,
             DEFAULT_PROMOTED_VIDEO_BIAS,
             parsedFollowingFeed.videos.length,
         )
+
+        const currentVideoIndex = interleavedVideos.findIndex(
+            (video) => video.id === currentVideoId,
+        )
+
+        if (currentVideoIndex > 0) {
+            const [currentVideo] = interleavedVideos.splice(currentVideoIndex, 1)
+            interleavedVideos.unshift(currentVideo)
+        }
 
         setFollowingMeta(parsedFollowingFeed.followingMeta)
         setFeed(interleavedVideos)
