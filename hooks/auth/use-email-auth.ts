@@ -48,8 +48,9 @@ export function useEmailAuth() {
         setError(null)
         try {
             const userCreds = await signUpWithEmailAndPassword(user)
+            if (!userCreds) throw new Error("Invalid email")
             await Promise.all([
-                createUser(userCreds.uid),
+                createUser(userCreds.uid, user.email),
                 createSession({ token: await userCreds.getIdToken(), uid: userCreds.uid }),
             ])
             return { success: true }
