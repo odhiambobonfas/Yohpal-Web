@@ -20,7 +20,12 @@ import { ResponsiveShareDialog } from "@/components/custom/app/video/ResponsiveS
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import {
+    InputGroup,
+    InputGroupAddon,
+    InputGroupButton,
+    InputGroupTextarea,
+} from "@/components/ui/input-group"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn, formatStat, formatTime } from "@/lib/utils"
 import { useAuth } from "@/providers/Auth"
@@ -185,25 +190,40 @@ export default function DesktopPlayerInteractions({
                 </div>
             </div>
             <div className="h-120 py-3 w-full flex gap-3 flex-col">
-                <form onSubmit={handleComment} className="relative w-full h-10">
-                    <Input
-                        type="text"
-                        value={commentMutation.text}
-                        onFocus={() => setIsTyping(true)}
-                        onBlur={() => setIsTyping(false)}
-                        onChange={(e) => commentMutation.setText(e.target.value)}
-                        className="rounded-full py-4 pr-12 text-lg w-full h-full"
-                        placeholder="Add comment..."
-                    />
-                    <Button
-                        type="submit"
-                        className="absolute right-1 top-1/2 transform -translate-y-1/2 rounded-full size-8"
-                        disabled={commentMutation.disabled}
-                    >
-                        <LucideSend />
-                    </Button>
+                <form onSubmit={handleComment} className="relative w-full ">
+                    <InputGroup className="rounded-2xl">
+                        <InputGroupTextarea
+                            required
+                            onFocus={() => setIsTyping(true)}
+                            onBlur={() => setIsTyping(false)}
+                            ref={(el) => {
+                                if (el) {
+                                    el.style.height = "auto"
+                                    el.style.height = Math.min(el.scrollHeight, 200) + "px"
+                                }
+                            }}
+                            value={commentMutation.text}
+                            onChange={(e) => {
+                                commentMutation.setText(e.target.value)
+                                e.target.style.height = "auto"
+                                e.target.style.height = Math.min(e.target.scrollHeight, 200) + "px"
+                            }}
+                            placeholder="Add comment..."
+                        />
+                        <InputGroupAddon align="inline-end" className="items-end pb-2">
+                            <InputGroupButton
+                                variant={"default"}
+                                type="submit"
+                                className="rounded-full hover:scale-100"
+                                disabled={commentMutation.disabled}
+                                size="icon-sm"
+                            >
+                                <LucideSend />
+                            </InputGroupButton>
+                        </InputGroupAddon>
+                    </InputGroup>
                 </form>
-                <ScrollArea className="flex-1 h-1/2 overflow-hidden py-3 flex flex-col gap-2">
+                <ScrollArea className="flex-1 h-[30%] overflow-hidden py-3 flex flex-col gap-2">
                     {currentStats.comments.length === 0 ? (
                         <NoCommentsCard />
                     ) : (
