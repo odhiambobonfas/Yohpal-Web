@@ -64,7 +64,7 @@ export default function UserDropDown({ className }: { className: string | undefi
                             loading="lazy"
                             width={50}
                             height={60}
-                            className="object-cover"
+                            className="object-cover not-checked:"
                             src={profile?.profile_picture || "/logo_circular.png"}
                             alt={profile?.userName || "User profile image"}
                         />
@@ -75,7 +75,9 @@ export default function UserDropDown({ className }: { className: string | undefi
             <DropdownMenuContent className="min-w-56" align="end" forceMount avoidCollisions>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <span className="text-sm font-medium leading-none">{userInitials}</span>
+                        <span className="text-sm font-medium leading-none">
+                            {profile?.userName || profile?.email?.split("@")[0] || userInitials}
+                        </span>
                         <span className="text-xs leading-none text-muted-foreground">
                             {user?.email}
                         </span>
