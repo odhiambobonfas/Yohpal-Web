@@ -167,7 +167,9 @@ export default function DesktopPlayerInteractions({
                     <Button
                         variant={"ghost"}
                         className={cn(
-                            currentStats.userBookmarked ? "text-blue-500" : "text-foreground",
+                            currentStats.userBookmarked
+                                ? "text-blue-500 dark:text-blue-500"
+                                : "text-foreground",
                             "hover:text-blue-500",
                         )}
                         onClick={handleBookmark}
