@@ -1,6 +1,5 @@
 import { DEBUG_BUILD } from "@/constants"
 import { db } from "@/lib/firebase/firebase.admin"
-import { replaceWithCDN } from "@/lib/utils"
 import { NextResponse } from "next/server"
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -14,10 +13,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
             .get()
 
         const videos = videoDocs.docs.map((v) => {
+            const videoData = v.data()
+            if (videoData?.watermarked !== undefined) return null
             if (!v.exists) return null
+
             return {
                 videoId: v.id,
-                videoUrl: replaceWithCDN(v.data().videoUrl),
+                videoUrl: videoData.videoUrl,
             }
         })
 
