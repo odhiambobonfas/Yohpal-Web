@@ -2,7 +2,6 @@ import { DEBUG_BUILD } from "@/constants"
 import { db } from "@/lib/firebase/firebase.admin"
 import { NextResponse } from "next/server"
 
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     if (!DEBUG_BUILD) return new Response("", { status: 406, statusText: "welp" })
 
     try {
