@@ -2,6 +2,8 @@ import { DEBUG_BUILD } from "@/constants"
 import { db } from "@/lib/firebase/firebase.admin"
 import { NextResponse } from "next/server"
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(req: Request) {
     if (!DEBUG_BUILD) return new Response("", { status: 406, statusText: "welp" })
 
     try {
