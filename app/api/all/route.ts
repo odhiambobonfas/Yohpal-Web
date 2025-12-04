@@ -11,6 +11,7 @@ export async function GET(req: Request) {
             .collection("videos")
             .select("videoUrl")
             .where("broken", "!=", true)
+            .orderBy("timestamp", "desc")
             .get()
 
         const videos = videoDocs.docs.map((v) => {
