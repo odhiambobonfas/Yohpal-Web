@@ -45,3 +45,4 @@ certificates
 public/sw*
 public/work*
 dump.rdb
+bun.lock
