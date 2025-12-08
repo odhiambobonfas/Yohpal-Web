@@ -2,7 +2,6 @@
 import {
     LucideAlbum,
     LucideBriefcase,
-    LucideCompass,
     LucideGlobeLock,
     LucideHome,
     LucideScrollText,
@@ -27,7 +26,8 @@ import {
 
 const navItems = [
     { icon: LucideHome, title: "Suggested", link: "/" },
-    { icon: LucideCompass, title: "Explore", link: "//" },
+    // TODO:: Enable this after the algo has been decided
+    // { icon: LucideCompass, title: "Explore", link: "//" },
     {
         icon: LucideUserCheck,
         title: "following",
