@@ -103,6 +103,7 @@ externally managed cache instance, redis,memcached,vulkan,dragonfly take your pi
 
 TODO(b4b852539b6d) :: Autoscroll disabled on safari
 ---
-There's a bug in safari that causes the videos to scroll really fast when its enabled,
-and it doesn't respect it even when disabled, so we remove the feature from UI
-and default it to `false` always on safari; you hould probably look into this.
+There's a bug in how we handle auto-scrolling on safari that causes the videos
+to scroll really fast when its enabled,and it doesn't respect it even when disabled,
+so we remove the feature from UI and default it to `false` always on safari;
+> you should probably look into this.
