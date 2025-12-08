@@ -20,7 +20,7 @@ export default function NotLoggedIn() {
             title="Logged Out"
             description="We can't show you your following feed just yet"
             cancelText="Go back"
-            onClose={router.back}
+            onClose={() => router.push("/")}
             actionText="Login"
             onAction={handleLoginAction}
         />
