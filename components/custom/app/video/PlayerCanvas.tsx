@@ -25,7 +25,7 @@ import {
 import useVideoHandlers from "@/hooks/videos/use-video-handlers"
 import { filterBlocked } from "@/lib/filter-blocked"
 import { randomizeVideos } from "@/lib/randomize-videos"
-import { getLast } from "@/lib/utils"
+import { getLast, isSafari } from "@/lib/utils"
 import { videoMix } from "@/services/server/mixed-feed"
 import { LucideChevronDown, LucideChevronUp } from "lucide-react"
 import KeyShortcuts from "../KeyShortcuts"
@@ -257,6 +257,11 @@ export default function PlayerCanvas({
     const [autoScrollEnabled, setAutoScrollEnabled] = useState(false)
 
     useEffect(() => {
+        if (isSafari()) {
+            setAutoScrollEnabled(false)
+            return
+        }
+
         const saved = localStorage.getItem("autoscrollEnabled")
         if (saved !== null) {
             setAutoScrollEnabled(saved === "true")

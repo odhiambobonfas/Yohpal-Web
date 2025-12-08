@@ -99,3 +99,10 @@ when cache becomes stable, we can use that, but this impl has a drawback in that
 it gets reset on app re/build (this includes redeplyoment) and is turned off by default in
 dev mode, still haven;t found a way to force it on in dev, but it should be replaced with an
 externally managed cache instance, redis,memcached,vulkan,dragonfly take your pick.
+
+
+TODO(b4b852539b6d) :: Autoscroll disabled on safari
+---
+There's a bug in safari that causes the videos to scroll really fast when its enabled,
+and it doesn't respect it even when disabled, so we remove the feature from UI
+and default it to `false` always on safari; you hould probably look into this.

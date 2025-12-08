@@ -5,6 +5,7 @@ import { twMerge } from "tailwind-merge"
 
 import { CDN_URL, DEFAULT_THUMBNAIL, OLD_URL } from "@/constants"
 import { FirebaseTimestamp } from "@/types/base"
+import { logger } from "./logger"
 
 dayjs.extend(relativeTime)
 
@@ -85,6 +86,15 @@ function flattenObject<T extends object>(raw: T): object {
     return result as object
 }
 
+// TODO(b4b852539b6d)
+function isSafari() {
+    if (typeof window === "undefined") {
+        logger.warn("Safari check running server-side")
+        return false
+    }
+    return /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+}
+
 export {
     cn,
     flattenObject,
@@ -92,6 +102,7 @@ export {
     formatTime,
     getError,
     getLast,
+    isSafari,
     recoverThumbnail,
     replaceWithCDN,
     serializeTimestamp,
