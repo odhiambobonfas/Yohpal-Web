@@ -22,7 +22,7 @@ export default function CommentCard({
     handleCommentDelete,
     handleCommentLikeToggle,
 }: CommentMutationProps) {
-    const { profile } = useAuth()
+    const { profile, isAuthenticated } = useAuth()
     const [active, setActive] = useState(false)
     const router = useRouter()
 
@@ -77,7 +77,7 @@ export default function CommentCard({
                             />
                             <span>{comment.likes}</span>
                         </Button>
-                        {profile?.uid === comment.userId && (
+                        {isAuthenticated && profile?.uid === comment.userId && (
                             <Button
                                 onClick={() => handleCommentDelete(comment.id, comment.videoId)}
                                 className=""
