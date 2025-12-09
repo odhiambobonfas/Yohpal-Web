@@ -118,14 +118,6 @@ export const ourServicesList = [
 
 export const leaderShip = [
     {
-        image: "/org/images/team/bernard-kungu.jpg",
-        name: "Bernard Kung'u",
-        role: "General Manager & Senior Developer",
-        description: `Bernard leads YohPal's technical development and strategic direction, ensuring
-      smooth coordination across products and a scalable, secure infrastructure`,
-    },
-
-    {
         image: "/org/images/team/dennis-maina.jpeg",
         name: "Dennis Maina",
         role: "Operations Lead",
@@ -138,13 +130,5 @@ and delivering user-centric, high-performance solutions.`,
         role: "System analyst & Documentation specialist",
         description: `Elizabeth manages systems analysis and documentation, ensuring clarity, consistency,
     and alignment between business goals and technical execution.`,
-    },
-
-    {
-        image: "/org/images/team/monica.jpg",
-        name: "Monicah",
-        role: "UI/UX Designer",
-        description: `Monicah crafts engaging and accessible user experiences, translating ideas
-      into intuitive designs that connect users seamlessly with YohPal’s features`,
     },
 ]
