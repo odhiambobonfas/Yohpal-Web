@@ -51,7 +51,9 @@ export default function CommentCard({
                     </Avatar>
                     <Link
                         href={
-                            comment.userId === profile?.uid ? `/profile` : `/user/${comment.userId}`
+                            comment.userId && comment.userId === profile?.uid
+                                ? `/profile`
+                                : `/user/${comment.userId}`
                         }
                         prefetch={active ? null : false}
                         onMouseEnter={() => setActive(true)}
