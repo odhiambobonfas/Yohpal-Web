@@ -3,11 +3,12 @@ import { useEffect, useState } from "react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useUserMutation } from "@/hooks/user/use-user-mutation"
 import { useAuth } from "@/providers/Auth"
 import { YPUser } from "@/types/users"
 import { LucideUserMinus2, LucideUserPlus2 } from "lucide-react"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import AppAlert from "../AppAlert"
@@ -31,6 +32,7 @@ interface ProfileHeaderProps {
 
 export default function ProfileHeader({ user, stats, profileType }: ProfileHeaderProps) {
     const [expanded, setExpanded] = useState(false)
+    const [previewOpen, setPreviewOpen] = useState(false)
     const wordsToShow = 5
     const words = user?.bio?.split(" ") || []
     const isLong = words.length > wordsToShow
@@ -85,19 +87,40 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
             />
 
             <div className="min-h-[30%] flex flex-col p-2 items-center md:flex-row  md:justify-center">
-                <div className="flex-shrink-0">
-                    <Avatar className="size-[90px] md:size-50">
-                        <AvatarImage
-                            loading="lazy"
-                            width={10}
-                            height={10}
-                            className="rounded-full object-cover"
-                            src={user?.profile_picture || "/logo_circular.png"}
-                            alt={user?.userName || "User profile image"}
-                        />
-                        <AvatarFallback>{user?.userName[0] || user?.email[0]}</AvatarFallback>
-                    </Avatar>
-                </div>
+                <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+                    <DialogTrigger asChild>
+                        <div className="flex-shrink-0 cursor-pointer">
+                            <Avatar className="size-[90px] md:size-50 hover:opacity-90 transition-opacity">
+                                <AvatarImage
+                                    loading="lazy"
+                                    width={10}
+                                    height={10}
+                                    className="rounded-full object-cover"
+                                    src={user?.profile_picture || "/logo_circular.png"}
+                                    alt={user?.userName || "User profile image"}
+                                />
+                                <AvatarFallback>
+                                    {user?.userName[0] || user?.email[0]}
+                                </AvatarFallback>
+                            </Avatar>
+                        </div>
+                    </DialogTrigger>
+                    <DialogContent
+                        showCloseButton={false}
+                        className="flex items-center justify-center border-0 bg-transparent p-0 max-w-none w-auto shadow-none"
+                    >
+                        <DialogTitle className="hidden">Profile Picture</DialogTitle>
+                        <div className="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px]">
+                            <Image
+                                src={user?.profile_picture || "/logo_circular.png"}
+                                alt={user?.userName || "User profile image"}
+                                fill
+                                className="rounded-full object-cover"
+                                priority
+                            />
+                        </div>
+                    </DialogContent>
+                </Dialog>
 
                 <div className="md:ml-5 flex-1 flex-col flex items-center md:items-start">
                     <div className="flex flex-col gap-1 justify-center">

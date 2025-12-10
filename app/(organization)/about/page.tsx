@@ -24,7 +24,7 @@ import {
 } from "./_lib/data"
 
 export default async function Page() {
-    const settings = await withCache(getCompanyGeneralSettings, "general-settings")
+    const settings = await withCache(getCompanyGeneralSettings, "generalSettings")
 
     const contactInfo = [
         { icon: LucideMapPin, title: "Our Address", details: settings?.companyAddress },

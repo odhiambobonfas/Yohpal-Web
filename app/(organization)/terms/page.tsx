@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-    const settings = await withCache(getCompanyGeneralSettings, "general-settings")
+    const settings = await withCache(getCompanyGeneralSettings, "generalSettings")
 
     return (
         <div className="flex flex-col justify-center w-full items-center p-6 mt-10">

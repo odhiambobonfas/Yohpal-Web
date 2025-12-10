@@ -5,7 +5,7 @@ export async function getCompanyGeneralSettings() {
     const settingsDocs = await db
         .collection("settings")
         .doc("yohpal")
-        .collection("generalsettings")
+        .collection("generalSettings")
         .get()
 
     if (settingsDocs.empty) return null

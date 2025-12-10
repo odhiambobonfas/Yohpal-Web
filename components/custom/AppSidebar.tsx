@@ -74,7 +74,6 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
 
     const isActive = (itemLink: string) => {
         if (itemLink === "/") {
-            console.log("active")
             return pathname === "/"
         }
         return pathname.startsWith(itemLink)
