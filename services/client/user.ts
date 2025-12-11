@@ -15,6 +15,10 @@ export async function getUserProfile(userId: string) {
     if (!userDoc.exists()) return null
 
     const data = userDoc.data()
+
+    // NOTE(4d84757014cb)
+    if (data.triggeredBy) return null
+
     return {
         uid: userDoc.id,
         ...data,
@@ -29,7 +33,7 @@ export async function getUserfollowers(userId: string, limit?: number) {
     const userFollowersDocs = await getDocs(q)
     if (userFollowersDocs.empty) return []
 
-    return userFollowersDocs.docs.map((f) => f.id)
+    return userFollowersDocs.docs.map((f) => f.id).filter((v) => v !== undefined)
 }
 
 export async function getUserfollowing(userId: string, limit?: number) {
@@ -49,8 +53,8 @@ export async function getUserfollowing(userId: string, limit?: number) {
 
 export async function getUserFriends(userId: string) {
     const [followers, following] = await Promise.all([
-        getUserfollowers(userId),
-        getUserfollowing(userId),
+        getUserfollowers(userId, undefined),
+        getUserfollowing(userId, undefined),
     ])
 
     if (!followers.length || !following.length) return []

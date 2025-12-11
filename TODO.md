@@ -1,5 +1,14 @@
 > TODOs/NOTEs
 
+
+NOTE(4d84757014cb) :: Deleted Accounts
+---
+Accounts for deleted user accounts
+Accounts are deleted by a cloud-function and tagged with
+`triggeredBy` and `actualDeletionDate` not sure if `actualDeletionDate`
+is set after the data is deleted or immediately its triggered
+
+
 NOTE(182a2d6a1ae0) :: Promoted content
 ---
 Promoted contents stats should be separated cause we need to be able
