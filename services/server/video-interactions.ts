@@ -129,10 +129,13 @@ async function updateView(interaction: VideoInteraction) {
         .collection("userIds")
         .doc(interaction.userId)
 
+    // NOTE(182a2d6a1ae0)
     const promotedViewsRef = db
         .collection("videos")
         .doc(interaction.videoId)
         .collection("campaign_stats")
+        .doc("PROMOTED")
+        .collection("views")
         .doc(DOC)
         .collection("userIds")
         .doc(interaction.userId)

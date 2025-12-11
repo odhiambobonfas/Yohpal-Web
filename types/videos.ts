@@ -73,6 +73,7 @@ export interface CommentActionProps {
     commentId: string
 }
 
+// NOTE(182a2d6a1ae0)
 export interface VideoInteraction {
     userId: string
     videoId: string

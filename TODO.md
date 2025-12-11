@@ -1,12 +1,38 @@
 > TODOs/NOTEs
 
+NOTE(182a2d6a1ae0) :: Promoted content
+---
+Promoted contents stats should be separated cause we need to be able
+to show the user how much they've gained during the campaign period.
+There was no predefined way, so I just placed them in a subcollection
+`campaign_stats`
+
+The structure is:\
+`videos/<videoId>/campaign_stats/PROMOTED/<stat>/<DOC>/userIds/<userId>`
+
+> why the **PROMOTED** document though?
+>
+> Well we can't keep going inside the nested subcollections for simple reads,
+> so they get brought up to the PROMOTED doc, making reads only 1 level deep
+> If you can find a better way, it would be fantastic
+
+- **stat**
+  - views
+  - likes
+  - downloads
+  - bookmarked
+are what seem to make sense to have there but I may be wrong
+
+**DOC**: is a hardcoded documentID that was already in the db when we begun working on it,
+and haven't really found a better way to replace it yet, cause a lot of things already depend on
+it.
 
 
 NOTE(d6e453a10692) :: In the shadow
 ---
 The redis first implementation is run in tandem with the old db updating functionality
 to ensure that the records are in sync, before the cloud functions takes over.
-> Remove the db operations when cloudfunction is live
+> Remove the db operations when cloud-function is live
 
 NOTE(0f80476cffa0) :: Prod only functionality
 ---
@@ -53,7 +79,7 @@ TODO(253894320916) :: Handle infinite scroll for both directions
 > its come accross, since we still only ever have 7 items on the dom, its relatively fast
 > tested it by autoscrolling 800+ videos and no delay was noticed
 
-Currently infinite scroll only works oneway, forwards, what if they want to go backwards
+Currently infinite scroll only works one way, forwards, what if they want to go backwards
 not a problem for right now, but possibly handle this in the future
 
 TODO(80186fb26301) :: Comment deletes
@@ -76,7 +102,7 @@ are more privacy filters/options, I haven't found them all and the people who se
 aren't here anymore, so updated this when you find more
 
 
-TODO(583fae8a3d42) :: Handle nested objects
+~TODO(583fae8a3d42) :: Handle nested objects~ [*Resolved*] `flattenObject` removes nested objetcs
 ---
 Next doesnt play nice with nested objects, especially when passing them down from
 server rendered pages ie initial page, to go around this, I just *delete* the `campaignMeta`
