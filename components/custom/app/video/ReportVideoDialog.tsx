@@ -24,6 +24,7 @@ import { AlertCircle } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 import { POLICIES } from "./_policy-data"
+import { useAuth } from "@/providers/Auth"
 
 export default function ReportVideoDialog({
     videoId,
@@ -32,6 +33,7 @@ export default function ReportVideoDialog({
     videoId: string
     children: React.ReactNode
 }) {
+    const {isAuthenticated} = useAuth()
     const [scenario, setScenario] = useState<string>("")
     const [details, setDetails] = useState<string>("")
     const { submitReport, loading } = useReportVideoMutation()
@@ -84,7 +86,7 @@ export default function ReportVideoDialog({
                     {scenario && selectedPolicy && scenario !== "Other" && (
                         <div className="bg-muted/50 rounded-lg p-4 space-y-2 border">
                             <div className="flex items-start gap-2">
-                                <AlertCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                                <AlertCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
                                 <div className="space-y-2 flex-1">
                                     <p className="font-medium">
                                         We don&apos;t allow the following:
@@ -126,10 +128,14 @@ export default function ReportVideoDialog({
                         <Button
                             variant={"destructive"}
                             onClick={handleSubmit}
-                            disabled={!scenario}
+                            disabled={!scenario || !isAuthenticated}
                             className="gap-2"
                         >
-                            {loading ? "Submitting..." : "Submit Report"}
+                            {
+                                isAuthenticated
+                                ? loading ? "Submitting..." : "Submit Report"
+                                : "You need to be logged in"
+                            }
                         </Button>
                     </DialogClose>
                 </DialogFooter>
