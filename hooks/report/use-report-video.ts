@@ -6,12 +6,14 @@ import { useState } from "react"
 export function useReportVideoMutation() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
-    const { profile } = useAuth()
+    const { profile,isAuthenticated } = useAuth()
 
     const submitReport = async (videoId: string, scenario: string, details: string) => {
         try {
             setLoading(true)
             setError(null)
+
+            if (!isAuthenticated) throw new Error("Actor needs to be authenticated")
 
             await reportVideo({
                 userId: profile!.uid,
