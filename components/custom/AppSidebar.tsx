@@ -23,6 +23,7 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from "@/components/ui/sidebar"
+import { useAuth } from "@/providers/Auth"
 
 const navItems = [
     { icon: LucideHome, title: "Suggested", link: "/" },
@@ -64,13 +65,15 @@ const navItems = [
     {
         icon: LucideWallet,
         title: "Account Manager",
-        target: "_blank",
-        link: "https://accountmanager.yohpal.com",
+        link: "/account",
+        prefetch: true,
+        requiresAuth: true,
     },
 ]
 
 export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const pathname = usePathname()
+    const { user } = useAuth()
 
     const isActive = (itemLink: string) => {
         if (itemLink === "/") {
@@ -78,6 +81,14 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
         }
         return pathname.startsWith(itemLink)
     }
+
+    // Filter nav items based on auth state
+    const filteredNavItems = navItems.filter((item) => {
+        if (item.requiresAuth && !user) {
+            return false
+        }
+        return true
+    })
 
     return (
         <Sidebar collapsible="icon" className="group/sidebar" {...props}>
@@ -102,7 +113,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
             </SidebarHeader>
             <SidebarContent className="p-2">
                 <SidebarMenu>
-                    {navItems.map((item, idx) =>
+                    {filteredNavItems.map((item, idx) =>
                         item.position !== "bottom" ? (
                             <Link
                                 href={item.link}
@@ -131,7 +142,7 @@ export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sid
             <SidebarRail />
             <SidebarFooter>
                 <SidebarMenu>
-                    {navItems.map((item, idx) =>
+                    {filteredNavItems.map((item, idx) =>
                         item.position === "bottom" ? (
                             <Link
                                 href={item.link}
