@@ -68,7 +68,7 @@ export async function updateBusinessProfile(data: Partial<BusinessProfile>, user
         // For now, let's implementation assuming we pass the object to be merged.
         
         // Construct update data
-        const updateData: any = {}
+        const updateData: Record<string, unknown> = {}
         for (const [key, value] of Object.entries(data)) {
             updateData[`businessProfile.${key}`] = value
         }
