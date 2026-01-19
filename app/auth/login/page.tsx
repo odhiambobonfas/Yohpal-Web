@@ -4,8 +4,10 @@ import { LucideEye, LucideEyeOff, LucideLoader2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { FormEvent, Suspense, useState } from "react"
+import { FormEvent, Suspense, useState, useEffect } from "react"
 
+import { createSession } from "@/actions/session"
+import { useAuth } from "@/providers/Auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -24,11 +26,38 @@ export default function Page() {
 function LoginComponent() {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const { user, loading: authLoading } = useAuth()
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
     const { loading, error, login } = useEmailAuth()
+
+    // Auto-login / Cookie restoration
+    useEffect(() => {
+        const restoreSession = async () => {
+             if (user && !authLoading) {
+                 try {
+                     const token = await user.getIdToken()
+                     await createSession({ token, uid: user.uid })
+                     
+                     const returnTo = searchParams.get("returnTo")
+                     if (returnTo) {
+                         router.push(decodeURIComponent(returnTo))
+                     } else {
+                         // Only redirect to home if we are actually at the login page explicitly 
+                         // and not just confused. But standard behavior is redirect to dashboard or home.
+                         router.push("/")
+                     }
+                     // Only show toast if we actually did a restoration? No, keep it silent for smoother UX.
+                 } catch (err) {
+                     console.error("Failed to restore session", err)
+                 }
+             }
+        }
+        
+        restoreSession()
+    }, [user, authLoading, router, searchParams])
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault()

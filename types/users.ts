@@ -13,6 +13,18 @@ export interface YPUser {
     followersCount: number
     followingCount: number
     contentPreferences: string[] | undefined
+    businessProfile?: BusinessProfile
+}
+
+export interface BusinessProfile {
+    businessName: string
+    businessDescription: string
+    businessLogo: string
+    contactInfo: string
+    category: string
+    verificationStatus: "pending" | "verified" | "rejected" | "unverified"
+    walletBalance: number
+    totalSpent: number
 }
 
 export interface AuthUser {

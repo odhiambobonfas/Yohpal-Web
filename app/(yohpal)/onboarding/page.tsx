@@ -63,8 +63,8 @@ export default function Page() {
         if (profile) {
             setEmail((prev) => prev || profile.email)
             setUserName((prev) => prev || sanitizeUserName(profile.userName))
-            setFirstName((prev) => prev || profile.firstName)
-            setLastName((prev) => prev || profile.lastName)
+            setFirstName((prev) => prev || profile.firstName || "")
+            setLastName((prev) => prev || profile.lastName || "")
             setSelected((prev) => (prev.length ? prev : (profile?.contentPreferences ?? [])))
             setCountry((prev) => prev || profile.Country)
             setRefererCode((prev) => prev || profile.refererCode)
