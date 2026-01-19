@@ -1,6 +1,6 @@
 import { db } from "@/lib/firebase/firebase.admin"
 import { Ad } from "@/types/ads"
-import { AD_FREQUENCY_BASE } from "@/constants"
+import { AD_COST_PER_IMPRESSION, AD_FREQUENCY_BASE } from "@/constants"
 
 export interface AdForFeed extends Ad {
     isAd: true
@@ -27,9 +27,10 @@ export async function selectAdsForFeed(count: number = 1): Promise<AdForFeed[]> 
         for (const doc of adsSnapshot.docs) {
             const adData = doc.data() as Omit<Ad, "id">
             const remainingBudget = adData.totalBudget - adData.spentAmount
+            const costPerImpression = adData.costPerImpression || AD_COST_PER_IMPRESSION
 
             // Only include ads with remaining budget for at least one impression
-            if (remainingBudget >= adData.costPerImpression) {
+            if (remainingBudget >= costPerImpression) {
                 eligibleAds.push({
                     id: doc.id,
                     ...adData,
