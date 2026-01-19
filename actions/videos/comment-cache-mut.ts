@@ -19,7 +19,7 @@ async function addCommentCacheAction(interaction: VideoCommentInteraction) {
     let cachedComments: VideoComment[] = []
 
     try {
-        const comments = await redis.get(key)
+        const comments = redis ? await redis.get(key) : null
         if (comments) cachedComments = JSON.parse(comments)
 
         const now = new Date()
@@ -58,7 +58,7 @@ async function deleteCacheComment(commentId: string, videoId: string) {
     let parsedComments: VideoComment[] = []
 
     try {
-        const comments = await redis.get(key)
+        const comments = redis ? await redis.get(key) : null
         if (comments) parsedComments = JSON.parse(comments)
 
         const commentIdx = parsedComments.findIndex((c) => c.id === commentId)
@@ -78,7 +78,7 @@ async function toggleCacheCommentLike(cap: CommentActionProps, like: boolean) {
     let parsedComments: VideoComment[] = []
 
     try {
-        const comments = await redis.get(key)
+        const comments = redis ? await redis.get(key) : null
         if (comments) parsedComments = JSON.parse(comments)
 
         const commentIdx = parsedComments.findIndex((c) => c.id === cap.commentId)

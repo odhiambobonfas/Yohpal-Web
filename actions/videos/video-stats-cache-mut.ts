@@ -11,7 +11,7 @@ async function toggleCachedVideoLikeAction(interaction: VideoInteraction) {
     let parsedVideoLikes: string[] = []
 
     try {
-        const videoLikes = await redis.get(key)
+        const videoLikes = redis ? await redis.get(key) : null
         if (videoLikes) parsedVideoLikes = JSON.parse(videoLikes)
 
         const userIndex = parsedVideoLikes.findIndex((u) => u.startsWith(interaction.userId))
@@ -36,7 +36,7 @@ async function toggleBookmarkCachedVideoAction(interaction: VideoInteraction) {
     let parsedVideoBookmarks: string[] = []
 
     try {
-        const videoBookmarks = await redis.get(key)
+        const videoBookmarks = redis ? await redis.get(key) : null
         if (videoBookmarks) parsedVideoBookmarks = JSON.parse(videoBookmarks)
 
         const userIndex = parsedVideoBookmarks.findIndex((u) => u.startsWith(interaction.userId))
@@ -61,7 +61,7 @@ async function downloadCachedVideoAction(interaction: VideoInteraction) {
     let parsedVideoDownloads: string[] = []
 
     try {
-        const videoDownloads = await redis.get(key)
+        const videoDownloads = redis ? await redis.get(key) : null
         if (videoDownloads) parsedVideoDownloads = JSON.parse(videoDownloads)
 
         if (parsedVideoDownloads.includes(interaction.userId)) return
@@ -80,7 +80,7 @@ async function viewCachedVideoAction(interaction: VideoInteraction) {
     let parsedVideoViews: string[] = []
 
     try {
-        const videoViews = await redis.get(key)
+        const videoViews = redis ? await redis.get(key) : null
         if (videoViews) parsedVideoViews = JSON.parse(videoViews)
 
         if (parsedVideoViews.includes(interaction.userId)) return
@@ -99,7 +99,7 @@ async function shareCachedVideoAction(interaction: VideoInteraction) {
     let parsedVideoShared: string[] = []
 
     try {
-        const videoShared = await redis.get(key)
+        const videoShared = redis ? await redis.get(key) : null
         if (videoShared) parsedVideoShared = JSON.parse(videoShared)
 
         if (parsedVideoShared.includes(interaction.userId)) return
@@ -114,6 +114,8 @@ async function shareCachedVideoAction(interaction: VideoInteraction) {
 }
 
 async function updateCachedVideosLookup(videoId: string) {
+    if (!redis) return
+
     let parsedLookup: string[] = []
     try {
         const lookup = await redis.get("videos:lookup")
