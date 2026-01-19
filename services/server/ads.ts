@@ -1,6 +1,6 @@
 import { db } from "@/lib/firebase/firebase.admin"
 import { Ad } from "@/types/ads"
-import { AD_COST_PER_IMPRESSION, AD_FREQUENCY_BASE } from "@/constants"
+import { AD_FREQUENCY_BASE } from "@/constants"
 
 export interface AdForFeed extends Ad {
     isAd: true
