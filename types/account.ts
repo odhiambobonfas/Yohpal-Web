@@ -19,7 +19,7 @@ export interface AccountStats {
 }
 
 // Transactions
-export type TransactionType = "deposit" | "withdrawal" | "referral" | "bonus"
+export type TransactionType = "deposit" | "referral" | "bonus"
 export type TransactionStatus = "pending" | "completed" | "failed" | "cancelled"
 
 export interface Transaction {
