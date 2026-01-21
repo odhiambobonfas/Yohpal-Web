@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useAccountBalance, useTransactions } from "@/hooks/account"
 import { StatsCards } from "@/components/custom/account/dashboard/StatsCards"
 import { EarningsBreakdown } from "@/components/custom/account/dashboard/EarningsBreakdown"
@@ -90,8 +91,12 @@ export default function AccountDashboard() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button>Upload Ad</Button>
-                  <Button variant="outline">Deposit Funds</Button>
+                  <Button asChild>
+                    <Link href="/account/ads/create">Upload Ad</Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link href="/account/deposit">Deposit Funds</Link>
+                  </Button>
                 </div>
               </div>
 
