@@ -2,8 +2,7 @@ import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import { COOKIES } from "@/constants"
 import { DepositRequest, DepositResponse, ApiResponse } from "@/types/account"
-
-const DEPOSIT_API_URL = process.env.YOHPAL_ACCOUNT_API_URL || "https://yohpal-apis.onrender.com"
+import { initiateStkPush } from "@/lib/mpesa"
 
 export async function POST(request: Request) {
   try {
@@ -28,42 +27,17 @@ export async function POST(request: Request) {
       )
     }
 
-    if (amount < 10) {
-      return NextResponse.json<ApiResponse<null>>(
-        { success: false, error: "Minimum deposit amount is KES 10" },
-        { status: 400 }
-      )
-    }
-
-    // Format phone number (ensure it starts with 254)
-    let formattedPhone = phoneNumber.replace(/\s/g, "")
-    if (formattedPhone.startsWith("0")) {
-      formattedPhone = "254" + formattedPhone.slice(1)
-    } else if (formattedPhone.startsWith("+254")) {
-      formattedPhone = formattedPhone.slice(1)
-    } else if (!formattedPhone.startsWith("254")) {
-      formattedPhone = "254" + formattedPhone
-    }
-
-    // Call the backend M-Pesa STK push API
-    const response = await fetch(`${DEPOSIT_API_URL}/deposit/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId,
-        phoneNumber: formattedPhone,
-        amount: Math.round(amount),
-      }),
+    // Initiate STK Push using the M-Pesa module
+    const result = await initiateStkPush({
+      phoneNumber,
+      amount,
+      userId,
     })
 
-    const data = await response.json()
-
-    if (!response.ok) {
+    if (!result.success) {
       return NextResponse.json<ApiResponse<null>>(
-        { success: false, error: data.message || "Deposit request failed" },
-        { status: response.status }
+        { success: false, error: result.error || result.message },
+        { status: 400 }
       )
     }
 
@@ -71,13 +45,13 @@ export async function POST(request: Request) {
       success: true,
       data: {
         success: true,
-        message: "STK push sent. Please check your phone and enter your M-Pesa PIN.",
-        transactionId: data.transactionId,
-        checkoutRequestId: data.checkoutRequestId,
+        message: result.message,
+        transactionId: result.merchantRequestId,
+        checkoutRequestId: result.checkoutRequestId,
       },
     })
   } catch (error) {
-    console.error("Error processing deposit:", error)
+    console.error("[M-Pesa Deposit Error]:", error)
     return NextResponse.json<ApiResponse<null>>(
       { success: false, error: "Failed to process deposit request" },
       { status: 500 }

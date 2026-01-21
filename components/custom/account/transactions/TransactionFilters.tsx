@@ -35,7 +35,6 @@ export function TransactionFilters({ filters, onFilterChange }: TransactionFilte
         <SelectContent>
           <SelectItem value="all">All Types</SelectItem>
           <SelectItem value="deposit">Deposits</SelectItem>
-          <SelectItem value="withdrawal">Withdrawals</SelectItem>
           <SelectItem value="referral">Referrals</SelectItem>
           <SelectItem value="bonus">Bonuses</SelectItem>
         </SelectContent>

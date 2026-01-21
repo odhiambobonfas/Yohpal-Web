@@ -2,7 +2,6 @@
 
 import {
   ArrowDownToLine,
-  ArrowUpFromLine,
   Users,
   Gift,
   CheckCircle2,
@@ -39,20 +38,25 @@ interface TransactionTableProps {
   onPageChange: (page: number) => void
 }
 
-function formatCurrency(amount: number, type: TransactionType): string {
-  const prefix = type === "withdrawal" ? "-" : "+"
-  return `${prefix}KES ${Math.abs(amount).toLocaleString()}`
+function formatCurrency(amount: number): string {
+  return `+KES ${Math.abs(amount).toLocaleString()}`
 }
 
 function formatDate(date: string | { seconds: number; nanoseconds: number }): string {
-  const d = typeof date === "string" ? new Date(date) : new Date(date.seconds * 1000)
-  return d.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  })
+  try {
+    const d = typeof date === "string" ? new Date(date) : new Date(date.seconds * 1000)
+    if (isNaN(d.getTime())) return "—"
+    return d.toLocaleDateString("en-KE", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    })
+  } catch {
+    return "—"
+  }
 }
 
 const typeConfig: Record<
@@ -64,12 +68,6 @@ const typeConfig: Record<
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
     label: "Deposit",
-  },
-  withdrawal: {
-    icon: ArrowUpFromLine,
-    color: "text-red-500",
-    bgColor: "bg-red-500/10",
-    label: "Withdrawal",
   },
   referral: {
     icon: Users,
@@ -191,7 +189,7 @@ export function TransactionTable({
                       Type
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-muted-foreground">
-                      Description
+                      M-Pesa Ref
                     </th>
                     <th className="text-left py-3 px-4 font-medium text-muted-foreground">
                       Date
@@ -233,27 +231,15 @@ export function TransactionTable({
                             </span>
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-muted-foreground">
-                          {transaction.description}
-                          {transaction.reference && (
-                            <span className="block text-xs opacity-75">
-                              Ref: {transaction.reference}
-                            </span>
-                          )}
+                        <td className="py-4 px-4 text-muted-foreground font-mono text-sm">
+                          {transaction.reference || "—"}
                         </td>
                         <td className="py-4 px-4 text-muted-foreground text-sm">
                           {formatDate(transaction.createdAt)}
                         </td>
                         <td className="py-4 px-4 text-right">
-                          <span
-                            className={cn(
-                              "font-semibold",
-                              transaction.type === "withdrawal"
-                                ? "text-red-500"
-                                : "text-green-500"
-                            )}
-                          >
-                            {formatCurrency(transaction.amount, transaction.type)}
+                          <span className="font-semibold text-green-500">
+                            {formatCurrency(transaction.amount)}
                           </span>
                         </td>
                         <td className="py-4 px-4 text-right">
@@ -313,20 +299,13 @@ export function TransactionTable({
                           </p>
                         </div>
                       </div>
-                      <span
-                        className={cn(
-                          "font-semibold",
-                          transaction.type === "withdrawal"
-                            ? "text-red-500"
-                            : "text-green-500"
-                        )}
-                      >
-                        {formatCurrency(transaction.amount, transaction.type)}
+                      <span className="font-semibold text-green-500">
+                        {formatCurrency(transaction.amount)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground truncate flex-1 mr-2">
-                        {transaction.description}
+                      <span className="text-muted-foreground truncate flex-1 mr-2 font-mono">
+                        {transaction.reference || "—"}
                       </span>
                       <Badge
                         variant="secondary"

@@ -3,7 +3,6 @@
 import Link from "next/link"
 import {
   ArrowDownToLine,
-  ArrowUpFromLine,
   Users,
   Gift,
   CheckCircle2,
