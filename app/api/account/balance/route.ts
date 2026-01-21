@@ -16,7 +16,7 @@ export async function GET() {
       )
     }
 
-    // Fetch user balance data from Firestore
+    // Fetch user data from Firestore
     const userDoc = await db.collection("users").doc(userId).get()
     if (!userDoc.exists) {
       return NextResponse.json<ApiResponse<null>>(
@@ -27,58 +27,23 @@ export async function GET() {
 
     const userData = userDoc.data()
 
-    // Fetch transaction totals
+    // Fetch completed deposits from mpesa_transactions
     const depositsSnapshot = await db
-      .collection("transactions")
+      .collection("mpesa_transactions")
       .where("userId", "==", userId)
-      .where("type", "==", "deposit")
       .where("status", "==", "completed")
       .get()
 
-    const withdrawalsSnapshot = await db
-      .collection("transactions")
-      .where("userId", "==", userId)
-      .where("type", "==", "withdrawal")
-      .where("status", "==", "completed")
-      .get()
-
-    const referralEarningsSnapshot = await db
-      .collection("transactions")
-      .where("userId", "==", userId)
-      .where("type", "==", "referral")
-      .where("status", "==", "completed")
-      .get()
-
-    const bonusEarningsSnapshot = await db
-      .collection("transactions")
-      .where("userId", "==", userId)
-      .where("type", "==", "bonus")
-      .where("status", "==", "completed")
-      .get()
-
-    // Calculate totals
+    // Calculate total deposits
     let totalDeposits = 0
     depositsSnapshot.forEach((doc) => {
       totalDeposits += doc.data().amount || 0
     })
 
-    let totalWithdrawals = 0
-    withdrawalsSnapshot.forEach((doc) => {
-      totalWithdrawals += doc.data().amount || 0
-    })
-
-    let referralEarnings = 0
-    referralEarningsSnapshot.forEach((doc) => {
-      referralEarnings += doc.data().amount || 0
-    })
-
-    let bonusEarnings = 0
-    bonusEarningsSnapshot.forEach((doc) => {
-      bonusEarnings += doc.data().amount || 0
-    })
-
+    const referralEarnings = userData?.referralEarnings || 0
+    const bonusEarnings = userData?.bonusEarnings || 0
     const totalEarnings = referralEarnings + bonusEarnings
-    const availableBalance = totalDeposits + totalEarnings - totalWithdrawals
+    const availableBalance = totalDeposits + totalEarnings
 
     // Count network size (referrals)
     const referralsSnapshot = await db
@@ -89,11 +54,23 @@ export async function GET() {
 
     const networkSize = referralsSnapshot.data().count || 0
 
+    // Count pending deposits
+    const pendingSnapshot = await db
+      .collection("mpesa_transactions")
+      .where("userId", "==", userId)
+      .where("status", "==", "pending")
+      .get()
+
+    let pendingBalance = 0
+    pendingSnapshot.forEach((doc) => {
+      pendingBalance += doc.data().amount || 0
+    })
+
     const balance: AccountBalance = {
       totalDeposits,
       totalEarnings,
       availableBalance: Math.max(0, availableBalance),
-      pendingBalance: userData?.pendingBalance || 0,
+      pendingBalance,
       networkSize,
       referralEarnings,
       bonusEarnings,
