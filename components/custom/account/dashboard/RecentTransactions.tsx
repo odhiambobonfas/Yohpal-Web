@@ -21,9 +21,8 @@ interface RecentTransactionsProps {
   loading: boolean
 }
 
-function formatCurrency(amount: number, type: TransactionType): string {
-  const prefix = type === "withdrawal" ? "-" : "+"
-  return `${prefix}KES ${Math.abs(amount).toLocaleString()}`
+function formatCurrency(amount: number): string {
+  return `+KES ${Math.abs(amount).toLocaleString()}`
 }
 
 function formatDate(date: string | { seconds: number; nanoseconds: number }): string {
@@ -33,7 +32,6 @@ function formatDate(date: string | { seconds: number; nanoseconds: number }): st
 
 const typeConfig: Record<TransactionType, { icon: typeof ArrowDownToLine; color: string }> = {
   deposit: { icon: ArrowDownToLine, color: "text-blue-500" },
-  withdrawal: { icon: ArrowUpFromLine, color: "text-red-500" },
   referral: { icon: Users, color: "text-green-500" },
   bonus: { icon: Gift, color: "text-purple-500" },
 }
@@ -115,13 +113,8 @@ export function RecentTransactions({ transactions, loading }: RecentTransactions
                     </div>
                   </div>
                   <div className="text-right">
-                    <p
-                      className={cn(
-                        "font-medium",
-                        transaction.type === "withdrawal" ? "text-red-500" : "text-green-500"
-                      )}
-                    >
-                      {formatCurrency(transaction.amount, transaction.type)}
+                    <p className="font-medium text-green-500">
+                      {formatCurrency(transaction.amount)}
                     </p>
                     <Badge
                       variant="secondary"

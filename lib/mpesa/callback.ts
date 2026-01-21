@@ -42,7 +42,7 @@ export function parseCallbackMetadata(
 
 /**
  * Process successful payment callback
- * Updates funds collection and transaction status
+ * Updates funds collection, user balance, and transaction status
  */
 async function processSuccessfulPayment(
   merchantRequestId: string,
@@ -78,7 +78,7 @@ async function processSuccessfulPayment(
 
   batch.set(transactionRef, completedTx)
 
-  // 2. Update user's deposit balance
+  // 2. Update user's deposit balance in funds collection
   const fundsRef = db.collection("funds").doc(userId)
   batch.set(
     fundsRef,
@@ -86,7 +86,18 @@ async function processSuccessfulPayment(
     { merge: true }
   )
 
-  // 3. Update pending transaction status
+  // 3. Update user's balance fields on user document
+  const userRef = db.collection("users").doc(userId)
+  batch.set(
+    userRef,
+    {
+      totalDeposits: FieldValue.increment(amount),
+      availableBalance: FieldValue.increment(amount),
+    },
+    { merge: true }
+  )
+
+  // 4. Update pending transaction status
   const pendingRef = db.collection("mpesa_transactions").doc(merchantRequestId)
   batch.update(pendingRef, {
     status: "completed",

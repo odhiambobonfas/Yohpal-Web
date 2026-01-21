@@ -53,27 +53,29 @@ export async function updatePreferences(preferences: string[], userId: string) {
 
 export async function updateBusinessProfile(data: Partial<BusinessProfile>, userId: string) {
     const userRef = doc(db, "users", userId)
+    const businessProfileRef = doc(db, "business_profiles", userId)
+
     try {
-        // We update the nested object using dot notation if we want to update specific fields,
-        // but since we are potentially creating it, we might need to be careful.
-        // For simplicity with Firestore, we can just merge into the businessProfile field
-        // assuming we pass the full object or we use dot notation for partial updates.
-        // However, standard updateDoc with nested objects requires map syntax if we don't want to overwrite the whole map.
-        // But here, let's assume we update the whole profile or specific fields.
-        // Let's use dot notation for safety if it exists, but for now strict replacement of what's passed is okay
-        // OR construct the update object.
-        
-        // Actually, let's just save it as `businessProfile`.
-        // If we want to merge, we'd need to read first or use "businessProfile.field": value syntax.
-        // For now, let's implementation assuming we pass the object to be merged.
-        
-        // Construct update data
+        // Construct update data for user document (nested businessProfile field)
         const updateData: Record<string, unknown> = {}
         for (const [key, value] of Object.entries(data)) {
             updateData[`businessProfile.${key}`] = value
         }
-        
+
+        // Update the user document with nested businessProfile
         await updateDoc(userRef, updateData)
+
+        // Also store in the separate business_profiles collection
+        await setDoc(
+            businessProfileRef,
+            {
+                ...data,
+                userId,
+                updatedAt: serverTimestamp(),
+                createdAt: serverTimestamp(),
+            },
+            { merge: true }
+        )
     } catch (error) {
         logger.error("Error updating business profile", error)
         throw error

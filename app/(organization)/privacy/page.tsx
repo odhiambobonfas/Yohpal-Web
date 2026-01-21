@@ -695,11 +695,6 @@ export default async function Page() {
                         with tax, regulatory, and statutory requirements.
                     </li>
                 </ul>
-                <p className="text-muted-foreground leading-loose mt-4">
-                    You may withdraw your consent at any time. However, withdrawing consent may
-                    affect your ability to access certain features or services.
-                </p>
-
                 <h5 className="font-bold text-foreground mt-8 text-lg">CONCLUSION</h5>
                 <p className="text-muted-foreground leading-loose mt-4">
                     At YohPal, we are committed to protecting your personal information while

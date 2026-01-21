@@ -14,7 +14,6 @@ export interface AccountBalance {
 export interface AccountStats {
   depositsChange: number // percentage change from previous period
   earningsChange: number
-  withdrawalsThisMonth: number
   depositsThisMonth: number
 }
 
@@ -63,18 +62,6 @@ export interface DepositResponse {
   message: string
   transactionId?: string
   checkoutRequestId?: string
-}
-
-// Withdrawal
-export interface WithdrawRequest {
-  phoneNumber: string
-  amount: number
-}
-
-export interface WithdrawResponse {
-  success: boolean
-  message: string
-  transactionId?: string
 }
 
 // Referrals / Network

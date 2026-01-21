@@ -27,23 +27,31 @@ export async function GET() {
 
     const userData = userDoc.data()
 
-    // Fetch completed deposits from mpesa_transactions
-    const depositsSnapshot = await db
-      .collection("mpesa_transactions")
-      .where("userId", "==", userId)
-      .where("status", "==", "completed")
-      .get()
+    // Use stored balance fields if available, otherwise calculate dynamically
+    let totalDeposits = userData?.totalDeposits || 0
+    let availableBalance = userData?.availableBalance || 0
 
-    // Calculate total deposits
-    let totalDeposits = 0
-    depositsSnapshot.forEach((doc) => {
-      totalDeposits += doc.data().amount || 0
-    })
+    // Fallback: calculate from transactions if stored values are 0 (for existing users)
+    if (totalDeposits === 0) {
+      const depositsSnapshot = await db
+        .collection("mpesa_transactions")
+        .where("userId", "==", userId)
+        .where("status", "==", "completed")
+        .get()
+
+      depositsSnapshot.forEach((doc) => {
+        totalDeposits += doc.data().amount || 0
+      })
+    }
 
     const referralEarnings = userData?.referralEarnings || 0
     const bonusEarnings = userData?.bonusEarnings || 0
     const totalEarnings = referralEarnings + bonusEarnings
-    const availableBalance = totalDeposits + totalEarnings
+
+    // If availableBalance not stored, calculate it
+    if (availableBalance === 0 && (totalDeposits > 0 || totalEarnings > 0)) {
+      availableBalance = totalDeposits + totalEarnings
+    }
 
     // Count network size (referrals)
     const referralsSnapshot = await db

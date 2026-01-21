@@ -14,6 +14,11 @@ export interface YPUser {
     followingCount: number
     contentPreferences: string[] | undefined
     businessProfile?: BusinessProfile
+    // Balance fields (stored on user document)
+    totalDeposits?: number
+    availableBalance?: number
+    referralEarnings?: number
+    bonusEarnings?: number
 }
 
 export interface BusinessProfile {
@@ -25,6 +30,13 @@ export interface BusinessProfile {
     verificationStatus: "pending" | "verified" | "rejected" | "unverified"
     walletBalance: number
     totalSpent: number
+}
+
+// Document type for the separate business_profiles collection
+export interface BusinessProfileDocument extends BusinessProfile {
+    userId: string
+    createdAt: Date
+    updatedAt: Date
 }
 
 export interface AuthUser {
