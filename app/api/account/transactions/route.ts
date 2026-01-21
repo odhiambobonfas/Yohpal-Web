@@ -9,8 +9,26 @@ import {
   ApiResponse,
 } from "@/types/account"
 
-const TRANSACTIONS_API_URL =
-  process.env.YOHPAL_TRANSACTIONS_API_URL || "https://yohpal-apis-test.onrender.com"
+// Helper to format Firestore timestamp to ISO string
+function formatTimestamp(timestamp: unknown): string {
+  if (!timestamp) return new Date().toISOString()
+
+  // Firestore Timestamp object
+  if (typeof timestamp === "object" && timestamp !== null) {
+    const ts = timestamp as { _seconds?: number; seconds?: number; toDate?: () => Date }
+    if (ts.toDate) return ts.toDate().toISOString()
+    if (ts._seconds) return new Date(ts._seconds * 1000).toISOString()
+    if (ts.seconds) return new Date(ts.seconds * 1000).toISOString()
+  }
+
+  // Already a string
+  if (typeof timestamp === "string") return timestamp
+
+  // Number (unix timestamp)
+  if (typeof timestamp === "number") return new Date(timestamp).toISOString()
+
+  return new Date().toISOString()
+}
 
 export async function GET(request: Request) {
   try {
@@ -35,118 +53,63 @@ export async function GET(request: Request) {
       limit: parseInt(searchParams.get("limit") || "20"),
     }
 
-    // Try fetching from external API first
-    try {
-      const externalResponse = await fetch(
-        `${TRANSACTIONS_API_URL}/transactionHistory/${userId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
-
-      if (externalResponse.ok) {
-        const externalData = await externalResponse.json()
-        // Transform external data to our format if needed
-        if (externalData.transactions) {
-          const transactions: Transaction[] = externalData.transactions.map(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (t: any) => ({
-              id: t.id || t.transactionId,
-              userId: t.userId || userId,
-              type: t.type || "deposit",
-              amount: t.amount || 0,
-              status: t.status || "completed",
-              description: t.description || t.type || "Transaction",
-              reference: t.reference || t.transactionId,
-              phoneNumber: t.phoneNumber,
-              createdAt: t.createdAt || t.timestamp,
-              completedAt: t.completedAt,
-            })
-          )
-
-          // Apply filters
-          let filtered = transactions
-
-          if (filters.type && filters.type !== "all") {
-            filtered = filtered.filter((t) => t.type === filters.type)
-          }
-
-          if (filters.status && filters.status !== "all") {
-            filtered = filtered.filter((t) => t.status === filters.status)
-          }
-
-          // Pagination
-          const page = filters.page || 1
-          const limit = filters.limit || 20
-          const start = (page - 1) * limit
-          const paginatedTransactions = filtered.slice(start, start + limit)
-
-          return NextResponse.json<ApiResponse<TransactionHistoryResponse>>({
-            success: true,
-            data: {
-              transactions: paginatedTransactions,
-              total: filtered.length,
-              page,
-              totalPages: Math.ceil(filtered.length / limit),
-              hasMore: start + limit < filtered.length,
-            },
-          })
-        }
-      }
-    } catch {
-      // Fall through to Firestore query
-    }
-
-    // Fallback: Query from Firestore
-    let query = db
-      .collection("transactions")
+    // Query from mpesa_transactions collection
+    const snapshot = await db
+      .collection("mpesa_transactions")
       .where("userId", "==", userId)
-      .orderBy("createdAt", "desc")
-
-    if (filters.type && filters.type !== "all") {
-      query = query.where("type", "==", filters.type)
-    }
-
-    if (filters.status && filters.status !== "all") {
-      query = query.where("status", "==", filters.status)
-    }
-
-    const snapshot = await query.get()
+      .get()
 
     const transactions: Transaction[] = []
     snapshot.forEach((doc) => {
       const data = doc.data()
+
+      // Map mpesa_transactions status to our status type
+      let status: Transaction["status"] = "pending"
+      if (data.status === "completed") status = "completed"
+      else if (data.status === "failed" || data.status === "cancelled") status = "cancelled"
+
       transactions.push({
         id: doc.id,
         userId: data.userId,
-        type: data.type,
-        amount: data.amount,
-        status: data.status,
-        description: data.description || data.type,
-        reference: data.reference,
+        type: "deposit",
+        amount: data.amount || 0,
+        status,
+        description: "M-Pesa Deposit",
+        reference: data.mpesaReceiptNumber || data.merchantRequestId,
         phoneNumber: data.phoneNumber,
-        createdAt: data.createdAt,
-        completedAt: data.completedAt,
+        createdAt: formatTimestamp(data.createdAt),
+        completedAt: data.completedAt ? formatTimestamp(data.completedAt) : undefined,
       })
     })
+
+    // Sort by createdAt descending (newest first)
+    transactions.sort((a, b) => {
+      const dateA = new Date(a.createdAt as string).getTime()
+      const dateB = new Date(b.createdAt as string).getTime()
+      return dateB - dateA
+    })
+
+    // Apply filters
+    let filtered = transactions
+
+    if (filters.status && filters.status !== "all") {
+      filtered = filtered.filter((t) => t.status === filters.status)
+    }
 
     // Pagination
     const page = filters.page || 1
     const limit = filters.limit || 20
     const start = (page - 1) * limit
-    const paginatedTransactions = transactions.slice(start, start + limit)
+    const paginatedTransactions = filtered.slice(start, start + limit)
 
     return NextResponse.json<ApiResponse<TransactionHistoryResponse>>({
       success: true,
       data: {
         transactions: paginatedTransactions,
-        total: transactions.length,
+        total: filtered.length,
         page,
-        totalPages: Math.ceil(transactions.length / limit),
-        hasMore: start + limit < transactions.length,
+        totalPages: Math.ceil(filtered.length / limit),
+        hasMore: start + limit < filtered.length,
       },
     })
   } catch (error) {
