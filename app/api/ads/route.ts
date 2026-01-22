@@ -1,15 +1,17 @@
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
-import { COOKIES, AD_COST_PER_IMPRESSION, AD_MIN_BUDGET } from "@/constants"
+import { COOKIES, AD_DESCRIPTION_MAX_LENGTH } from "@/constants"
 import { db, serverTimestamp } from "@/lib/firebase/firebase.admin"
 import { ApiResponse } from "@/types/account"
-import { Ad, AdsListResponse, CreateAdRequest } from "@/types/ads"
+import { Ad, AdsListResponse, CreateAdRequest, AdFilterType } from "@/types/ads"
 
 // GET - List user's ads
 export async function GET(request: Request) {
     try {
         const cookieStore = await cookies()
         const userId = cookieStore.get(COOKIES.User)?.value
+
+        console.log("Fetching ads for userId:", userId)
 
         if (!userId) {
             return NextResponse.json<ApiResponse<null>>(
@@ -21,30 +23,57 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url)
         const page = parseInt(searchParams.get("page") || "1")
         const limit = parseInt(searchParams.get("limit") || "10")
-        const status = searchParams.get("status")
+        const filter = (searchParams.get("filter") || "all") as AdFilterType
 
-        let query = db
-            .collection("ads")
-            .where("userId", "==", userId)
-            .where("isArchived", "==", false)
-            .orderBy("createdAt", "desc")
+        console.log("Filter:", filter, "Page:", page, "Limit:", limit)
 
-        if (status) {
-            query = query.where("status", "==", status)
+        // Build query - where clauses must come before orderBy
+        let queryRef = db.collection("ads").where("userId", "==", userId)
+
+        // Apply filter before orderBy
+        if (filter === "drafts") {
+            queryRef = queryRef.where("isPublished", "==", false)
+        } else if (filter === "published") {
+            queryRef = queryRef.where("isPublished", "==", true).where("isDepleted", "==", false)
+        } else if (filter === "depleted") {
+            queryRef = queryRef.where("isDepleted", "==", true)
         }
 
+        // Add orderBy after all where clauses
+        const query = queryRef.orderBy("createdAt", "desc")
+
         // Get total count
-        const countSnapshot = await query.count().get()
-        const total = countSnapshot.data().count
+        let total = 0
+        try {
+            const countSnapshot = await query.count().get()
+            total = countSnapshot.data().count
+        } catch (countError) {
+            console.error("Error counting ads (index may be needed):", countError)
+            // Fall back to getting all docs and counting
+        }
 
         // Get paginated results
         const offset = (page - 1) * limit
         const adsSnapshot = await query.offset(offset).limit(limit).get()
 
-        const ads: Ad[] = adsSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-        })) as Ad[]
+        console.log("Found", adsSnapshot.docs.length, "ads, total:", total)
+
+        const ads: Ad[] = adsSnapshot.docs.map((doc) => {
+            const data = doc.data()
+            // Convert Firestore timestamps to ISO strings
+            const createdAt = data.createdAt && typeof data.createdAt === "object" && "toDate" in data.createdAt
+                ? data.createdAt.toDate().toISOString()
+                : data.createdAt
+            const updatedAt = data.updatedAt && typeof data.updatedAt === "object" && "toDate" in data.updatedAt
+                ? data.updatedAt.toDate().toISOString()
+                : data.updatedAt
+            return {
+                id: doc.id,
+                ...data,
+                createdAt,
+                updatedAt,
+            }
+        }) as Ad[]
 
         const totalPages = Math.ceil(total / limit)
 
@@ -67,7 +96,7 @@ export async function GET(request: Request) {
     }
 }
 
-// POST - Create new ad
+// POST - Create new ad (as draft)
 export async function POST(request: Request) {
     try {
         const cookieStore = await cookies()
@@ -81,20 +110,20 @@ export async function POST(request: Request) {
         }
 
         const body: CreateAdRequest = await request.json()
-        const { title, description, callToAction, destinationUrl, imageUrl, totalBudget } = body
+        const { imageUrl, description } = body
 
         // Validate required fields
-        if (!title || !description || !callToAction || !destinationUrl || !imageUrl || !totalBudget) {
+        if (!imageUrl) {
             return NextResponse.json<ApiResponse<null>>(
-                { success: false, error: "All fields are required" },
+                { success: false, error: "Image is required" },
                 { status: 400 }
             )
         }
 
-        // Validate budget
-        if (totalBudget < AD_MIN_BUDGET) {
+        // Validate description length if provided
+        if (description && description.length > AD_DESCRIPTION_MAX_LENGTH) {
             return NextResponse.json<ApiResponse<null>>(
-                { success: false, error: `Minimum budget is KES ${AD_MIN_BUDGET}` },
+                { success: false, error: `Description must be ${AD_DESCRIPTION_MAX_LENGTH} characters or less` },
                 { status: 400 }
             )
         }
@@ -118,80 +147,54 @@ export async function POST(request: Request) {
             )
         }
 
-        // Check wallet balance
-        const walletBalance = businessProfile.walletBalance || 0
-        if (walletBalance < totalBudget) {
-            return NextResponse.json<ApiResponse<null>>(
-                { success: false, error: "Insufficient wallet balance" },
-                { status: 400 }
-            )
-        }
-
-        // Create the ad
+        // Create the ad as draft - NO balance check needed
         const adRef = db.collection("ads").doc()
         const timestamp = serverTimestamp()
-        const adData = {
+        const adData: Record<string, unknown> = {
             userId,
-            businessName: businessProfile.businessName,
             imageUrl,
-            title,
-            description,
-            callToAction,
-            destinationUrl,
-            totalBudget,
-            spentAmount: 0,
-            costPerImpression: AD_COST_PER_IMPRESSION,
-            status: "active" as const,
+            amountAllocated: 0,
+            viewsGenerated: 0,
+            isPublished: false,
+            isDepleted: false,
             createdAt: timestamp,
             updatedAt: timestamp,
-            isArchived: false,
         }
 
-        // Use a batch to update both ad and wallet
-        const batch = db.batch()
+        // Only add optional fields if they have values
+        if (businessProfile.id) {
+            adData.businessId = businessProfile.id
+        }
+        if (description) {
+            adData.description = description
+        }
 
-        // Create ad
-        batch.set(adRef, adData)
-
-        // Deduct from wallet balance
-        batch.update(db.collection("users").doc(userId), {
-            "businessProfile.walletBalance": walletBalance - totalBudget,
-        })
-
-        // Create transaction record
-        const txRef = db.collection("adTransactions").doc()
-        batch.set(txRef, {
-            userId,
-            adId: adRef.id,
-            type: "ad_spend",
-            amount: -totalBudget,
-            description: `Budget allocated for ad: ${title}`,
-            createdAt: serverTimestamp(),
-        })
-
-        await batch.commit()
+        await adRef.set(adData)
 
         // Return the created ad with ISO timestamp strings
         const now = new Date().toISOString()
+        const responseData: Ad = {
+            id: adRef.id,
+            userId,
+            imageUrl,
+            amountAllocated: 0,
+            viewsGenerated: 0,
+            isPublished: false,
+            isDepleted: false,
+            createdAt: now,
+            updatedAt: now,
+        }
+
+        if (businessProfile.id) {
+            responseData.businessId = businessProfile.id
+        }
+        if (description) {
+            responseData.description = description
+        }
+
         return NextResponse.json<ApiResponse<Ad>>({
             success: true,
-            data: {
-                id: adRef.id,
-                userId,
-                businessName: businessProfile.businessName,
-                imageUrl,
-                title,
-                description,
-                callToAction,
-                destinationUrl,
-                totalBudget,
-                spentAmount: 0,
-                costPerImpression: AD_COST_PER_IMPRESSION,
-                status: "active",
-                createdAt: now,
-                updatedAt: now,
-                isArchived: false,
-            },
+            data: responseData,
         })
     } catch (error) {
         console.error("Error creating ad:", error)

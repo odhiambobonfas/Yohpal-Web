@@ -3,30 +3,20 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/providers/Auth"
-import { useCreateAd, useUploadAdImage, useAdWallet } from "@/hooks/ads"
+import { useCreateAd, useUploadAdImage } from "@/hooks/ads"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 import { AdImageUpload } from "./AdImageUpload"
 import { AdPreview } from "./AdPreview"
-import { CALL_TO_ACTION_OPTIONS } from "@/types/ads"
-import { AD_MIN_BUDGET } from "@/constants"
+import { AD_DESCRIPTION_MAX_LENGTH } from "@/constants"
 
 export function CreateAdForm() {
     const { user, profile } = useAuth()
     const router = useRouter()
-    const { balance } = useAdWallet()
     const { createAd, loading: creating } = useCreateAd()
     const {
         upload,
@@ -37,13 +27,7 @@ export function CreateAdForm() {
         reset: resetUpload,
     } = useUploadAdImage()
 
-    const [formData, setFormData] = useState({
-        title: "",
-        description: "",
-        callToAction: "",
-        destinationUrl: "",
-        totalBudget: "",
-    })
+    const [description, setDescription] = useState("")
 
     const handleImageUpload = async (file: File) => {
         if (!user) return
@@ -71,39 +55,24 @@ export function CreateAdForm() {
             return
         }
 
-        const budget = parseFloat(formData.totalBudget)
-        if (isNaN(budget) || budget < AD_MIN_BUDGET) {
-            toast.error(`Minimum budget is KES ${AD_MIN_BUDGET}`)
-            return
-        }
-
-        if (budget > balance) {
-            toast.error("Insufficient wallet balance. Please deposit more funds.")
-            return
-        }
-
-        if (!formData.title || !formData.description || !formData.callToAction || !formData.destinationUrl) {
-            toast.error("Please fill in all required fields")
+        if (description.length > AD_DESCRIPTION_MAX_LENGTH) {
+            toast.error(`Description must be ${AD_DESCRIPTION_MAX_LENGTH} characters or less`)
             return
         }
 
         try {
-            await createAd({
-                title: formData.title,
-                description: formData.description,
-                callToAction: formData.callToAction,
-                destinationUrl: formData.destinationUrl,
+            const createdAd = await createAd({
                 imageUrl,
-                totalBudget: budget,
+                description: description || undefined,
             })
-            toast.success("Ad created successfully!")
-            router.push("/account/ads")
+            toast.success("Ad saved as draft!")
+            router.push(`/account/ads/${createdAd?.id}`)
         } catch {
             toast.error("Failed to create ad")
         }
     }
 
-    const businessName = profile?.businessProfile?.businessName || "Your Business"
+    const charactersRemaining = AD_DESCRIPTION_MAX_LENGTH - description.length
 
     return (
         <div className="grid gap-6 lg:grid-cols-2">
@@ -111,13 +80,13 @@ export function CreateAdForm() {
                 <CardHeader>
                     <CardTitle>Create New Ad</CardTitle>
                     <CardDescription>
-                        Fill in the details to create your advertisement
+                        Upload an image and optionally add a description. Your ad will be saved as a draft until you publish it.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                            <Label>Ad Image *</Label>
+                            <Label>Ad Image (Landscape) *</Label>
                             <AdImageUpload
                                 imageUrl={imageUrl}
                                 preview={preview}
@@ -126,103 +95,38 @@ export function CreateAdForm() {
                                 onRemove={handleRemoveImage}
                                 error={uploadError}
                             />
+                            <p className="text-xs text-muted-foreground">
+                                Upload a landscape image for best display
+                            </p>
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="title">Title *</Label>
-                            <Input
-                                id="title"
-                                placeholder="Enter ad title"
-                                value={formData.title}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, title: e.target.value })
-                                }
-                                maxLength={100}
-                                required
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="description">Description *</Label>
+                            <Label htmlFor="description">Description (Optional)</Label>
                             <Textarea
                                 id="description"
-                                placeholder="Describe your ad..."
-                                value={formData.description}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, description: e.target.value })
-                                }
+                                placeholder="Add a short description for your ad..."
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
                                 rows={3}
-                                maxLength={250}
-                                required
+                                maxLength={AD_DESCRIPTION_MAX_LENGTH}
                             />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="callToAction">Call to Action *</Label>
-                            <Select
-                                value={formData.callToAction}
-                                onValueChange={(value) =>
-                                    setFormData({ ...formData, callToAction: value })
-                                }
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select call to action" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {CALL_TO_ACTION_OPTIONS.map((option) => (
-                                        <SelectItem key={option} value={option}>
-                                            {option}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="destinationUrl">Destination URL *</Label>
-                            <Input
-                                id="destinationUrl"
-                                type="url"
-                                placeholder="https://example.com"
-                                value={formData.destinationUrl}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, destinationUrl: e.target.value })
-                                }
-                                required
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="totalBudget">Budget (KES) *</Label>
-                            <Input
-                                id="totalBudget"
-                                type="number"
-                                placeholder={`Minimum KES ${AD_MIN_BUDGET}`}
-                                value={formData.totalBudget}
-                                onChange={(e) =>
-                                    setFormData({ ...formData, totalBudget: e.target.value })
-                                }
-                                min={AD_MIN_BUDGET}
-                                step="0.01"
-                                required
-                            />
-                            <p className="text-xs text-muted-foreground">
-                                Available balance: KES {balance.toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                            <p className={`text-xs ${charactersRemaining < 20 ? "text-destructive" : "text-muted-foreground"}`}>
+                                {charactersRemaining} characters remaining
                             </p>
                         </div>
 
                         <Button
                             type="submit"
                             className="w-full"
-                            disabled={creating || uploading}
+                            disabled={creating || uploading || !imageUrl}
                         >
                             {creating ? (
                                 <>
                                     <Loader2 className="mr-2 size-4 animate-spin" />
-                                    Creating Ad...
+                                    Saving Draft...
                                 </>
                             ) : (
-                                "Create Ad"
+                                "Save as Draft"
                             )}
                         </Button>
                     </form>
@@ -233,11 +137,7 @@ export function CreateAdForm() {
                 <h3 className="font-semibold">Preview</h3>
                 <AdPreview
                     imageUrl={preview || imageUrl}
-                    title={formData.title}
-                    description={formData.description}
-                    callToAction={formData.callToAction}
-                    destinationUrl={formData.destinationUrl}
-                    businessName={businessName}
+                    description={description}
                 />
             </div>
         </div>

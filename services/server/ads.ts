@@ -1,6 +1,7 @@
 import { db } from "@/lib/firebase/firebase.admin"
 import { Ad } from "@/types/ads"
-import { AD_COST_PER_IMPRESSION, AD_FREQUENCY_BASE } from "@/constants"
+import { AD_COST_PER_VIEW, AD_FREQUENCY_BASE } from "@/constants"
+import { getRemainingBudget } from "@/lib/ads/calculations"
 
 export interface AdForFeed extends Ad {
     isAd: true
@@ -13,12 +14,12 @@ export interface AdForFeed extends Ad {
  */
 export async function selectAdsForFeed(count: number = 1): Promise<AdForFeed[]> {
     try {
-        // Get active ads with remaining budget
+        // Get published, non-depleted ads
         const adsSnapshot = await db
             .collection("ads")
-            .where("status", "==", "active")
-            .where("isArchived", "==", false)
-            .orderBy("totalBudget", "desc")
+            .where("isPublished", "==", true)
+            .where("isDepleted", "==", false)
+            .orderBy("amountAllocated", "desc")
             .limit(count * 3) // Get extra to filter
             .get()
 
@@ -26,11 +27,10 @@ export async function selectAdsForFeed(count: number = 1): Promise<AdForFeed[]> 
 
         for (const doc of adsSnapshot.docs) {
             const adData = doc.data() as Omit<Ad, "id">
-            const remainingBudget = adData.totalBudget - adData.spentAmount
-            const costPerImpression = adData.costPerImpression || AD_COST_PER_IMPRESSION
+            const remainingBudget = getRemainingBudget(adData.amountAllocated, adData.viewsGenerated)
 
-            // Only include ads with remaining budget for at least one impression
-            if (remainingBudget >= costPerImpression) {
+            // Only include ads with remaining budget for at least one view
+            if (remainingBudget >= AD_COST_PER_VIEW) {
                 eligibleAds.push({
                     id: doc.id,
                     ...adData,
@@ -50,7 +50,7 @@ export async function selectAdsForFeed(count: number = 1): Promise<AdForFeed[]> 
         while (selectedAds.length < count && adsCopy.length > 0) {
             // Calculate total weight (remaining budget)
             const totalWeight = adsCopy.reduce(
-                (sum, ad) => sum + (ad.totalBudget - ad.spentAmount),
+                (sum, ad) => sum + getRemainingBudget(ad.amountAllocated, ad.viewsGenerated),
                 0
             )
 
@@ -59,7 +59,7 @@ export async function selectAdsForFeed(count: number = 1): Promise<AdForFeed[]> 
             let selectedIndex = 0
 
             for (let i = 0; i < adsCopy.length; i++) {
-                random -= adsCopy[i].totalBudget - adsCopy[i].spentAmount
+                random -= getRemainingBudget(adsCopy[i].amountAllocated, adsCopy[i].viewsGenerated)
                 if (random <= 0) {
                     selectedIndex = i
                     break

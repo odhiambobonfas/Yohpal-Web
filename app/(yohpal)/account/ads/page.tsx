@@ -10,10 +10,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Plus, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AdFilterType } from "@/types/ads"
 
 export default function AdsPage() {
     const { profile, loading: authLoading } = useAuth()
-    const { ads, loading: adsLoading, refetch } = useAds()
+    const [filter, setFilter] = useState<AdFilterType>("all")
+    const { ads, loading: adsLoading, refetch } = useAds({ filter })
     const { balance, totalDeposited, totalSpent, loading: walletLoading, refetch: refetchWallet } = useAdWallet()
     const searchParams = useSearchParams()
     const router = useRouter()
@@ -36,6 +38,15 @@ export default function AdsPage() {
         }
     }
 
+    const handleFilterChange = (newFilter: AdFilterType) => {
+        setFilter(newFilter)
+    }
+
+    const handleUpdate = () => {
+        refetch()
+        refetchWallet()
+    }
+
     if (authLoading) {
         return (
             <div className="flex h-[50vh] items-center justify-center">
@@ -46,7 +57,6 @@ export default function AdsPage() {
 
     const business = profile?.businessProfile
     const isVerified = business?.verificationStatus === "verified"
-    const canCreateAd = isVerified && balance > 0
 
     return (
         <div className="space-y-6">
@@ -72,7 +82,7 @@ export default function AdsPage() {
                     >
                         Deposit Funds
                     </Button>
-                    <Button asChild disabled={!canCreateAd}>
+                    <Button asChild disabled={!isVerified}>
                         <Link href="/account/ads/create">
                             <Plus className="mr-2 size-4" />
                             Create Ad
@@ -89,24 +99,6 @@ export default function AdsPage() {
                     <AlertDescription>
                         Your business account must be verified before you can create ads.
                         Please complete your business profile verification.
-                    </AlertDescription>
-                </Alert>
-            )}
-
-            {/* Balance Warning */}
-            {isVerified && balance <= 0 && (
-                <Alert>
-                    <AlertCircle className="size-4" />
-                    <AlertTitle>No Ad Balance</AlertTitle>
-                    <AlertDescription>
-                        You need to deposit funds to your ad wallet before creating ads.
-                        <Button
-                            variant="link"
-                            className="h-auto p-0 ml-1"
-                            onClick={() => setDepositOpen(true)}
-                        >
-                            Deposit now
-                        </Button>
                     </AlertDescription>
                 </Alert>
             )}
@@ -133,6 +125,9 @@ export default function AdsPage() {
                     ads={ads}
                     loading={adsLoading}
                     emptyMessage="You haven't created any ads yet"
+                    filter={filter}
+                    onFilterChange={handleFilterChange}
+                    onUpdate={handleUpdate}
                 />
             </div>
 

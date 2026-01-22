@@ -46,15 +46,19 @@ const FOLLOWING_FEED_CURRENT_VID_KEY = "currentFollowingVideoId"
 const FETCH_TRIGGER_OFFSET = Math.floor(VIDEO_LIMIT * 0.75)
 
 // Ad constants
-const AD_COST_PER_IMPRESSION = 0.10  // KES
-const AD_MIN_BUDGET = 100            // KES minimum per ad
-const AD_MIN_DEPOSIT = 50            // KES minimum deposit
-const AD_FREQUENCY_BASE = 5          // Show ad every N videos
+const AD_COST_PER_VIEW = 1                // 1 KES per view
+const AD_VIEW_DURATION_SECONDS = 15       // Each view = 15 seconds
+const AD_MIN_PUBLISH_AMOUNT = 20          // Minimum amount to publish an ad
+const AD_DESCRIPTION_MAX_LENGTH = 100     // Max description characters
+const AD_MIN_DEPOSIT = 50                 // KES minimum deposit
+const AD_FREQUENCY_BASE = 5               // Show ad every N videos
 
 export {
-    AD_COST_PER_IMPRESSION,
+    AD_COST_PER_VIEW,
+    AD_VIEW_DURATION_SECONDS,
+    AD_MIN_PUBLISH_AMOUNT,
+    AD_DESCRIPTION_MAX_LENGTH,
     AD_FREQUENCY_BASE,
-    AD_MIN_BUDGET,
     AD_MIN_DEPOSIT,
     CACHE_TTL,
     CDN_URL,

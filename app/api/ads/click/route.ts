@@ -3,13 +3,12 @@ import { NextResponse } from "next/server"
 import { COOKIES } from "@/constants"
 import { db, serverTimestamp } from "@/lib/firebase/firebase.admin"
 import { ApiResponse } from "@/types/account"
-import { Ad } from "@/types/ads"
 
 interface ClickRequest {
     adId: string
 }
 
-// POST - Record ad click
+// POST - Record ad click (for analytics purposes)
 export async function POST(request: Request) {
     try {
         const cookieStore = await cookies()
@@ -28,7 +27,7 @@ export async function POST(request: Request) {
             )
         }
 
-        // Get the ad
+        // Get the ad to verify it exists
         const adDoc = await db.collection("ads").doc(adId).get()
 
         if (!adDoc.exists) {
@@ -38,20 +37,17 @@ export async function POST(request: Request) {
             )
         }
 
-        const adData = adDoc.data() as Omit<Ad, "id">
-
-        // Record the click
+        // Record the click for analytics
         await db.collection("adClicks").add({
             adId,
             viewerId: effectiveViewerId,
             timestamp: serverTimestamp(),
-            destinationUrl: adData.destinationUrl,
         })
 
-        return NextResponse.json<ApiResponse<{ destinationUrl: string }>>({
+        return NextResponse.json<ApiResponse<{ recorded: boolean }>>({
             success: true,
             data: {
-                destinationUrl: adData.destinationUrl,
+                recorded: true,
             },
         })
     } catch (error) {
