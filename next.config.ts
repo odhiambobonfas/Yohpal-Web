@@ -61,6 +61,13 @@ const nextConfig = {
             },
         ]
     },
+    webpack: (config, { isServer }) => {
+        // Suppress invalid source map warnings from @google-cloud/firestore
+        config.ignoreWarnings = [
+            { module: /node_modules\/@google-cloud\/firestore/ },
+        ]
+        return config
+    },
     images: {
         remotePatterns: [
             {
