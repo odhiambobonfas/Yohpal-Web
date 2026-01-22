@@ -47,3 +47,4 @@ public/sw*
 public/work*
 dump.rdb
 bun.lock
+docs/
