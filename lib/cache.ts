@@ -5,7 +5,7 @@ import { redis } from "./redis"
 
 export async function withCache<T>(fn: () => Promise<T>, key: string) {
     if (!redis) {
-        logger.error(`[REDIS ERR]: Redis not initialized, falling back to next cache`)
+        logger.debug(`[REDIS]: Not configured, using Next.js cache`)
         return await withUnstableCache(fn, key)
     }
 
