@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { Loader2, CheckCircle2 } from "lucide-react"
+import { ViewCalculator } from "./ViewCalculator"
 import { AD_MIN_DEPOSIT } from "@/constants"
 
 interface AdDepositDialogProps {
@@ -26,6 +27,8 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
     const { refetch } = useAdWallet()
     const [phoneNumber, setPhoneNumber] = useState("")
     const [amount, setAmount] = useState("")
+
+    const amountValue = parseFloat(amount) || 0
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -106,6 +109,10 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
                                 required
                             />
                         </div>
+
+                        {amountValue > 0 && (
+                            <ViewCalculator amount={amountValue} />
+                        )}
 
                         <div className="flex gap-2">
                             <Button
