@@ -1,15 +1,16 @@
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
-import { COOKIES } from "@/constants"
+import { COOKIES, AD_COST_PER_VIEW } from "@/constants"
 import { db, serverTimestamp } from "@/lib/firebase/firebase.admin"
 import { ApiResponse } from "@/types/account"
 import { Ad } from "@/types/ads"
+import { isAdDepleted } from "@/lib/ads/calculations"
 
-interface ImpressionRequest {
+interface ViewRequest {
     adId: string
 }
 
-// POST - Record ad impression and deduct cost
+// POST - Record ad view and deduct cost
 export async function POST(request: Request) {
     try {
         const cookieStore = await cookies()
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
         const anonymousId = request.headers.get("x-anonymous-id") || "anonymous"
         const effectiveViewerId = viewerId || anonymousId
 
-        const body: ImpressionRequest = await request.json()
+        const body: ViewRequest = await request.json()
         const { adId } = body
 
         if (!adId) {
@@ -30,14 +31,14 @@ export async function POST(request: Request) {
         }
 
         // Check if this viewer has already seen this ad (dedup)
-        const impressionId = `${adId}__${effectiveViewerId}`
-        const existingImpression = await db
-            .collection("adImpressions")
-            .doc(impressionId)
+        const viewId = `${adId}__${effectiveViewerId}`
+        const existingView = await db
+            .collection("adViews")
+            .doc(viewId)
             .get()
 
-        if (existingImpression.exists) {
-            // Already counted this impression, don't charge again
+        if (existingView.exists) {
+            // Already counted this view, don't charge again
             return NextResponse.json<ApiResponse<{ charged: boolean }>>({
                 success: true,
                 data: { charged: false },
@@ -57,19 +58,19 @@ export async function POST(request: Request) {
 
         const adData = adDoc.data() as Omit<Ad, "id">
 
-        // Check if ad is active and has budget
-        if (adData.status !== "active") {
+        // Check if ad is published and not depleted
+        if (!adData.isPublished || adData.isDepleted) {
             return NextResponse.json<ApiResponse<{ charged: boolean }>>({
                 success: true,
                 data: { charged: false },
             })
         }
 
-        const remainingBudget = adData.totalBudget - adData.spentAmount
-        if (remainingBudget < adData.costPerImpression) {
-            // No budget left, mark ad as completed
+        // Check if ad has budget remaining
+        if (isAdDepleted(adData.amountAllocated, adData.viewsGenerated)) {
+            // No budget left, mark ad as depleted
             await adRef.update({
-                status: "completed",
+                isDepleted: true,
                 updatedAt: serverTimestamp(),
             })
 
@@ -79,26 +80,26 @@ export async function POST(request: Request) {
             })
         }
 
-        // Use batch to record impression and update ad
+        // Use batch to record view and update ad
         const batch = db.batch()
 
-        // Record impression
-        batch.set(db.collection("adImpressions").doc(impressionId), {
+        // Record view
+        batch.set(db.collection("adViews").doc(viewId), {
             adId,
             viewerId: effectiveViewerId,
             timestamp: serverTimestamp(),
         })
 
-        // Update ad spend
-        const newSpentAmount = adData.spentAmount + adData.costPerImpression
+        // Update ad views count
+        const newViewsGenerated = adData.viewsGenerated + 1
         const updateData: Record<string, unknown> = {
-            spentAmount: newSpentAmount,
+            viewsGenerated: newViewsGenerated,
             updatedAt: serverTimestamp(),
         }
 
-        // Check if budget is exhausted
-        if (newSpentAmount >= adData.totalBudget) {
-            updateData.status = "completed"
+        // Check if budget is now exhausted
+        if (isAdDepleted(adData.amountAllocated, newViewsGenerated)) {
+            updateData.isDepleted = true
         }
 
         batch.update(adRef, updateData)
@@ -110,7 +111,7 @@ export async function POST(request: Request) {
         const currentTotalSpent = userData?.businessProfile?.totalSpent || 0
 
         batch.update(userRef, {
-            "businessProfile.totalSpent": currentTotalSpent + adData.costPerImpression,
+            "businessProfile.totalSpent": currentTotalSpent + AD_COST_PER_VIEW,
         })
 
         // Record transaction
@@ -119,8 +120,9 @@ export async function POST(request: Request) {
             userId: adData.userId,
             adId,
             type: "ad_spend",
-            amount: -adData.costPerImpression,
-            description: `Impression on ad: ${adData.title}`,
+            amount: -AD_COST_PER_VIEW,
+            description: `View on ad (view #${newViewsGenerated})`,
+            status: "completed",
             createdAt: serverTimestamp(),
         })
 
@@ -131,9 +133,9 @@ export async function POST(request: Request) {
             data: { charged: true },
         })
     } catch (error) {
-        console.error("Error recording impression:", error)
+        console.error("Error recording view:", error)
         return NextResponse.json<ApiResponse<null>>(
-            { success: false, error: "Failed to record impression" },
+            { success: false, error: "Failed to record view" },
             { status: 500 }
         )
     }
