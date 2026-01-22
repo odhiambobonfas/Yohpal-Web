@@ -1,40 +1,28 @@
 import { FirebaseTimestamp } from "./base"
 
-// Ad Status
-export type AdStatus = "draft" | "active" | "paused" | "completed" | "rejected"
-
-// Core Ad interface
+// Core Ad interface (simplified - view-based pricing)
 export interface Ad {
     id: string
     userId: string
-    businessName: string
+    businessId?: string
 
-    // Media (image only for MVP)
-    imageUrl: string
+    imageUrl: string              // Required, landscape
+    description?: string          // Optional, max 100 chars
 
-    // Content
-    title: string
-    description: string
-    callToAction: string // "Shop Now", "Learn More", etc.
-    destinationUrl: string
+    amountAllocated: number       // Budget assigned
+    viewsGenerated: number        // Actual views (continues on republish)
 
-    // Budget
-    totalBudget: number // KES allocated
-    spentAmount: number // KES spent
-    costPerImpression: number // Fixed: 0.10 KES
+    isPublished: boolean          // false = draft
+    isDepleted: boolean           // true when budget exhausted
 
-    // Status
-    status: AdStatus
     createdAt: FirebaseTimestamp | string
     updatedAt: FirebaseTimestamp | string
-    isArchived: boolean
 }
 
 // Ad statistics
 export interface AdStats {
-    impressions: number
-    clicks: number
-    ctr: number // Click-through rate
+    views: number
+    totalTimeSeconds: number
     totalSpent: number
 }
 
@@ -44,7 +32,7 @@ export interface AdWithStats extends Ad {
 }
 
 // Ad transaction types
-export type AdTransactionType = "deposit" | "ad_spend"
+export type AdTransactionType = "deposit" | "ad_spend" | "ad_publish" | "ad_republish"
 
 export interface AdTransaction {
     id: string
@@ -53,7 +41,6 @@ export interface AdTransaction {
     type: AdTransactionType
     amount: number
     description: string
-    // Status is optional for backward compatibility, but new transactions should include it
     status?: "pending" | "success" | "failed" | "completed"
     createdAt: FirebaseTimestamp | string
 }
@@ -65,24 +52,26 @@ export interface AdWalletBalance {
     totalSpent: number
 }
 
-// Create ad request
+// Create ad request (simplified - draft only)
 export interface CreateAdRequest {
-    title: string
-    description: string
-    callToAction: string
-    destinationUrl: string
     imageUrl: string
-    totalBudget: number
+    description?: string
 }
 
-// Update ad request
+// Publish ad request
+export interface PublishAdRequest {
+    amountToAllocate: number
+}
+
+// Republish ad request
+export interface RepublishAdRequest {
+    amountToAllocate: number
+}
+
+// Update ad request (simplified)
 export interface UpdateAdRequest {
-    title?: string
-    description?: string
-    callToAction?: string
-    destinationUrl?: string
     imageUrl?: string
-    status?: AdStatus
+    description?: string
 }
 
 // Ad deposit request (for ad wallet)
@@ -98,8 +87,8 @@ export interface AdDepositResponse {
     checkoutRequestId?: string
 }
 
-// Ad impression tracking
-export interface AdImpression {
+// Ad view tracking
+export interface AdView {
     adId: string
     viewerId: string
     timestamp: FirebaseTimestamp | string
@@ -122,16 +111,5 @@ export interface AdTransactionsResponse {
     hasMore: boolean
 }
 
-// Call-to-action options
-export const CALL_TO_ACTION_OPTIONS = [
-    "Shop Now",
-    "Learn More",
-    "Sign Up",
-    "Get Offer",
-    "Contact Us",
-    "Download",
-    "Watch Now",
-    "Book Now",
-] as const
-
-export type CallToAction = (typeof CALL_TO_ACTION_OPTIONS)[number]
+// Ad filter type for list view
+export type AdFilterType = "all" | "drafts" | "published" | "depleted"
