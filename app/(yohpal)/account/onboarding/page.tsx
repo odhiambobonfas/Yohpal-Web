@@ -96,7 +96,7 @@ export default function OnboardingPage() {
                     contactInfo: formData.contactInfo,
                     category: formData.category,
                     businessLogo: formData.businessLogo || "https://github.com/shadcn.png",
-                    verificationStatus: "verified",
+                    verificationStatus: "unverified",
                     walletBalance: 0,
                     totalSpent: 0,
                 },
