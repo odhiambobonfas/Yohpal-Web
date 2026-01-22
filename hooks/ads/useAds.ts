@@ -1,17 +1,17 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Ad, AdsListResponse } from "@/types/ads"
+import { Ad, AdsListResponse, AdFilterType } from "@/types/ads"
 import { ApiResponse } from "@/types/account"
 
 interface UseAdsOptions {
     page?: number
     limit?: number
-    status?: string
+    filter?: AdFilterType
 }
 
 export function useAds(options: UseAdsOptions = {}) {
-    const { page = 1, limit = 10, status } = options
+    const { page = 1, limit = 10, filter = "all" } = options
     const [ads, setAds] = useState<Ad[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -27,8 +27,8 @@ export function useAds(options: UseAdsOptions = {}) {
             const params = new URLSearchParams({
                 page: page.toString(),
                 limit: limit.toString(),
+                filter,
             })
-            if (status) params.set("status", status)
 
             const res = await fetch(`/api/ads?${params}`)
             const data: ApiResponse<AdsListResponse> = await res.json()
@@ -46,7 +46,7 @@ export function useAds(options: UseAdsOptions = {}) {
         } finally {
             setLoading(false)
         }
-    }, [page, limit, status])
+    }, [page, limit, filter])
 
     useEffect(() => {
         fetchAds()
