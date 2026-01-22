@@ -1,15 +1,17 @@
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
-import { COOKIES } from "@/constants"
+import { COOKIES, AD_DESCRIPTION_MAX_LENGTH } from "@/constants"
 import { db, serverTimestamp } from "@/lib/firebase/firebase.admin"
 import { ApiResponse } from "@/types/account"
-import { Ad, AdWithStats, UpdateAdRequest, AdStats } from "@/types/ads"
+import { Ad, AdWithStats, UpdateAdRequest } from "@/types/ads"
+import { calculateSpentAmount, calculateTimeDelivered } from "@/lib/ads/calculations"
+
+interface RouteParams {
+    params: Promise<{ adId: string }>
+}
 
 // GET - Get ad details with stats
-export async function GET(
-    request: Request,
-    { params }: { params: Promise<{ adId: string }> }
-) {
+export async function GET(request: Request, { params }: RouteParams) {
     try {
         const cookieStore = await cookies()
         const userId = cookieStore.get(COOKIES.User)?.value
@@ -42,34 +44,28 @@ export async function GET(
             )
         }
 
-        // Get impression and click counts
-        const impressionsSnapshot = await db
-            .collection("adImpressions")
-            .where("adId", "==", adId)
-            .count()
-            .get()
+        // Calculate stats from views
+        const totalSpent = calculateSpentAmount(adData.viewsGenerated)
+        const totalTimeSeconds = calculateTimeDelivered(adData.viewsGenerated)
 
-        const clicksSnapshot = await db
-            .collection("adClicks")
-            .where("adId", "==", adId)
-            .count()
-            .get()
-
-        const impressions = impressionsSnapshot.data().count || 0
-        const clicks = clicksSnapshot.data().count || 0
-        const ctr = impressions > 0 ? (clicks / impressions) * 100 : 0
-
-        const stats: AdStats = {
-            impressions,
-            clicks,
-            ctr,
-            totalSpent: adData.spentAmount,
-        }
+        // Convert Firestore timestamps to ISO strings
+        const createdAt = adData.createdAt && typeof adData.createdAt === "object" && "toDate" in adData.createdAt
+            ? (adData.createdAt as { toDate: () => Date }).toDate().toISOString()
+            : adData.createdAt
+        const updatedAt = adData.updatedAt && typeof adData.updatedAt === "object" && "toDate" in adData.updatedAt
+            ? (adData.updatedAt as { toDate: () => Date }).toDate().toISOString()
+            : adData.updatedAt
 
         const adWithStats: AdWithStats = {
             id: adDoc.id,
             ...adData,
-            stats,
+            createdAt,
+            updatedAt,
+            stats: {
+                views: adData.viewsGenerated,
+                totalTimeSeconds,
+                totalSpent,
+            },
         }
 
         return NextResponse.json<ApiResponse<AdWithStats>>({
@@ -85,11 +81,8 @@ export async function GET(
     }
 }
 
-// PATCH - Update ad
-export async function PATCH(
-    request: Request,
-    { params }: { params: Promise<{ adId: string }> }
-) {
+// PATCH - Update ad (only drafts can be updated)
+export async function PATCH(request: Request, { params }: RouteParams) {
     try {
         const cookieStore = await cookies()
         const userId = cookieStore.get(COOKIES.User)?.value
@@ -124,27 +117,29 @@ export async function PATCH(
             )
         }
 
+        // Can only update drafts (unpublished ads)
+        if (adData.isPublished) {
+            return NextResponse.json<ApiResponse<null>>(
+                { success: false, error: "Cannot update a published ad" },
+                { status: 400 }
+            )
+        }
+
+        // Validate description length if provided
+        if (body.description && body.description.length > AD_DESCRIPTION_MAX_LENGTH) {
+            return NextResponse.json<ApiResponse<null>>(
+                { success: false, error: `Description must be ${AD_DESCRIPTION_MAX_LENGTH} characters or less` },
+                { status: 400 }
+            )
+        }
+
         // Build update object
         const updateData: Record<string, unknown> = {
             updatedAt: serverTimestamp(),
         }
 
-        if (body.title !== undefined) updateData.title = body.title
-        if (body.description !== undefined) updateData.description = body.description
-        if (body.callToAction !== undefined) updateData.callToAction = body.callToAction
-        if (body.destinationUrl !== undefined) updateData.destinationUrl = body.destinationUrl
         if (body.imageUrl !== undefined) updateData.imageUrl = body.imageUrl
-        if (body.status !== undefined) {
-            // Validate status transitions
-            const validStatuses = ["active", "paused"]
-            if (!validStatuses.includes(body.status)) {
-                return NextResponse.json<ApiResponse<null>>(
-                    { success: false, error: "Invalid status" },
-                    { status: 400 }
-                )
-            }
-            updateData.status = body.status
-        }
+        if (body.description !== undefined) updateData.description = body.description || undefined
 
         await adRef.update(updateData)
 
@@ -166,11 +161,8 @@ export async function PATCH(
     }
 }
 
-// DELETE - Archive ad (soft delete) and refund remaining budget
-export async function DELETE(
-    request: Request,
-    { params }: { params: Promise<{ adId: string }> }
-) {
+// DELETE - Delete ad and refund remaining budget
+export async function DELETE(request: Request, { params }: RouteParams) {
     try {
         const cookieStore = await cookies()
         const userId = cookieStore.get(COOKIES.User)?.value
@@ -204,18 +196,15 @@ export async function DELETE(
             )
         }
 
-        // Calculate refund
-        const refundAmount = adData.totalBudget - adData.spentAmount
+        // Calculate refund (amount allocated minus what was spent on views)
+        const spentAmount = calculateSpentAmount(adData.viewsGenerated)
+        const refundAmount = adData.amountAllocated - spentAmount
 
-        // Use batch to update ad and refund wallet
+        // Use batch to delete ad and refund wallet
         const batch = db.batch()
 
-        // Archive the ad
-        batch.update(adRef, {
-            isArchived: true,
-            status: "completed",
-            updatedAt: serverTimestamp(),
-        })
+        // Delete the ad
+        batch.delete(adRef)
 
         // Refund remaining budget to wallet
         if (refundAmount > 0) {
@@ -235,7 +224,8 @@ export async function DELETE(
                 adId,
                 type: "deposit",
                 amount: refundAmount,
-                description: `Refund from deleted ad: ${adData.title}`,
+                description: `Refund from deleted ad (KES ${refundAmount.toFixed(2)} remaining budget)`,
+                status: "completed",
                 createdAt: serverTimestamp(),
             })
         }
@@ -244,9 +234,7 @@ export async function DELETE(
 
         return NextResponse.json<ApiResponse<null>>({
             success: true,
-            message: refundAmount > 0
-                ? `Ad deleted. KES ${refundAmount.toFixed(2)} refunded to wallet.`
-                : "Ad deleted.",
+            data: null,
         })
     } catch (error) {
         console.error("Error deleting ad:", error)
