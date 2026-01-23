@@ -53,6 +53,7 @@ const withPWAFunc = withPWAInit({
 
 const nextConfig = {
     reactStrictMode: true,
+    turbopack: {}, // Add this line to fix the build error
     async headers() {
         return [
             {
@@ -61,11 +62,9 @@ const nextConfig = {
             },
         ]
     },
-    webpack: (config, { isServer }) => {
+    webpack: (config) => {
         // Suppress invalid source map warnings from @google-cloud/firestore
-        config.ignoreWarnings = [
-            { module: /node_modules\/@google-cloud\/firestore/ },
-        ]
+        config.ignoreWarnings = [{ module: /node_modules\/@google-cloud\/firestore/ }]
         return config
     },
     images: {
