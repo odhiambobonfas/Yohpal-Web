@@ -6,7 +6,7 @@ export interface AccountBalance {
   totalEarnings: number
   availableBalance: number
   pendingBalance: number
-  networkSize: number
+  totalSpentOnAds: number
   referralEarnings: number
   bonusEarnings: number
 }
