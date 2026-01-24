@@ -40,7 +40,7 @@ export function AdWalletCard({
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">Ad Wallet Balance</CardTitle>
+                <CardTitle className="text-sm font-medium">Available Balance</CardTitle>
                 <Wallet className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="space-y-4">
@@ -61,7 +61,7 @@ export function AdWalletCard({
                     <div className="space-y-1">
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <TrendingUp className="size-3" />
-                            Total Spent
+                            Spent on Ads
                         </div>
                         <div className="font-semibold">
                             KES {totalSpent.toLocaleString("en-KE", { minimumFractionDigits: 2 })}
