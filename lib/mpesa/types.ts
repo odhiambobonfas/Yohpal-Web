@@ -46,8 +46,8 @@ export interface StkQueryResponse {
   ResponseDescription: string
   MerchantRequestID: string
   CheckoutRequestID: string
-  ResultCode: string
-  ResultDesc: string
+  ResultCode?: number  // 0 = success, non-zero = failure (may be absent while pending)
+  ResultDesc?: string
 }
 
 // Callback from M-Pesa
