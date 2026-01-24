@@ -69,9 +69,9 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
         <Dialog open={open} onOpenChange={handleClose}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Deposit to Ad Wallet</DialogTitle>
+                    <DialogTitle>Deposit Funds</DialogTitle>
                     <DialogDescription>
-                        Add funds to your ad wallet using M-Pesa
+                        Add funds to your account using M-Pesa
                     </DialogDescription>
                 </DialogHeader>
 
