@@ -104,16 +104,6 @@ export async function POST(request: Request) {
 
         batch.update(adRef, updateData)
 
-        // Update business profile total spent
-        const userRef = db.collection("users").doc(adData.userId)
-        const userDoc = await userRef.get()
-        const userData = userDoc.data()
-        const currentTotalSpent = userData?.businessProfile?.totalSpent || 0
-
-        batch.update(userRef, {
-            "businessProfile.totalSpent": currentTotalSpent + AD_COST_PER_VIEW,
-        })
-
         // Record transaction
         const txRef = db.collection("adTransactions").doc()
         batch.set(txRef, {
