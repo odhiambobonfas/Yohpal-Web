@@ -5,8 +5,10 @@ import {
   TrendingUp,
   Wallet,
   Megaphone,
+  RefreshCw,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AccountBalance } from "@/types/account"
@@ -14,28 +16,36 @@ import { AccountBalance } from "@/types/account"
 interface StatsCardsProps {
   balance: AccountBalance | null
   loading: boolean
+  onRefresh?: () => void
 }
 
 function formatCurrency(amount: number): string {
   return `KES ${amount.toLocaleString()}`
 }
 
-export function StatsCards({ balance, loading }: StatsCardsProps) {
+export function StatsCards({ balance, loading, onRefresh }: StatsCardsProps) {
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((unused, i) => (
-          <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-4 w-4" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-8 w-32 mb-2" />
-              <Skeleton className="h-2 w-full" />
-            </CardContent>
-          </Card>
-        ))}
+      <div className="space-y-4">
+        {onRefresh && (
+          <div className="flex justify-end">
+            <Skeleton className="h-8 w-24" />
+          </div>
+        )}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((unused, i) => (
+            <Card key={i}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-4" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-32 mb-2" />
+                <Skeleton className="h-2 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
     )
   }
@@ -76,23 +86,33 @@ export function StatsCards({ balance, loading }: StatsCardsProps) {
   ]
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {stats.map((stat) => (
-        <Card key={stat.title}>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {stat.title}
-            </CardTitle>
-            <div className={`p-2 rounded-lg ${stat.bgColor}`}>
-              <stat.icon className={`h-4 w-4 ${stat.color}`} />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold mb-2">{stat.value}</div>
-            <Progress value={stat.progress} className="h-1.5" />
-          </CardContent>
-        </Card>
-      ))}
+    <div className="space-y-4">
+      {onRefresh && (
+        <div className="flex justify-end">
+          <Button variant="outline" size="sm" onClick={onRefresh}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
+      )}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <Card key={stat.title}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {stat.title}
+              </CardTitle>
+              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                <stat.icon className={`h-4 w-4 ${stat.color}`} />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold mb-2">{stat.value}</div>
+              <Progress value={stat.progress} className="h-1.5" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   )
 }
