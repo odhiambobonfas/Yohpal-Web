@@ -16,7 +16,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function AccountDashboard() {
-  const { balance, loading: balanceLoading } = useAccountBalance()
+  const { balance, loading: balanceLoading, refetch: refetchBalance } = useAccountBalance()
   const { transactions, loading: transactionsLoading } = useTransactions({ limit: 5 })
   const { profile, loading: authLoading } = useAuth()
   const router = useRouter()
@@ -121,7 +121,7 @@ export default function AccountDashboard() {
         </CardContent>
       </Card>
 
-      <StatsCards balance={balance} loading={balanceLoading} />
+      <StatsCards balance={balance} loading={balanceLoading} onRefresh={refetchBalance} />
 
       <div className="grid gap-6 md:grid-cols-2">
         <EarningsBreakdown balance={balance} loading={balanceLoading} />
