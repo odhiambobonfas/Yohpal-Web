@@ -83,7 +83,7 @@ export function DepositForm() {
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder="0712345678"
+                  placeholder="07XX or 01XX..."
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   className="pl-10"
@@ -91,7 +91,7 @@ export function DepositForm() {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Enter your Safaricom M-Pesa registered phone number
+                Safaricom M-Pesa number (07XX or 01XX)
               </p>
             </div>
 
