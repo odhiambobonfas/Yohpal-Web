@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Phone, Banknote, Loader2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,7 @@ import { DepositStatusOverlay } from "./DepositStatusOverlay"
 import { toast } from "sonner"
 
 const quickAmounts = [100, 500, 1000, 2000, 5000]
+const PHONE_STORAGE_KEY = "yohpal_mpesa_phone"
 
 export function DepositForm() {
   const [phoneNumber, setPhoneNumber] = useState("")
@@ -18,6 +19,14 @@ export function DepositForm() {
   const [pendingAmount, setPendingAmount] = useState(0)
   const { deposit, loading } = useDeposit()
   const { status, message, startPolling, reset: resetStatus } = useDepositStatus()
+
+  // Load saved phone number on mount
+  useEffect(() => {
+    const savedPhone = localStorage.getItem(PHONE_STORAGE_KEY)
+    if (savedPhone) {
+      setPhoneNumber(savedPhone)
+    }
+  }, [])
 
   const handleQuickAmount = (value: number) => {
     setAmount(String(value))
@@ -39,6 +48,9 @@ export function DepositForm() {
 
     try {
       setPendingAmount(amountNum)
+      // Save phone number for future use
+      localStorage.setItem(PHONE_STORAGE_KEY, phoneNumber)
+
       const response = await deposit({ phoneNumber, amount: amountNum })
 
       // Start polling for status if we have a checkout request ID
