@@ -60,7 +60,7 @@ export function useDepositStatus(): UseDepositStatusReturn {
       } else if (result.status === "failed") {
         // Interpret common result codes
         const code = result.resultCode
-        let failMessage = result.resultDesc || "Payment failed"
+        const failMessage = result.resultDesc || "Payment failed"
 
         if (code === "1032") {
           return { status: "cancelled", message: "You cancelled the transaction", resultCode: code }
