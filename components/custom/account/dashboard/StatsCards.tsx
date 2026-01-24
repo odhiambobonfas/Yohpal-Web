@@ -4,7 +4,7 @@ import {
   ArrowDownToLine,
   TrendingUp,
   Wallet,
-  Users,
+  Megaphone,
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -66,12 +66,12 @@ export function StatsCards({ balance, loading }: StatsCardsProps) {
       progress: Math.min(100, ((balance?.availableBalance || 0) / 10000) * 100),
     },
     {
-      title: "Network Size",
-      value: String(balance?.networkSize || 0),
-      icon: Users,
+      title: "Spent on Ads",
+      value: formatCurrency(balance?.totalSpentOnAds || 0),
+      icon: Megaphone,
       color: "text-orange-500",
       bgColor: "bg-orange-500/10",
-      progress: Math.min(100, ((balance?.networkSize || 0) / 100) * 100),
+      progress: Math.min(100, ((balance?.totalSpentOnAds || 0) / 5000) * 100),
     },
   ]
 
