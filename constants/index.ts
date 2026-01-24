@@ -50,7 +50,7 @@ const AD_COST_PER_VIEW = 1                // 1 KES per view
 const AD_VIEW_DURATION_SECONDS = 15       // Each view = 15 seconds
 const AD_MIN_PUBLISH_AMOUNT = 20          // Minimum amount to publish an ad
 const AD_DESCRIPTION_MAX_LENGTH = 100     // Max description characters
-const AD_MIN_DEPOSIT = 50                 // KES minimum deposit
+const AD_MIN_DEPOSIT = 10                 // KES minimum deposit
 const AD_FREQUENCY_BASE = 5               // Show ad every N videos
 
 export {
