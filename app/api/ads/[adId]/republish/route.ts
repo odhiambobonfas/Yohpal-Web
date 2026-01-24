@@ -63,16 +63,46 @@ export async function POST(request: Request, { params }: RouteParams) {
             )
         }
 
-        // Get user's wallet balance
+        // Get user's available balance
         const userRef = db.collection("users").doc(userId)
         const userDoc = await userRef.get()
         const userData = userDoc.data()
-        const walletBalance = userData?.businessProfile?.walletBalance || 0
+        let availableBalance = userData?.availableBalance || 0
 
-        // Check wallet balance
-        if (walletBalance < amountToAllocate) {
+        // Fallback: calculate from mpesa_transactions if balance not stored
+        if (availableBalance === 0) {
+            const depositsSnapshot = await db
+                .collection("mpesa_transactions")
+                .where("userId", "==", userId)
+                .where("status", "==", "completed")
+                .get()
+
+            let totalDeposited = 0
+            depositsSnapshot.forEach((doc) => {
+                totalDeposited += doc.data().amount || 0
+            })
+
+            // Calculate balance from deposits minus what's been allocated to ads
+            const publishSnapshot = await db
+                .collection("adTransactions")
+                .where("userId", "==", userId)
+                .get()
+
+            let totalAllocated = 0
+            publishSnapshot.forEach((doc) => {
+                const data = doc.data()
+                if (data.type === "ad_publish" || data.type === "ad_republish") {
+                    totalAllocated += Math.abs(data.amount || 0)
+                }
+            })
+
+            availableBalance = Math.max(0, totalDeposited - totalAllocated)
+        }
+
+        // Check available balance
+        if (availableBalance < amountToAllocate) {
             return NextResponse.json<ApiResponse<null>>(
-                { success: false, error: "Insufficient wallet balance" },
+                { success: false, error: "Insufficient balance. Please deposit funds first." },
                 { status: 400 }
             )
         }
@@ -80,7 +110,7 @@ export async function POST(request: Request, { params }: RouteParams) {
         // Calculate new total allocated (ADD to existing, don't replace)
         const newAmountAllocated = (adData.amountAllocated || 0) + amountToAllocate
 
-        // Use batch to update ad, wallet, and create transaction
+        // Use batch to update ad, balance, and create transaction
         const batch = db.batch()
 
         // Update ad - DO NOT reset viewsGenerated
@@ -91,9 +121,9 @@ export async function POST(request: Request, { params }: RouteParams) {
             updatedAt: serverTimestamp(),
         })
 
-        // Deduct from wallet
+        // Deduct from available balance
         batch.update(userRef, {
-            "businessProfile.walletBalance": walletBalance - amountToAllocate,
+            availableBalance: availableBalance - amountToAllocate,
         })
 
         // Create transaction record
