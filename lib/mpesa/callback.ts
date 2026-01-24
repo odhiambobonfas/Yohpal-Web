@@ -9,7 +9,6 @@ import {
   MpesaCallback,
   CallbackMetadata,
   PendingTransaction,
-  CompletedTransaction,
 } from "./types"
 
 /**

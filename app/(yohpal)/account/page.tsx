@@ -12,11 +12,11 @@ import { useEffect } from "react"
 import { Loader2, Mail, Phone, Building2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function AccountDashboard() {
-  const { balance, loading: balanceLoading } = useAccountBalance()
+  const { balance, loading: balanceLoading, refetch: refetchBalance } = useAccountBalance()
   const { transactions, loading: transactionsLoading } = useTransactions({ limit: 5 })
   const { profile, loading: authLoading } = useAuth()
   const router = useRouter()
@@ -121,27 +121,7 @@ export default function AccountDashboard() {
         </CardContent>
       </Card>
 
-      {/* Wallet Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">KES {business?.totalSpent?.toFixed(2) || "0.00"}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Remaining Balance</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">KES {business?.walletBalance?.toFixed(2) || "0.00"}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <StatsCards balance={balance} loading={balanceLoading} />
+      <StatsCards balance={balance} loading={balanceLoading} onRefresh={refetchBalance} />
 
       <div className="grid gap-6 md:grid-cols-2">
         <EarningsBreakdown balance={balance} loading={balanceLoading} />

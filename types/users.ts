@@ -28,8 +28,6 @@ export interface BusinessProfile {
     contactInfo: string
     category: string
     verificationStatus: "pending" | "verified" | "rejected" | "unverified"
-    walletBalance: number
-    totalSpent: number
 }
 
 // Document type for the separate business_profiles collection

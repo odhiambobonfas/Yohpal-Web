@@ -17,7 +17,7 @@ export function useAdDeposit() {
             setSuccess(false)
             setResponse(null)
 
-            const res = await fetch("/api/ads/wallet/deposit", {
+            const res = await fetch("/api/account/deposit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(request),

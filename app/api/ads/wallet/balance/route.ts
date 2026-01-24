@@ -27,38 +27,42 @@ export async function GET() {
         }
 
         const userData = userDoc.data()
-        const businessProfile = userData?.businessProfile
 
-        if (!businessProfile) {
-            return NextResponse.json<ApiResponse<AdWalletBalance>>({
-                success: true,
-                data: {
-                    balance: 0,
-                    totalDeposited: 0,
-                    totalSpent: 0,
-                },
+        // Use unified balance from user document
+        let balance = userData?.availableBalance || 0
+        let totalDeposited = userData?.totalDeposits || 0
+
+        // Fallback: if no balance stored, calculate from mpesa_transactions
+        if (balance === 0 && totalDeposited === 0) {
+            const depositsSnapshot = await db
+                .collection("mpesa_transactions")
+                .where("userId", "==", userId)
+                .where("status", "==", "completed")
+                .get()
+
+            depositsSnapshot.forEach((doc) => {
+                totalDeposited += doc.data().amount || 0
             })
+
+            // Calculate balance from deposits minus what's been spent on ads
+            const publishSnapshot = await db
+                .collection("adTransactions")
+                .where("userId", "==", userId)
+                .get()
+
+            let totalAllocated = 0
+            publishSnapshot.forEach((doc) => {
+                const data = doc.data()
+                // ad_publish and ad_republish have negative amounts
+                if (data.type === "ad_publish" || data.type === "ad_republish") {
+                    totalAllocated += Math.abs(data.amount || 0)
+                }
+            })
+
+            balance = Math.max(0, totalDeposited - totalAllocated)
         }
 
-        // Calculate total deposited from transactions
-        const depositsSnapshot = await db
-            .collection("adTransactions")
-            .where("userId", "==", userId)
-            .where("type", "==", "deposit")
-            .get()
-
-        let totalDeposited = 0
-        depositsSnapshot.forEach((doc) => {
-            const data = doc.data()
-            const amount = data.amount || 0
-            // Only count successful deposits (or legacy transactions without status)
-            const status = data.status
-            if (amount > 0 && (status === "success" || status === "completed" || !status)) {
-                totalDeposited += amount
-            }
-        })
-
-        // Calculate total spent from transactions
+        // Calculate total spent from ad transactions (views charged)
         const spendSnapshot = await db
             .collection("adTransactions")
             .where("userId", "==", userId)
@@ -74,11 +78,6 @@ export async function GET() {
                 totalSpent += Math.abs(amount)
             }
         })
-
-        // Calculate available balance dynamically
-        // Balance = Total Deposited - Total Spent
-        // This fixes the issue where the user profile walletBalance might be out of sync
-        const balance = Math.max(0, totalDeposited - totalSpent)
 
         return NextResponse.json<ApiResponse<AdWalletBalance>>({
             success: true,

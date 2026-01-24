@@ -53,14 +53,21 @@ export async function GET() {
       availableBalance = totalDeposits + totalEarnings
     }
 
-    // Count network size (referrals)
-    const referralsSnapshot = await db
-      .collection("users")
-      .where("refererCode", "==", userData?.referralCode || "")
-      .count()
+    // Calculate total spent on ads from adTransactions
+    const adSpendSnapshot = await db
+      .collection("adTransactions")
+      .where("userId", "==", userId)
+      .where("type", "==", "ad_spend")
       .get()
 
-    const networkSize = referralsSnapshot.data().count || 0
+    let totalSpentOnAds = 0
+    adSpendSnapshot.forEach((doc) => {
+      const amount = doc.data().amount || 0
+      // Ad spend amounts are negative, so we take absolute value
+      if (amount < 0) {
+        totalSpentOnAds += Math.abs(amount)
+      }
+    })
 
     // Count pending deposits
     const pendingSnapshot = await db
@@ -79,7 +86,7 @@ export async function GET() {
       totalEarnings,
       availableBalance: Math.max(0, availableBalance),
       pendingBalance,
-      networkSize,
+      totalSpentOnAds,
       referralEarnings,
       bonusEarnings,
     }
