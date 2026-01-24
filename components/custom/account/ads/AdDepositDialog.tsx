@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useAdDeposit, useAdWallet } from "@/hooks/ads"
 import { useDepositStatus } from "@/hooks/account"
@@ -24,6 +24,8 @@ interface AdDepositDialogProps {
     onOpenChange: (open: boolean) => void
 }
 
+const PHONE_STORAGE_KEY = "yohpal_mpesa_phone"
+
 export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
     const { deposit, loading, reset } = useAdDeposit()
     const { refetch } = useAdWallet()
@@ -31,6 +33,16 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
     const [phoneNumber, setPhoneNumber] = useState("")
     const [amount, setAmount] = useState("")
     const [pendingAmount, setPendingAmount] = useState(0)
+
+    // Load saved phone number when dialog opens
+    useEffect(() => {
+        if (open) {
+            const savedPhone = localStorage.getItem(PHONE_STORAGE_KEY)
+            if (savedPhone) {
+                setPhoneNumber(savedPhone)
+            }
+        }
+    }, [open])
 
     const amountValue = parseFloat(amount) || 0
 
@@ -50,6 +62,9 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
 
         try {
             setPendingAmount(depositAmount)
+            // Save phone number for future use
+            localStorage.setItem(PHONE_STORAGE_KEY, phoneNumber)
+
             const response = await deposit({
                 phoneNumber,
                 amount: depositAmount,
