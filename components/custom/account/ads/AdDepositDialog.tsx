@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { useAdDeposit, useAdWallet } from "@/hooks/ads"
+import { useDepositStatus } from "@/hooks/account"
 import {
     Dialog,
     DialogContent,
@@ -13,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { Loader2, CheckCircle2 } from "lucide-react"
+import { Loader2, CheckCircle2, XCircle, Ban } from "lucide-react"
 import { ViewCalculator } from "./ViewCalculator"
 import { AD_MIN_DEPOSIT } from "@/constants"
 
@@ -23,10 +25,12 @@ interface AdDepositDialogProps {
 }
 
 export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
-    const { deposit, loading, success, response, reset } = useAdDeposit()
+    const { deposit, loading, reset } = useAdDeposit()
     const { refetch } = useAdWallet()
+    const { status, message, startPolling, reset: resetStatus } = useDepositStatus()
     const [phoneNumber, setPhoneNumber] = useState("")
     const [amount, setAmount] = useState("")
+    const [pendingAmount, setPendingAmount] = useState(0)
 
     const amountValue = parseFloat(amount) || 0
 
@@ -45,11 +49,16 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
         }
 
         try {
-            await deposit({
+            setPendingAmount(depositAmount)
+            const response = await deposit({
                 phoneNumber,
                 amount: depositAmount,
             })
-            toast.success("Check your phone for the M-Pesa prompt")
+
+            // Start polling for status
+            if (response?.checkoutRequestId) {
+                startPolling(response.checkoutRequestId)
+            }
         } catch {
             toast.error("Failed to initiate deposit")
         }
@@ -57,12 +66,86 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
 
     const handleClose = () => {
         reset()
+        resetStatus()
         setPhoneNumber("")
         setAmount("")
         onOpenChange(false)
-        if (success) {
+        if (status === "completed") {
             refetch()
         }
+    }
+
+    const handleRetry = () => {
+        resetStatus()
+    }
+
+    // Render status view
+    const renderStatusView = () => {
+        if (status === "pending") {
+            return (
+                <div className="flex flex-col items-center py-8 text-center">
+                    <div className="relative mb-6">
+                        <div className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
+                        <div className="absolute -inset-4 animate-spin rounded-full border-4 border-transparent border-t-primary" style={{ animationDuration: "1.5s" }} />
+                        <div className="relative h-20 w-20 animate-pulse">
+                            <Image src="/logo_circular.png" alt="Yohpal" fill className="object-contain" priority />
+                        </div>
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">Processing Payment</h3>
+                    <p className="text-sm text-muted-foreground mb-2">{message}</p>
+                    <p className="text-sm font-medium text-primary">KES {pendingAmount.toLocaleString()}</p>
+                    <Button variant="outline" className="mt-6" onClick={handleClose}>Cancel</Button>
+                </div>
+            )
+        }
+
+        if (status === "completed") {
+            return (
+                <div className="flex flex-col items-center py-8 text-center">
+                    <div className="animate-in zoom-in-50 duration-300 mb-6">
+                        <CheckCircle2 className="size-20 text-green-500" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="font-semibold text-lg text-green-500 mb-2">Payment Successful!</h3>
+                    <p className="text-sm text-muted-foreground mb-2">{message}</p>
+                    <p className="text-sm font-medium text-green-500">KES {pendingAmount.toLocaleString()} added</p>
+                    <Button className="mt-6" onClick={handleClose}>Done</Button>
+                </div>
+            )
+        }
+
+        if (status === "failed") {
+            return (
+                <div className="flex flex-col items-center py-8 text-center">
+                    <div className="animate-in zoom-in-50 duration-300 mb-6">
+                        <XCircle className="size-20 text-destructive" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="font-semibold text-lg text-destructive mb-2">Payment Failed</h3>
+                    <p className="text-sm text-muted-foreground mb-4">{message}</p>
+                    <div className="flex gap-2">
+                        <Button variant="outline" onClick={handleRetry}>Try Again</Button>
+                        <Button onClick={handleClose}>Close</Button>
+                    </div>
+                </div>
+            )
+        }
+
+        if (status === "cancelled") {
+            return (
+                <div className="flex flex-col items-center py-8 text-center">
+                    <div className="animate-in zoom-in-50 duration-300 mb-6">
+                        <Ban className="size-20 text-muted-foreground" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">Payment Cancelled</h3>
+                    <p className="text-sm text-muted-foreground mb-4">{message}</p>
+                    <div className="flex gap-2">
+                        <Button variant="outline" onClick={handleRetry}>Try Again</Button>
+                        <Button onClick={handleClose}>Close</Button>
+                    </div>
+                </div>
+            )
+        }
+
+        return null
     }
 
     return (
@@ -75,15 +158,8 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
                     </DialogDescription>
                 </DialogHeader>
 
-                {success ? (
-                    <div className="flex flex-col items-center py-6 text-center">
-                        <CheckCircle2 className="size-12 text-green-500 mb-4" />
-                        <h3 className="font-semibold mb-2">STK Push Sent!</h3>
-                        <p className="text-sm text-muted-foreground mb-4">
-                            {response?.message || "Check your phone and enter your M-Pesa PIN to complete the deposit."}
-                        </p>
-                        <Button onClick={handleClose}>Done</Button>
-                    </div>
+                {status !== "idle" ? (
+                    renderStatusView()
                 ) : (
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
@@ -93,6 +169,7 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
                                 placeholder="07XXXXXXXX"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
+                                disabled={loading}
                                 required
                             />
                         </div>
@@ -106,6 +183,7 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
                                 min={AD_MIN_DEPOSIT}
+                                disabled={loading}
                                 required
                             />
                         </div>
@@ -120,6 +198,7 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
                                 variant="outline"
                                 onClick={handleClose}
                                 className="flex-1"
+                                disabled={loading}
                             >
                                 Cancel
                             </Button>
