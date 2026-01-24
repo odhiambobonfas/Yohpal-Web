@@ -56,10 +56,10 @@ export function validateDeposit(
     return { valid: false, error: "Maximum deposit amount is KES 150,000" }
   }
 
-  // Validate phone number format
+  // Validate phone number format (Safaricom: 07XX or 01XX)
   const formatted = formatPhoneNumber(phoneNumber)
   if (!/^254[17]\d{8}$/.test(formatted)) {
-    return { valid: false, error: "Invalid phone number format" }
+    return { valid: false, error: "Enter a valid Safaricom number (07XX or 01XX)" }
   }
 
   return { valid: true }
