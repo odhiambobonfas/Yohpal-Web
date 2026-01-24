@@ -166,7 +166,7 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
                             <Label htmlFor="phoneNumber">M-Pesa Phone Number</Label>
                             <Input
                                 id="phoneNumber"
-                                placeholder="07XXXXXXXX"
+                                placeholder="07XX or 01XX..."
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
                                 disabled={loading}
