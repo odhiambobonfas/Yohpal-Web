@@ -51,21 +51,26 @@ export async function queryTransactionStatus(
     // ResultCode 2001 = Wrong PIN
     // ResultCode 1 = Insufficient funds
 
-    if (data.ResultCode === "0") {
+    // Convert to string for consistent comparison (API may return number or string)
+    const resultCode = String(data.ResultCode ?? "")
+    const responseCode = String(data.ResponseCode ?? "")
+
+    if (resultCode === "0") {
       return {
         success: true,
         status: "completed",
-        resultCode: data.ResultCode,
+        resultCode: resultCode,
         resultDesc: data.ResultDesc,
       }
-    } else if (data.ResultCode) {
+    } else if (resultCode !== "" && resultCode !== "undefined") {
+      // Non-zero result code means failure
       return {
         success: true,
         status: "failed",
-        resultCode: data.ResultCode,
+        resultCode: resultCode,
         resultDesc: data.ResultDesc,
       }
-    } else if (data.ResponseCode === "0") {
+    } else if (responseCode === "0") {
       // Request accepted but no result yet
       return {
         success: true,
