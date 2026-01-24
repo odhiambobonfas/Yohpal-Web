@@ -206,15 +206,15 @@ export async function DELETE(request: Request, { params }: RouteParams) {
         // Delete the ad
         batch.delete(adRef)
 
-        // Refund remaining budget to wallet
+        // Refund remaining budget to available balance
         if (refundAmount > 0) {
             const userRef = db.collection("users").doc(userId)
             const userDoc = await userRef.get()
             const userData = userDoc.data()
-            const currentBalance = userData?.businessProfile?.walletBalance || 0
+            const currentBalance = userData?.availableBalance || 0
 
             batch.update(userRef, {
-                "businessProfile.walletBalance": currentBalance + refundAmount,
+                availableBalance: currentBalance + refundAmount,
             })
 
             // Create refund transaction
