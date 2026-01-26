@@ -22,6 +22,11 @@ const navTabs = [
 export function AccountNavTabs() {
   const pathname = usePathname()
 
+  // Hide nav tabs on onboarding page for immersive experience
+  if (pathname === "/account/onboarding") {
+    return null
+  }
+
   const isActive = (href: string) => {
     if (href === "/account") {
       return pathname === "/account"
