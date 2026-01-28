@@ -11,6 +11,7 @@ type AuthContextType = {
     profile: YPUser | null
     loading: boolean
     isAuthenticated: boolean
+    refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -21,6 +22,13 @@ export function YPAuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true)
     const { getProfile } = useUser()
     const stableGetProfile = useCallback(getProfile, [getProfile])
+
+    const refreshProfile = useCallback(async () => {
+        if (user) {
+            const ypUser = await stableGetProfile(user.uid)
+            setUserProfile(ypUser)
+        }
+    }, [user, stableGetProfile])
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -44,6 +52,7 @@ export function YPAuthProvider({ children }: { children: ReactNode }) {
                 profile: userProfile,
                 loading: loading,
                 isAuthenticated: !!user,
+                refreshProfile,
             }}
         >
             {children}

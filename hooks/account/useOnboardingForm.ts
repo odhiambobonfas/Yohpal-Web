@@ -1,11 +1,21 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { OnboardingStep, OnboardingFormData, INITIAL_FORM_DATA } from "@/components/custom/account/onboarding/types"
 
 export function useOnboardingForm() {
     const [step, setStep] = useState<OnboardingStep>(0)
     const [formData, setFormData] = useState<OnboardingFormData>(INITIAL_FORM_DATA)
+
+    const isDirty = useMemo(() => {
+        return (
+            formData.businessName !== INITIAL_FORM_DATA.businessName ||
+            formData.businessDescription !== INITIAL_FORM_DATA.businessDescription ||
+            formData.contactInfo !== INITIAL_FORM_DATA.contactInfo ||
+            formData.category !== INITIAL_FORM_DATA.category ||
+            formData.businessLogo !== INITIAL_FORM_DATA.businessLogo
+        )
+    }, [formData])
 
     const nextStep = useCallback(() => {
         setStep((prev) => Math.min(prev + 1, 4) as OnboardingStep)
@@ -31,6 +41,7 @@ export function useOnboardingForm() {
     return {
         step,
         formData,
+        isDirty,
         nextStep,
         prevStep,
         goToStep,
