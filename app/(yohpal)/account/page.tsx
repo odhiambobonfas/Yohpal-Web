@@ -1,15 +1,16 @@
 "use client"
 
 import Link from "next/link"
+import { useState, useEffect } from "react"
 import { useAccountBalance, useTransactions } from "@/hooks/account"
 import { StatsCards } from "@/components/custom/account/dashboard/StatsCards"
 import { EarningsBreakdown } from "@/components/custom/account/dashboard/EarningsBreakdown"
 import { QuickActions } from "@/components/custom/account/dashboard/QuickActions"
 import { RecentTransactions } from "@/components/custom/account/dashboard/RecentTransactions"
+import { EditProfileSheet } from "@/components/custom/account/profile/EditProfileSheet"
 import { useAuth } from "@/providers/Auth"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import { Loader2, Mail, Phone, Building2 } from "lucide-react"
+import { Loader2, Mail, Phone, Building2, Pencil } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -18,8 +19,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 export default function AccountDashboard() {
   const { balance, loading: balanceLoading, refetch: refetchBalance } = useAccountBalance()
   const { transactions, loading: transactionsLoading } = useTransactions({ limit: 5 })
-  const { profile, loading: authLoading } = useAuth()
+  const { profile, loading: authLoading, user, refreshProfile } = useAuth()
   const router = useRouter()
+  const [editSheetOpen, setEditSheetOpen] = useState(false)
 
   useEffect(() => {
     if (!authLoading && profile) {
@@ -91,6 +93,14 @@ export default function AccountDashboard() {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setEditSheetOpen(true)}
+                    title="Edit Profile"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                   <Button asChild>
                     <Link href="/account/ads/create">Upload Ad</Link>
                   </Button>
@@ -129,6 +139,16 @@ export default function AccountDashboard() {
       </div>
 
       <RecentTransactions transactions={transactions} loading={transactionsLoading} />
+
+      {business && user && (
+        <EditProfileSheet
+          open={editSheetOpen}
+          onOpenChange={setEditSheetOpen}
+          profile={business}
+          userId={user.uid}
+          onSuccess={refreshProfile}
+        />
+      )}
     </div>
   )
 }
