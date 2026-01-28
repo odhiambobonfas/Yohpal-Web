@@ -1,12 +1,22 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "@/providers/Auth"
 import { updateBusinessProfile } from "@/services/client/user-mutations"
 import { toast } from "sonner"
 import { Card, CardContent } from "@/components/ui/card"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { useOnboardingForm } from "@/hooks/account/useOnboardingForm"
 import { WizardProgress } from "./WizardProgress"
 import { WizardNavigation } from "./WizardNavigation"
@@ -43,9 +53,23 @@ const pageVariants = {
 export function OnboardingWizard() {
     const { user } = useAuth()
     const router = useRouter()
-    const { step, formData, nextStep, prevStep, goToStep, updateFormData } = useOnboardingForm()
+    const { step, formData, isDirty, nextStep, prevStep, goToStep, updateFormData } = useOnboardingForm()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [direction, setDirection] = useState(1)
+    const [showLeaveDialog, setShowLeaveDialog] = useState(false)
+
+    // Warn user about unsaved changes when leaving the page
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (isDirty) {
+                e.preventDefault()
+                e.returnValue = ""
+            }
+        }
+
+        window.addEventListener("beforeunload", handleBeforeUnload)
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload)
+    }, [isDirty])
 
     const validateCurrentStep = (): boolean => {
         switch (step) {
@@ -145,36 +169,63 @@ export function OnboardingWizard() {
         }
     }
 
+    const handleLeave = () => {
+        setShowLeaveDialog(false)
+        router.push("/")
+    }
+
     return (
-        <div className="w-full max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-10">
-            <WizardProgress currentStep={step} onStepClick={handleStepClick} />
+        <>
+            <div className="w-full max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-10">
+                <WizardProgress currentStep={step} onStepClick={handleStepClick} />
 
-            <Card className="overflow-hidden">
-                <CardContent className="p-6 md:p-10">
-                    <div className="min-h-[500px] md:min-h-[550px]">
-                        <AnimatePresence mode="wait" custom={direction}>
-                            <motion.div
-                                key={step}
-                                custom={direction}
-                                variants={pageVariants}
-                                initial="initial"
-                                animate="animate"
-                                exit="exit"
-                            >
-                                {renderStep()}
-                            </motion.div>
-                        </AnimatePresence>
-                    </div>
+                <Card className="overflow-hidden">
+                    <CardContent className="p-6 md:p-10">
+                        <div className="min-h-[500px] md:min-h-[550px]">
+                            <AnimatePresence mode="wait" custom={direction}>
+                                <motion.div
+                                    key={step}
+                                    custom={direction}
+                                    variants={pageVariants}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit"
+                                >
+                                    {renderStep()}
+                                </motion.div>
+                            </AnimatePresence>
+                        </div>
 
-                    <WizardNavigation
-                        currentStep={step}
-                        onBack={handleBack}
-                        onNext={handleNext}
-                        isNextDisabled={!validateCurrentStep()}
-                        isLoading={isSubmitting}
-                    />
-                </CardContent>
-            </Card>
-        </div>
+                        <WizardNavigation
+                            currentStep={step}
+                            onBack={handleBack}
+                            onNext={handleNext}
+                            isNextDisabled={!validateCurrentStep()}
+                            isLoading={isSubmitting}
+                        />
+                    </CardContent>
+                </Card>
+            </div>
+
+            <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Leave setup?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Your progress will be lost if you leave now. Are you sure you want to exit?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Continue Setup</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleLeave}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            Leave
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     )
 }
