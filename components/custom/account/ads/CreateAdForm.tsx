@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/providers/Auth"
 import { useCreateAd, useUploadAdImage } from "@/hooks/ads"
@@ -8,6 +8,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 import { AdImageUpload } from "./AdImageUpload"
@@ -28,6 +38,24 @@ export function CreateAdForm() {
     } = useUploadAdImage()
 
     const [description, setDescription] = useState("")
+    const [showLeaveDialog, setShowLeaveDialog] = useState(false)
+
+    const isDirty = useMemo(() => {
+        return description.trim() !== "" || !!imageUrl
+    }, [description, imageUrl])
+
+    // Warn user about unsaved changes when leaving the page
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (isDirty) {
+                e.preventDefault()
+                e.returnValue = ""
+            }
+        }
+
+        window.addEventListener("beforeunload", handleBeforeUnload)
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload)
+    }, [isDirty])
 
     const handleImageUpload = async (file: File) => {
         if (!user) return
@@ -40,6 +68,19 @@ export function CreateAdForm() {
 
     const handleRemoveImage = () => {
         resetUpload()
+    }
+
+    const handleCancel = () => {
+        if (isDirty) {
+            setShowLeaveDialog(true)
+        } else {
+            router.push("/account/ads")
+        }
+    }
+
+    const handleLeave = () => {
+        setShowLeaveDialog(false)
+        router.push("/account/ads")
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -115,20 +156,31 @@ export function CreateAdForm() {
                             </p>
                         </div>
 
-                        <Button
-                            type="submit"
-                            className="w-full"
-                            disabled={creating || uploading || !imageUrl}
-                        >
-                            {creating ? (
-                                <>
-                                    <Loader2 className="mr-2 size-4 animate-spin" />
-                                    Saving Draft...
-                                </>
-                            ) : (
-                                "Save as Draft"
-                            )}
-                        </Button>
+                        <div className="flex gap-3">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="flex-1"
+                                onClick={handleCancel}
+                                disabled={creating || uploading}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                className="flex-1"
+                                disabled={creating || uploading || !imageUrl}
+                            >
+                                {creating ? (
+                                    <>
+                                        <Loader2 className="mr-2 size-4 animate-spin" />
+                                        Saving Draft...
+                                    </>
+                                ) : (
+                                    "Save as Draft"
+                                )}
+                            </Button>
+                        </div>
                     </form>
                 </CardContent>
             </Card>
@@ -140,6 +192,26 @@ export function CreateAdForm() {
                     description={description}
                 />
             </div>
+
+            <AlertDialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You have unsaved changes that will be lost if you leave this page.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Keep Editing</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleLeave}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            Discard
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }
