@@ -10,6 +10,13 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,8 +24,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { toast } from "sonner"
 import { Loader2, RefreshCw, Eye, Clock, Info } from "lucide-react"
 import { ViewCalculator } from "./ViewCalculator"
-import { Ad } from "@/types/ads"
-import { AD_MIN_PUBLISH_AMOUNT } from "@/constants"
+import { Ad, AdViewFrequency } from "@/types/ads"
+import { AD_MIN_PUBLISH_AMOUNT, AD_VIEW_FREQUENCY_OPTIONS, AD_DEFAULT_VIEW_FREQUENCY } from "@/constants"
 import { formatAdTime, calculateTimeDelivered } from "@/lib/ads/calculations"
 
 interface RepublishAdDialogProps {
@@ -32,6 +39,8 @@ export function RepublishAdDialog({ ad, open, onOpenChange, onSuccess }: Republi
     const { republishAd, loading, reset } = useRepublishAd()
     const { balance, refetch: refetchWallet } = useAdWallet()
     const [amount, setAmount] = useState("")
+    const currentViewFrequency = (ad.viewFrequency ?? AD_DEFAULT_VIEW_FREQUENCY) as AdViewFrequency
+    const [viewFrequency, setViewFrequency] = useState<AdViewFrequency>(currentViewFrequency)
 
     const amountValue = parseFloat(amount) || 0
     const isValidAmount = amountValue >= AD_MIN_PUBLISH_AMOUNT
@@ -53,7 +62,7 @@ export function RepublishAdDialog({ ad, open, onOpenChange, onSuccess }: Republi
         }
 
         try {
-            await republishAd(ad.id, amountValue)
+            await republishAd(ad.id, amountValue, viewFrequency)
             toast.success("Ad republished successfully!")
             refetchWallet()
             onSuccess?.()
@@ -66,6 +75,7 @@ export function RepublishAdDialog({ ad, open, onOpenChange, onSuccess }: Republi
     const handleClose = () => {
         reset()
         setAmount("")
+        setViewFrequency(currentViewFrequency)
         onOpenChange(false)
     }
 
@@ -121,6 +131,28 @@ export function RepublishAdDialog({ ad, open, onOpenChange, onSuccess }: Republi
                         />
                         <p className="text-xs text-muted-foreground">
                             Available balance: KES {balance.toLocaleString("en-KE", { minimumFractionDigits: 2 })}
+                        </p>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="viewFrequency">View Frequency</Label>
+                        <Select
+                            value={viewFrequency.toString()}
+                            onValueChange={(v) => setViewFrequency(parseInt(v) as AdViewFrequency)}
+                        >
+                            <SelectTrigger id="viewFrequency">
+                                <SelectValue placeholder="Select view frequency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {AD_VIEW_FREQUENCY_OPTIONS.map((option) => (
+                                    <SelectItem key={option.value} value={option.value.toString()}>
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                            {AD_VIEW_FREQUENCY_OPTIONS.find(o => o.value === viewFrequency)?.description}
                         </p>
                     </div>
 

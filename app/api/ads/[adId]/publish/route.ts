@@ -1,9 +1,9 @@
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
-import { COOKIES, AD_MIN_PUBLISH_AMOUNT } from "@/constants"
+import { COOKIES, AD_MIN_PUBLISH_AMOUNT, AD_DEFAULT_VIEW_FREQUENCY, AD_MAX_VIEW_FREQUENCY } from "@/constants"
 import { db, serverTimestamp } from "@/lib/firebase/firebase.admin"
 import { ApiResponse } from "@/types/account"
-import { Ad, PublishAdRequest } from "@/types/ads"
+import { Ad, PublishAdRequest, AdViewFrequency } from "@/types/ads"
 
 interface RouteParams {
     params: Promise<{ adId: string }>
@@ -24,7 +24,12 @@ export async function POST(request: Request, { params }: RouteParams) {
 
         const { adId } = await params
         const body: PublishAdRequest = await request.json()
-        const { amountToAllocate } = body
+        const { amountToAllocate, viewFrequency: requestedFrequency } = body
+
+        // Validate and default view frequency
+        const viewFrequency: AdViewFrequency = (requestedFrequency && requestedFrequency >= 1 && requestedFrequency <= AD_MAX_VIEW_FREQUENCY)
+            ? requestedFrequency as AdViewFrequency
+            : AD_DEFAULT_VIEW_FREQUENCY as AdViewFrequency
 
         // Validate amount
         if (!amountToAllocate || amountToAllocate < AD_MIN_PUBLISH_AMOUNT) {
@@ -115,6 +120,7 @@ export async function POST(request: Request, { params }: RouteParams) {
             amountAllocated: amountToAllocate,
             isPublished: true,
             isDepleted: false,
+            viewFrequency,
             updatedAt: serverTimestamp(),
         })
 
@@ -153,6 +159,7 @@ export async function POST(request: Request, { params }: RouteParams) {
                 amountAllocated: amountToAllocate,
                 isPublished: true,
                 isDepleted: false,
+                viewFrequency,
                 updatedAt: now,
             },
         })

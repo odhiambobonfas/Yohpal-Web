@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import {
   LayoutDashboard,
   Megaphone,
+  Video,
   ArrowDownToLine,
   Users,
   History,
@@ -14,6 +15,7 @@ import { cn } from "@/lib/utils"
 const navTabs = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/account" },
   { icon: Megaphone, label: "Ads", href: "/account/ads" },
+  { icon: Video, label: "Promotions", href: "/account/promotions" },
   { icon: ArrowDownToLine, label: "Deposit", href: "/account/deposit" },
   { icon: Users, label: "Network", href: "/account/network" },
   { icon: History, label: "Transactions", href: "/account/transactions" },

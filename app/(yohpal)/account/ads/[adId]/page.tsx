@@ -30,7 +30,9 @@ import {
     Eye,
     Clock,
     Coins,
+    Repeat,
 } from "lucide-react"
+import { AD_VIEW_FREQUENCY_OPTIONS, AD_DEFAULT_VIEW_FREQUENCY } from "@/constants"
 import { getRemainingBudget, formatAdTime, calculateTimeDelivered, calculateSpentAmount } from "@/lib/ads/calculations"
 
 export default function AdDetailsPage() {
@@ -273,6 +275,13 @@ export default function AdDetailsPage() {
                             <CardTitle className="text-lg">Info</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
+                            <div>
+                                <p className="text-xs text-muted-foreground">View Frequency</p>
+                                <p className="font-medium flex items-center gap-1.5">
+                                    <Repeat className="size-3.5 text-muted-foreground" />
+                                    {AD_VIEW_FREQUENCY_OPTIONS.find(o => o.value === (ad.viewFrequency ?? AD_DEFAULT_VIEW_FREQUENCY))?.label ?? "Once per day"}
+                                </p>
+                            </div>
                             <div>
                                 <p className="text-xs text-muted-foreground">View Duration</p>
                                 <p className="font-medium">15 seconds per view</p>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { Ad, PublishAdRequest } from "@/types/ads"
+import { Ad, AdViewFrequency, PublishAdRequest } from "@/types/ads"
 import { ApiResponse } from "@/types/account"
 
 export function usePublishAd() {
@@ -9,13 +9,13 @@ export function usePublishAd() {
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
 
-    const publishAd = useCallback(async (adId: string, amountToAllocate: number) => {
+    const publishAd = useCallback(async (adId: string, amountToAllocate: number, viewFrequency?: AdViewFrequency) => {
         try {
             setLoading(true)
             setError(null)
             setSuccess(false)
 
-            const request: PublishAdRequest = { amountToAllocate }
+            const request: PublishAdRequest = { amountToAllocate, viewFrequency }
 
             const res = await fetch(`/api/ads/${adId}/publish`, {
                 method: "POST",
