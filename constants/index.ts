@@ -53,6 +53,18 @@ const AD_DESCRIPTION_MAX_LENGTH = 100     // Max description characters
 const AD_MIN_DEPOSIT = 10                 // KES minimum deposit
 const AD_FREQUENCY_BASE = 5               // Show ad every N videos
 
+// Ad view frequency options (how many times per day same user sees the ad)
+const AD_VIEW_FREQUENCY_OPTIONS = [
+    { value: 1, label: "Once per day", description: "Each user sees ad once per day" },
+    { value: 2, label: "Twice per day", description: "Each user can see ad 2 times per day" },
+    { value: 3, label: "3 times per day", description: "Each user can see ad 3 times per day" },
+    { value: 4, label: "4 times per day", description: "Each user can see ad 4 times per day" },
+    { value: 5, label: "5 times per day", description: "Each user can see ad 5 times per day (max)" },
+] as const
+
+const AD_MAX_VIEW_FREQUENCY = 5
+const AD_DEFAULT_VIEW_FREQUENCY = 1
+
 export {
     AD_COST_PER_VIEW,
     AD_VIEW_DURATION_SECONDS,
@@ -60,6 +72,9 @@ export {
     AD_DESCRIPTION_MAX_LENGTH,
     AD_FREQUENCY_BASE,
     AD_MIN_DEPOSIT,
+    AD_VIEW_FREQUENCY_OPTIONS,
+    AD_MAX_VIEW_FREQUENCY,
+    AD_DEFAULT_VIEW_FREQUENCY,
     CACHE_TTL,
     CDN_URL,
     COOKIES,
