@@ -40,7 +40,7 @@ export default function PromotionsLoading() {
                     <Skeleton className="h-10 w-36" />
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {Array.from({ length: 6 }).map((_, i) => (
+                    {Array.from({ length: 6 }).map((unused, i) => (
                         <Card key={i} className="overflow-hidden">
                             <Skeleton className="aspect-video" />
                             <CardContent className="p-4 space-y-3">
