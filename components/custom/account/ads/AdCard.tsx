@@ -10,7 +10,8 @@ import { Ad } from "@/types/ads"
 import { AdStatusBadge } from "./AdStatusBadge"
 import { PublishAdDialog } from "./PublishAdDialog"
 import { RepublishAdDialog } from "./RepublishAdDialog"
-import { Eye, Clock, Rocket, RefreshCw } from "lucide-react"
+import { Eye, Clock, Rocket, RefreshCw, Repeat } from "lucide-react"
+import { AD_DEFAULT_VIEW_FREQUENCY } from "@/constants"
 import { getRemainingBudget, formatAdTime, calculateTimeDelivered, calculateSpentAmount } from "@/lib/ads/calculations"
 
 interface AdCardProps {
@@ -82,6 +83,12 @@ export function AdCard({ ad, onUpdate }: AdCardProps) {
                             <Clock className="size-3.5" />
                             <span>{formatAdTime(timeDelivered)}</span>
                         </div>
+                        {(ad.viewFrequency ?? AD_DEFAULT_VIEW_FREQUENCY) > 1 && (
+                            <div className="flex items-center gap-1">
+                                <Repeat className="size-3.5" />
+                                <span>{ad.viewFrequency}x/day</span>
+                            </div>
+                        )}
                     </div>
                 </CardContent>
                 <CardFooter className="p-4 pt-0 gap-2">
