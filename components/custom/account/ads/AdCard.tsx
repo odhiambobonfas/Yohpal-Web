@@ -32,7 +32,6 @@ export function AdCard({ ad, onUpdate }: AdCardProps) {
 
     const isDraft = !ad.isPublished
     const isDepleted = ad.isDepleted
-    const isActive = ad.isPublished && !ad.isDepleted
 
     const handleSuccess = () => {
         onUpdate?.()
