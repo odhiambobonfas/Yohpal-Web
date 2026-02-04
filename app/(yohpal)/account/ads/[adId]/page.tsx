@@ -94,7 +94,7 @@ export default function AdDetailsPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4">
                     <Button variant="ghost" size="icon" asChild>
                         <Link href="/account/ads">
@@ -116,22 +116,22 @@ export default function AdDetailsPage() {
                         </p>
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     {isDraft && (
-                        <Button onClick={() => setPublishDialogOpen(true)}>
+                        <Button onClick={() => setPublishDialogOpen(true)} className="w-full sm:w-auto">
                             <Rocket className="mr-2 size-4" />
                             Publish
                         </Button>
                     )}
                     {isDepleted && (
-                        <Button onClick={() => setRepublishDialogOpen(true)}>
+                        <Button onClick={() => setRepublishDialogOpen(true)} className="w-full sm:w-auto">
                             <RefreshCw className="mr-2 size-4" />
                             Republish
                         </Button>
                     )}
                     <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                         <AlertDialogTrigger asChild>
-                            <Button variant="destructive">
+                            <Button variant="destructive" className="w-full sm:w-auto">
                                 <Trash2 className="mr-2 size-4" />
                                 Delete
                             </Button>
@@ -230,7 +230,7 @@ export default function AdDetailsPage() {
                                         <Progress value={budgetUsedPercent} className="h-2" />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4 pt-2">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                                         <div>
                                             <p className="text-xs text-muted-foreground">Total Allocated</p>
                                             <p className="font-semibold">
