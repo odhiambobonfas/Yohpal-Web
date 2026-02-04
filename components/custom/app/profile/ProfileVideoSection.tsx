@@ -55,7 +55,7 @@ export default function ProfileVideosSection({
     return (
         <div className="">
             <Tabs defaultValue="uploads">
-                <TabsList className="bg-accent">
+                <TabsList className="bg-accent w-full sm:w-fit">
                     <TabsTrigger value="uploads">
                         <Upload /> Uploads
                     </TabsTrigger>
