@@ -56,7 +56,7 @@ export default function AppAlert({
                     </AlertDialogDescription>
                 </AlertDialogHeader>
 
-                <AlertDialogFooter className="items-center flex w-full justify-center flex-row gap-2">
+                <AlertDialogFooter className="items-center flex w-full justify-center flex-col-reverse sm:flex-row gap-2">
                     {showCancel && (
                         <AlertDialogCancel onClick={onClose} className="w-auto flex-1">
                             {cancelText}
