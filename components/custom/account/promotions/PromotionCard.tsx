@@ -96,7 +96,7 @@ export function PromotionCard({ promotion, onUpdate }: PromotionCardProps) {
                         )}
                     </div>
                 </CardContent>
-                <CardFooter className="p-4 pt-0 gap-2">
+                <CardFooter className="p-4 pt-0 gap-2 flex-col sm:flex-row sm:items-center">
                     <Button variant="outline" className="flex-1" asChild>
                         <Link href={`/account/promotions/${promotion.id}`}>
                             View Details
