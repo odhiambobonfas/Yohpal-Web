@@ -71,12 +71,12 @@ export default function AccountDashboard() {
 
             {/* Business Details */}
             <div className="flex-1 space-y-3">
-              <div className="flex items-start justify-between">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <h1 className="text-2xl font-bold tracking-tight">
                     {business?.businessName || "My Business"}
                   </h1>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex flex-wrap items-center gap-2 mt-1">
                     {business?.category && (
                       <Badge variant="outline" className="capitalize">
                         <Building2 className="h-3 w-3 mr-1" />
@@ -92,7 +92,7 @@ export default function AccountDashboard() {
                     )}
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <Button
                     variant="outline"
                     size="icon"
@@ -101,10 +101,10 @@ export default function AccountDashboard() {
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button asChild>
+                  <Button asChild className="w-full sm:w-auto">
                     <Link href="/account/ads/create">Upload Ad</Link>
                   </Button>
-                  <Button variant="outline" asChild>
+                  <Button variant="outline" asChild className="w-full sm:w-auto">
                     <Link href="/account/deposit">Deposit Funds</Link>
                   </Button>
                 </div>
