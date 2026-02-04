@@ -61,10 +61,10 @@ export default function AdsPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold tracking-tight">Ads Manager</h1>
-                    <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
                         <span>{business?.businessName || "My Business"}</span>
                         {business?.verificationStatus && (
                             <Badge
@@ -75,14 +75,15 @@ export default function AdsPage() {
                         )}
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <Button
                         variant="outline"
                         onClick={() => setDepositOpen(true)}
+                        className="w-full sm:w-auto"
                     >
                         Deposit Funds
                     </Button>
-                    <Button asChild disabled={!isVerified}>
+                    <Button asChild disabled={!isVerified} className="w-full sm:w-auto">
                         <Link href="/account/ads/create">
                             <Plus className="mr-2 size-4" />
                             Create Ad
