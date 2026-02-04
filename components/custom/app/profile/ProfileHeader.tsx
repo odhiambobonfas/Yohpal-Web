@@ -130,7 +130,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                         <span className="text-muted-foreground mb-2">{user?.email}</span>
                     )}
 
-                    <span className="text-muted-foreground mb-2 w-full text-center md:text-start md:w-[600px]">
+                    <span className="text-muted-foreground mb-2 w-full text-center md:text-start md:max-w-2xl">
                         {visibleText}
                         {isLong && !expanded && "..."}
                         {isLong && (
@@ -148,7 +148,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                     )}
 
                     {!isPersonal && isAuthenticated && (
-                        <div className="flex my-2 text-sm md:text-lg px-3 py-1 md:px-5 md:py-2 gap-2">
+                        <div className="flex flex-wrap my-2 text-sm md:text-lg px-3 py-1 md:px-5 md:py-2 gap-2 justify-center md:justify-start">
                             <Button
                                 onClick={() => {
                                     handleFollowToggle({
@@ -183,7 +183,7 @@ export default function ProfileHeader({ user, stats, profileType }: ProfileHeade
                     )}
 
                     {/* Stats */}
-                    <div className="flex flex-row mt-2 gap-2 md:gap-4 cursor-pointer">
+                    <div className="flex flex-wrap md:flex-nowrap mt-2 gap-2 md:gap-4 cursor-pointer justify-center md:justify-start">
                         <div className="bg-accent py-1 px-2 md:py-2 md:px-3 rounded-lg flex flex-col items-center text-muted-foreground justify-center font-semibold">
                             <span className="text-sm md:text-base">{stats?.uploadedStat}</span>
                             <span className="text-[10px] md:text-xs">Posts</span>
