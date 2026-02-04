@@ -19,7 +19,7 @@ export default async function Page() {
     ])
 
     return (
-        <div className="flex flex-col min-h-screen p-2 gap-2">
+        <div className="flex flex-col min-h-screen p-2 md:p-4 gap-2">
             <ProfileHeader
                 user={user!}
                 stats={{
