@@ -235,7 +235,7 @@ export default function FollowingCanvas({ promotedVideos }: { promotedVideos: Vi
                 <p>LastPromoted: {lastPromotedDocId}</p>
             </DebugWindow>
 
-            <section className="h-[calc(100vh-6rem)] flex justify-center w-full">
+            <section className="h-[calc(100svh-6rem)] flex justify-center w-full">
                 <ClientOnly>
                     {!isMobile && (
                         <div className="flex flex-col justify-center gap-5 rounded-full mr-[10%]">

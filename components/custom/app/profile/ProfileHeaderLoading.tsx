@@ -11,9 +11,9 @@ export default function ProfileHeaderLoading() {
 
             <div className="ml-4 flex-1 mt-4 flex flex-col items-center md:items-start space-y-3 gap-2">
                 <Skeleton className="h-8 w-44" />
-                <Skeleton className="h-18 w-96" />
+                <Skeleton className="h-18 w-full max-w-md" />
 
-                <div className="flex flex-row gap-3">
+                <div className="flex flex-wrap gap-3 justify-center md:justify-start">
                     {Array(5)
                         .fill(0)
                         .map((__unused, i) => (

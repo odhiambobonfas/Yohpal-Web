@@ -93,7 +93,7 @@ export function RepublishAdDialog({ ad, open, onOpenChange, onSuccess }: Republi
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4 p-4 rounded-lg bg-muted/50">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-lg bg-muted/50">
                         <div className="flex items-center gap-2">
                             <Eye className="size-4 text-primary" />
                             <div>

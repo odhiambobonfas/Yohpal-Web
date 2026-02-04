@@ -3,7 +3,7 @@ import Link from "next/link"
 
 export default function Page() {
     return (
-        <div className="grid h-screen place-items-center bg-white-100 px-6  lg:px-8">
+        <div className="grid min-h-screen place-items-center bg-white-100 px-6 lg:px-8 py-8">
             <div className="text-center">
                 <Image
                     src="/404-error.svg"

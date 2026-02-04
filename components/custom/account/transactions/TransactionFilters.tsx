@@ -29,7 +29,7 @@ export function TransactionFilters({ filters, onFilterChange }: TransactionFilte
           onFilterChange({ type: value as TransactionType | "all" })
         }
       >
-        <SelectTrigger className="w-[140px] h-9">
+        <SelectTrigger className="w-full sm:w-[140px] h-9">
           <SelectValue placeholder="All Types" />
         </SelectTrigger>
         <SelectContent>
@@ -46,7 +46,7 @@ export function TransactionFilters({ filters, onFilterChange }: TransactionFilte
           onFilterChange({ status: value as TransactionStatus | "all" })
         }
       >
-        <SelectTrigger className="w-[140px] h-9">
+        <SelectTrigger className="w-full sm:w-[140px] h-9">
           <SelectValue placeholder="All Status" />
         </SelectTrigger>
         <SelectContent>

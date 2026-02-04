@@ -136,9 +136,9 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
                     </div>
                     <h3 className="font-semibold text-lg text-destructive mb-2">Payment Failed</h3>
                     <p className="text-sm text-muted-foreground mb-4">{message}</p>
-                    <div className="flex gap-2">
-                        <Button variant="outline" onClick={handleRetry}>Try Again</Button>
-                        <Button onClick={handleClose}>Close</Button>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full">
+                        <Button variant="outline" onClick={handleRetry} className="w-full sm:w-auto">Try Again</Button>
+                        <Button onClick={handleClose} className="w-full sm:w-auto">Close</Button>
                     </div>
                 </div>
             )
@@ -152,9 +152,9 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
                     </div>
                     <h3 className="font-semibold text-lg mb-2">Payment Cancelled</h3>
                     <p className="text-sm text-muted-foreground mb-4">{message}</p>
-                    <div className="flex gap-2">
-                        <Button variant="outline" onClick={handleRetry}>Try Again</Button>
-                        <Button onClick={handleClose}>Close</Button>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full">
+                        <Button variant="outline" onClick={handleRetry} className="w-full sm:w-auto">Try Again</Button>
+                        <Button onClick={handleClose} className="w-full sm:w-auto">Close</Button>
                     </div>
                 </div>
             )
@@ -207,7 +207,7 @@ export function AdDepositDialog({ open, onOpenChange }: AdDepositDialogProps) {
                             <ViewCalculator amount={amountValue} />
                         )}
 
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                             <Button
                                 type="button"
                                 variant="outline"

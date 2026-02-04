@@ -20,17 +20,17 @@ export function ViewCalculator({ amount, className = "" }: ViewCalculatorProps) 
 
     return (
         <div className={`rounded-lg bg-muted/50 p-3 ${className}`}>
-            <div className="flex items-center justify-between gap-4 text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
                 <div className="flex items-center gap-2">
                     <Coins className="size-4 text-primary" />
                     <span className="font-medium">KES {amount.toLocaleString("en-KE")}</span>
                 </div>
-                <span className="text-muted-foreground">=</span>
+                <span className="text-muted-foreground hidden sm:inline">=</span>
                 <div className="flex items-center gap-2">
                     <Eye className="size-4 text-primary" />
                     <span className="font-medium">{calculation.views.toLocaleString()} views</span>
                 </div>
-                <span className="text-muted-foreground">=</span>
+                <span className="text-muted-foreground hidden sm:inline">=</span>
                 <div className="flex items-center gap-2">
                     <Clock className="size-4 text-primary" />
                     <span className="font-medium">{calculation.formattedTime}</span>

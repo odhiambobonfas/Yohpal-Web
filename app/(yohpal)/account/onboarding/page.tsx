@@ -19,7 +19,7 @@ export default function OnboardingPage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+            <div className="flex items-center justify-center min-h-[calc(100svh-4rem)]">
                 <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
             </div>
         )
@@ -28,7 +28,7 @@ export default function OnboardingPage() {
     // If user already has a business profile, show loading while redirecting
     if (profile?.businessProfile?.businessName) {
         return (
-            <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+            <div className="flex items-center justify-center min-h-[calc(100svh-4rem)]">
                 <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
             </div>
         )

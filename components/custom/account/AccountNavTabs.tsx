@@ -38,7 +38,7 @@ export function AccountNavTabs() {
 
   return (
     <div className="border-b">
-      <nav className="flex gap-1 overflow-x-auto px-4 py-2 md:px-6">
+      <nav className="flex gap-1 overflow-x-auto no-scrollbar px-4 py-2 md:px-6">
         {navTabs.map((tab) => (
           <Link
             key={tab.href}

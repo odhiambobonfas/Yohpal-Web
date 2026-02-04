@@ -16,7 +16,7 @@ export default async function Page({ params }: { params: Promise<{ userId: strin
     if (!user) return <ProfileNotFound />
 
     return (
-        <div className="h-screen">
+        <div className="min-h-screen p-2 md:p-4">
             <ProfileHeader
                 profileType="public"
                 stats={{

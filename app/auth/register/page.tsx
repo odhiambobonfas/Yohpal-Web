@@ -41,12 +41,12 @@ export default function Page() {
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     return (
-        <div className="h-screen flex items-center justify-center">
-            <div className="w-full md:w-4/6 items-center min-h-full md:min-h-[40svh] drop-shadow-2xl rounded-lg bg-background grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center px-4 py-8">
+            <div className="w-full max-w-5xl items-center min-h-[60vh] md:min-h-[40svh] drop-shadow-2xl rounded-lg bg-background grid grid-cols-1 md:grid-cols-2 overflow-hidden">
                 <div className="col-span-1 p-5 flex flex-col my-2 gap-5">
                     <div className="min-h-24 flex items-center flex-col gap-2 py-3">
                         <Image width={50} height={50} src="/logo_circular.png" alt="Yohpal logo" />
-                        <h4 className="text-4xl font-semibold">YOHPAL</h4>
+                        <h4 className="text-3xl sm:text-4xl font-semibold">YOHPAL</h4>
                         <h5 className="text-lg">Welcome to Yohpal website!</h5>
                     </div>
                     {(error || confirmError) && (
